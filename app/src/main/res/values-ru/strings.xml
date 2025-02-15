@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CoinCapApp</string>
+    <string name="search_placeholder">Поиск</string>
+    <string name="error_string">Ошибка</string>
+    <string name="try_again_string">Попробуйте снова</string>
+    <string name="exchanges_tool_bar_title">Обменники</string>
+    <string name="empty_coins">Монеты не найдены</string>
+    <string name="symbol">Код %1$s</string>
+    <string name="price">Цена: %1$s %2$s</string>
+    <string name="percent24hr_title">Процент за 24 часа: %1$s %2$s</string>
+    <string name="volumeUsd" translatable="true"> Объем торгов: %.5f %s</string>
+    <string name="percentTotalVolume" translatable="true"> Процент от общего объема торгов: %.5f %s</string>
+    <string name="exchangeUrl" translatable="true"> Exchange URL: %s</string>
+    <string name="current_price">Текущая стоимость: %1$s $</string>
+
+</resources>

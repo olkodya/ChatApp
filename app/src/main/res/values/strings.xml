@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">CoinCapApp</string>
+    <string name="search_placeholder">Search</string>
+    <string name="error_string">Error</string>
+    <string name="try_again_string">Try Again</string>
+    <string name="exchanges_tool_bar_title">Exchanges</string>
+    <string name="empty_coins">Coins not found</string>
+    <string name="hashtag" translatable="false">%1$s#</string>
+    <string name="percent" translatable="false">%</string>
+    <string name="usd" translatable="false">$</string>
+    <string name="symbol">Symbol: %1$s</string>
+    <string name="price">Price: %.5f %s</string>
+    <string name="percent24hr_title">Percent 24 hour: </string>
+    <string name="percent24hr">%.5f %s</string>
+    <string name="volumeUsd" translatable="true"> Volume: %.5f %s</string>
+    <string name="percentTotalVolume" translatable="true"> Total volume: %.5f %s</string>
+    <string name="exchangeUrl" translatable="true"> Exchange URL: %s</string>
+    <string name="current_price">%1$s $</string>
+    <string name="assets_title">Assets</string>
+    <string name="exchanges">Exchanges</string>
+
+</resources>
