@@ -10,11 +10,17 @@ sealed class BottomNavigationItem(
 ) {
 
     @Serializable
-    data object Coins :
-        BottomNavigationItem(R.drawable.assets_icon, R.string.assets_title)
+    data object Chats :
+        BottomNavigationItem(
+            R.drawable.assets_icon,
+            R.string.bottom_nav_title_chat
+        )
 
     @Serializable
-    data object Exchanges :
-        BottomNavigationItem(R.drawable.exchanges_icon, R.string.exchanges)
+    data object Profile :
+        BottomNavigationItem(
+            R.drawable.exchanges_icon,
+            R.string.bottom_nav_title_profile
+        )
 }
 

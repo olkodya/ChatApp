@@ -3,7 +3,6 @@ package com.example.chatapp.feature.authorization.data.api
 import com.example.chatapp.feature.authorization.data.model.LoginRequest
 import com.example.chatapp.feature.authorization.data.model.LoginResponse
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface LoginApi {

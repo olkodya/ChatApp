@@ -15,16 +15,16 @@ data class LoginResponse(
 @Serializable
 data class LoginData(
     @SerialName("userId")
-    val userId: String,
+    val userId: String?,
     @SerialName("authToken")
-    val authToken: String,
+    val authToken: String?,
     @SerialName("me")
-    val me: UserInfo,
+    val me: UserInfo?,
 )
 
 @Serializable
 data class UserInfo(
-    @SerialName("userId")
+    @SerialName("_id")
     val _id: String,
     @SerialName("username")
     val username: String,
@@ -32,4 +32,11 @@ data class UserInfo(
     val name: String?,
 )
 
-fun LoginResponse.toEntity() : LoginEntity = LoginEntity()
+fun LoginResponse.toEntity(): LoginEntity = LoginEntity(
+    status = status,
+    userId = data.userId,
+    authToken = data.authToken,
+    _id = data.me?._id ?: "",
+    username = data.me?.username ?: "",
+    name = data.me?.name ?: "",
+)

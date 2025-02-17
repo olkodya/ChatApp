@@ -13,13 +13,9 @@ fun RootNavGraph(navHostController: NavHostController) {
     NavHost(
         navController = navHostController, startDestination = Routes.LoginScreen,
     ) {
-
-        composable<Routes.LoginScreen>{
-            LoginScreen(){
-
-            }
+        composable<Routes.LoginScreen> {
+            LoginScreen(onNavigateToMain = { navHostController.navigate(Routes.ScreenMain) })
         }
-
 
         composable<Routes.ScreenMain> {
             MainScreen(navHostController)

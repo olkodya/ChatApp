@@ -14,6 +14,7 @@ fun CoinDetailScreen(
     routeBackStack: () -> Unit
 ) {
     val viewModel: CoinDetailViewModel = hiltViewModel()
+
     LaunchedEffect(Unit) {
         if (viewModel.coinState.value.coinPriceHistory.isEmpty())
             viewModel.handleAction(

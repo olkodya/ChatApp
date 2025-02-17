@@ -18,8 +18,8 @@ fun BottomNavigationBar(
     navController: NavHostController, modifier: Modifier
 ) {
     val screens = listOf(
-        BottomNavigationItem.Coins,
-        BottomNavigationItem.Exchanges,
+        BottomNavigationItem.Chats,
+        BottomNavigationItem.Profile,
     )
 
     NavigationBar(
@@ -29,8 +29,8 @@ fun BottomNavigationBar(
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.let {
             when (it.route) {
-                BottomNavigationItem.Coins::class.qualifiedName -> BottomNavigationItem.Coins
-                else -> BottomNavigationItem.Exchanges
+                BottomNavigationItem.Chats::class.qualifiedName -> BottomNavigationItem.Chats
+                else -> BottomNavigationItem.Profile
             }
         }
 

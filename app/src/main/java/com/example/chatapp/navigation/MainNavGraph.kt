@@ -14,10 +14,10 @@ fun MainNavGraph(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = BottomNavigationItem.Coins
+        startDestination = BottomNavigationItem.Chats
     ) {
 
-        composable<BottomNavigationItem.Coins> {
+        composable<BottomNavigationItem.Chats> {
             CoinListScreen(
                 routeToCoinDetailScreen = { id, name, price ->
                     rootNavHostController.navigate(
@@ -31,7 +31,7 @@ fun MainNavGraph(
             )
         }
 
-        composable<BottomNavigationItem.Exchanges> {
+        composable<BottomNavigationItem.Profile> {
             ExchangeListScreen()
         }
     }

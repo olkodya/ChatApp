@@ -8,6 +8,6 @@ data class LoginScreenState(
     val password: String = "",
     val isLoading: Boolean = false,
     val error: String? = null,
-    val loginError: String? = null,
-    val passwordError: String? = null,
-)
+){
+    val isEmpty = login == "" || password == ""
+}

@@ -24,7 +24,10 @@ import javax.inject.Singleton
 class AppModule {
     private companion object {
         val contentType = "application/json".toMediaType()
-        val json = Json { ignoreUnknownKeys = true }
+        val json = Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+        }
     }
 
     @Singleton
@@ -35,8 +38,6 @@ class AppModule {
             it.proceed(
                 it.request()
                     .newBuilder()
-//                    .addHeader("Api-Key", BuildConfig.API_KEY)
-//                    .addHeader("Authorization", BuildConfig.AUTH_TOKEN)
                     .build()
             )
         }

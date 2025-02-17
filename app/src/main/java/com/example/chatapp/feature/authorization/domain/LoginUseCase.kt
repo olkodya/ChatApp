@@ -1,9 +1,10 @@
 package com.example.chatapp.feature.authorization.domain
 
-import com.example.chatapp.feature.coinDetail.domain.CoinDetailEntity
+import com.example.chatapp.feature.authorization.data.model.LoginData
+
 
 interface LoginUseCase {
 
-    suspend operator fun invoke(username: String, password: String): LoginEntity
+    suspend operator fun invoke(username: String, password: String): Result<LoginData>
 
 }
