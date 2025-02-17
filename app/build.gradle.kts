@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.coincapapp"
+    namespace = "com.example.chatapp"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.coincapapp"
+        applicationId = "com.example.chatapp"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
