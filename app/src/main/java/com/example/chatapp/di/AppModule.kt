@@ -1,5 +1,6 @@
 package com.example.chatapp.di
 
+import com.example.chatapp.feature.authorization.data.api.LoginApi
 import com.example.chatapp.feature.coinDetail.data.api.CoinDetailApi
 import com.example.chatapp.feature.coinList.data.model.api.CoinApi
 import com.example.chatapp.feature.exchangeList.data.api.ExchangeApi
@@ -53,7 +54,7 @@ class AppModule {
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl("https://api.coincap.io/v2/")
+            .baseUrl("https://eltex2025.rocket.chat/")
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
 
@@ -65,6 +66,9 @@ class AppModule {
 
     @Provides
     fun provideCoinDetailApi(retrofit: Retrofit): CoinDetailApi = retrofit.create()
+
+    @Provides
+    fun provideCoinLoginApi(retrofit: Retrofit): LoginApi = retrofit.create()
 
 }
 

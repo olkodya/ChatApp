@@ -15,5 +15,5 @@ sealed class Routes {
     )
 
     @Serializable
-    object AuthScreen
+    object LoginScreen
 }
