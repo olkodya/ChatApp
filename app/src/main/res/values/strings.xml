@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CoinCapApp</string>
+    <string name="app_name">ChatApp</string>
     <string name="search_placeholder">Search</string>
     <string name="error_string">Error</string>
     <string name="try_again_string">Try Again</string>
