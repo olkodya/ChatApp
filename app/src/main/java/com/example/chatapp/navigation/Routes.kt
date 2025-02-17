@@ -13,4 +13,7 @@ sealed class Routes {
         val coinName: String,
         val priceUsd: String,
     )
+
+    @Serializable
+    object AuthScreen
 }

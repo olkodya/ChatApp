@@ -91,6 +91,7 @@ dependencies {
 
     implementation (libs.kotlinx.serialization.json)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation ("androidx.core:core-splashscreen:1.0.0-beta02")
 
 
 

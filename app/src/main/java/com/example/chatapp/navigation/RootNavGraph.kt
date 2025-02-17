@@ -5,13 +5,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.chatapp.feature.authorization.presentation.AuthScreen
 import com.example.chatapp.feature.coinDetail.presentation.CoinDetailScreen
+import com.example.chatapp.navigation.Routes.AuthScreen
 
 @Composable
 fun RootNavGraph(navHostController: NavHostController) {
     NavHost(
-        navController = navHostController, startDestination = Routes.ScreenMain,
+        navController = navHostController, startDestination = Routes.AuthScreen,
     ) {
+
+        composable<Routes.AuthScreen>{
+            AuthScreen()
+        }
+
 
         composable<Routes.ScreenMain> {
             MainScreen(navHostController)
