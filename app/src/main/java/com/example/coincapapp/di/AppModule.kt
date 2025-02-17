@@ -1,47 +1,72 @@
 package com.example.coincapapp.di
 
+import com.example.coincapapp.feature.coinDetail.data.api.CoinDetailApi
+import com.example.coincapapp.feature.coinList.data.model.api.CoinApi
+import com.example.coincapapp.feature.exchangeList.data.api.ExchangeApi
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.DEFAULT
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.websocket.WebSockets
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.create
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
-@Module
 @InstallIn(SingletonComponent::class)
-object AppModules {
+@Module
+class AppModule {
+    private companion object {
+        val contentType = "application/json".toMediaType()
+        val json = Json { ignoreUnknownKeys = true }
+    }
 
-    @Provides
     @Singleton
-    fun providesHttpClient() = HttpClient(CIO) {
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    ignoreUnknownKeys = true
-                    prettyPrint = true
-                    isLenient = true
+    @Provides
+    fun provideOkHttp(): OkHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .addInterceptor {
+            it.proceed(
+                it.request()
+                    .newBuilder()
+//                    .addHeader("Api-Key", BuildConfig.API_KEY)
+//                    .addHeader("Authorization", BuildConfig.AUTH_TOKEN)
+                    .build()
+            )
+        }
+        .let {
+            it.addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
                 }
             )
         }
-        install(WebSockets)
-        install(Logging) {
-            logger = Logger.DEFAULT
-            level = LogLevel.ALL
-        }
-        defaultRequest {
-            url("https://api.coincap.io/v2/")
-        }
-    }
+        .build()
+
+    @Singleton
+    @Provides
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl("https://api.coincap.io/v2/")
+            .addConverterFactory(json.asConverterFactory(contentType))
+            .build()
+
+    @Provides
+    fun provideCoinApi(retrofit: Retrofit): CoinApi = retrofit.create()
+
+    @Provides
+    fun provideExchangeApi(retrofit: Retrofit): ExchangeApi = retrofit.create()
+
+    @Provides
+    fun provideCoinDetailApi(retrofit: Retrofit): CoinDetailApi = retrofit.create()
+
 }
+
+
 

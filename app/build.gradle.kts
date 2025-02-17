@@ -66,23 +66,32 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    implementation(libs.ktor.client.android)
-    implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.content.negotiation)
-
-    implementation(libs.ktor.client.serialization.jvm)
-    implementation(libs.ktor.client.logging)
+//    implementation(libs.ktor.client.android)
+//    implementation(libs.ktor.client.cio)
+//    implementation(libs.ktor.serialization.kotlinx.json)
+//    implementation(libs.ktor.client.content.negotiation)
+//
+//    implementation(libs.ktor.client.serialization.jvm)
+//    implementation(libs.ktor.client.logging)
 
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
 
     implementation(libs.kotlinx.collections.immutable)
 
-    implementation(libs.charts)
+//    implementation(libs.charts)
 
 
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+//    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    implementation(libs.retrofit)
+
+    implementation (libs.logging.interceptor)
+    implementation (libs.okhttp)
+
+    implementation (libs.kotlinx.serialization.json)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+
 
 
 }

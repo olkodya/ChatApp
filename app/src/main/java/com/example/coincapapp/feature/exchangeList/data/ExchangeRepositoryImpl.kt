@@ -1,16 +1,12 @@
 package com.example.coincapapp.feature.exchangeList.data
 
 import com.example.coincapapp.feature.exchangeList.data.model.ExchangeListResponse
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.get
+import com.example.coincapapp.feature.exchangeList.data.api.ExchangeApi
 import javax.inject.Inject
 
 class ExchangeRepositoryImpl @Inject constructor(
-    private val client: HttpClient,
+    private val api: ExchangeApi
 ) : ExchangeRepository {
 
-    override suspend fun loadExchanges(): ExchangeListResponse = client
-        .get("exchanges")
-        .body()
+    override suspend fun loadExchanges(): ExchangeListResponse = api.loadExchanges()
 }

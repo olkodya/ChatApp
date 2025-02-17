@@ -14,25 +14,25 @@ data class ExchangeListResponse(
 @Serializable
 data class ExchangeResponse(
     @SerialName("exchangeId")
-    val id: String?,
+    val id: String? = "",
     @SerialName("name")
-    val name: String?,
+    val name: String? = "",
     @SerialName("rank")
-    val rank: String?,
+    val rank: String? = "",
     @Serializable(with = BigDecimalSerializer::class)
     @SerialName("percentTotalVolume")
-    val percentTotalVolume: BigDecimal?,
+    val percentTotalVolume: BigDecimal? = BigDecimal.ZERO,
     @SerialName("volumeUsd")
     @Serializable(with = BigDecimalSerializer::class)
-    val volumeUsd: BigDecimal?,
+    val volumeUsd: BigDecimal? = BigDecimal.ZERO,
     @SerialName("tradingPairs")
-    val tradingPairs: String?,
+    val tradingPairs: String? = "",
     @SerialName("socket")
-    val socket: String?,
+    val socket: String?="",
     @SerialName("exchangeUrl")
-    val exchangeUrl: String?,
+    val exchangeUrl: String?="",
     @SerialName("updated")
-    val updated: String?,
+    val updated: String?="",
 )
 
 fun ExchangeResponse.toEntity() = ExchangeEntity(

@@ -2,7 +2,6 @@ package com.example.coincapapp.feature.coinDetail.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.coincapapp.feature.coinDetail.domain.GetCoinCurrentPriceUseCase
 import com.example.coincapapp.feature.coinDetail.domain.GetCoinPriceHistoryUseCase
 import com.example.coincapapp.feature.coinDetail.domain.toState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +20,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CoinDetailViewModel @Inject constructor(
-    private val currentPriceUseCase: GetCoinCurrentPriceUseCase,
     private val historyUseCase: GetCoinPriceHistoryUseCase,
 ) : ViewModel() {
 
@@ -83,15 +81,15 @@ class CoinDetailViewModel @Inject constructor(
                     errorMessage = null
                 )
 
-                currentPriceUseCase(coinId).collect { price ->
-                    mutableCoinState.value = coinState.value.copy(currentPrice = price.priceUsd,
-                        coinPriceHistory = coinState.value.coinPriceHistory.toMutableList()
-                            .apply { add(price.toState(coinState.value.coinPriceHistory.size.toFloat())) }
-                            .toImmutableList(),
-                        loading = false,
-                        errorMessage = null,
-                        coinPriceIncreased = price.priceUsd > coinState.value.currentPrice)
-                }
+//                currentPriceUseCase(coinId).collect { price ->
+//                    mutableCoinState.value = coinState.value.copy(currentPrice = price.priceUsd,
+//                        coinPriceHistory = coinState.value.coinPriceHistory.toMutableList()
+//                            .apply { add(price.toState(coinState.value.coinPriceHistory.size.toFloat())) }
+//                            .toImmutableList(),
+//                        loading = false,
+//                        errorMessage = null,
+//                        coinPriceIncreased = price.priceUsd > coinState.value.currentPrice)
+//                }
             } catch (ex: Exception) {
                 mutableCoinState.value = coinState.value.copy(
                     loading = false,

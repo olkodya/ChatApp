@@ -1,7 +1,6 @@
 package com.example.coincapapp.feature.coinDetail.presentation
 
 import androidx.compose.runtime.Immutable
-import com.github.mikephil.charting.data.Entry
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import java.math.BigDecimal
@@ -26,5 +25,5 @@ data class CoinDetailScreenState(
 @Immutable
 data class CoinDetailState(
     val time: String,
-    val data: Entry,
+//    val data: Entry,
 )
