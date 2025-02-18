@@ -12,14 +12,14 @@ sealed class BottomNavigationItem(
     @Serializable
     data object Chats :
         BottomNavigationItem(
-            R.drawable.assets_icon,
+            R.drawable.chat_bubble,
             R.string.bottom_nav_title_chat
         )
 
     @Serializable
     data object Profile :
         BottomNavigationItem(
-            R.drawable.exchanges_icon,
+            R.drawable.account_circle,
             R.string.bottom_nav_title_profile
         )
 }

@@ -22,7 +22,7 @@ fun LoginScreen(
     LoginContent(
         state = viewModel.loginState.collectAsState().value,
 
-    ){
-         viewModel.handleAction(it)
+        ) {
+        viewModel.handleAction(it)
     }
 }
