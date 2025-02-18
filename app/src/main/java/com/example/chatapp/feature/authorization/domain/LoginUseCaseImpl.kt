@@ -2,8 +2,8 @@ package com.example.chatapp.feature.authorization.domain
 
 import com.example.chatapp.feature.authorization.data.LoginRepository
 import com.example.chatapp.feature.authorization.data.model.LoginData
-import com.example.chatapp.feature.authorization.data.model.toEntity
-import com.example.chatapp.navigation.BottomNavigationItem
+import com.example.chatapp.feature.authorization.presentation.InvalidCredentialsException
+
 import javax.inject.Inject
 
 class LoginUseCaseImpl @Inject constructor(
@@ -17,7 +17,10 @@ class LoginUseCaseImpl @Inject constructor(
             val response = repository.login(username, password)
             Result.success(response.data)
         } catch (e: Exception) {
-            Result.failure(e)
+            if (e.message.toString().contains("HTTP 401"))
+                Result.failure(InvalidCredentialsException())
+            else
+                Result.failure(e)
         }
     }
 }

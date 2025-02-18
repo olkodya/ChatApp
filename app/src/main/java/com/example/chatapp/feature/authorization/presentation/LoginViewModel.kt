@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,9 +54,15 @@ class LoginViewModel @Inject constructor(
                     mutableLoginState.value = loginState.value.copy(
                         error = null
                     )
-                }.onFailure { error ->
+                }.onFailure { throwable ->
+                    val error = when (throwable) {
+                        is IOException -> LoginError.NetworkError
+                        is InvalidCredentialsException -> LoginError.InvalidCredentials
+                        else -> LoginError.NetworkError
+                    }
                     mutableLoginState.value = loginState.value.copy(
-                        error = error.message
+                        error = error,
+                        isLoading = false
                     )
                 }
             }

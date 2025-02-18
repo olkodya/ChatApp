@@ -1,6 +1,9 @@
 package com.example.chatapp.feature.authorization.presentation
 
+import android.graphics.drawable.Drawable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,71 +22,104 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.chatapp.R
 import com.example.chatapp.feature.authorization.presentation.LoginViewModel.LoginAction
 
 
 @Composable
 fun LoginContent(
-    state: LoginScreenState,
-    handleAction: (LoginAction) -> Unit
+    state: LoginScreenState, handleAction: (LoginAction) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        TextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = state.login,
-            onValueChange = { value -> handleAction(LoginAction.OnLoginFieldChanged(value)) },
-            placeholder = { Text(stringResource(R.string.login_text_field)) },
+    Box(
+        modifier = Modifier.fillMaxSize()
+    )
+    {
+        Image(
+            painter = painterResource(id = R.drawable.splash_screen),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = state.password,
-            onValueChange = { handleAction(LoginAction.OnPasswordFieldChanged(it)) },
-            placeholder = { Text(stringResource(R.string.password_text_field)) },
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { if (!state.isEmpty) handleAction(LoginAction.OnLoginClick) },
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .alpha(if (!state.isEmpty) 1f else 0.5f),
-            enabled = !state.isEmpty,
-            colors = ButtonDefaults.buttonColors(
-                disabledContainerColor = MaterialTheme.colorScheme.primary,
-                disabledContentColor = Color.White
-            )
-
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            } else {
-                Text(stringResource(R.string.login_button))
-            }
-        }
 
-        state.error?.let { error ->
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = error,
-                color = MaterialTheme.colorScheme.error
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                contentDescription = null,
+                modifier = Modifier.size(62.dp)
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            Text(
+                text = "Введите логин и пароль для входа",
+                color = Color.White,
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.login,
+                onValueChange = { value -> handleAction(LoginAction.OnLoginFieldChanged(value)) },
+                placeholder = { Text(stringResource(R.string.login_text_field)) },
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.password,
+                onValueChange = { handleAction(LoginAction.OnPasswordFieldChanged(it)) },
+                placeholder = { Text(stringResource(R.string.password_text_field)) },
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { if (!state.isEmpty) handleAction(LoginAction.OnLoginClick) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .alpha(if (!state.isEmpty) 1f else 0.5f),
+                enabled = !state.isEmpty,
+                colors = ButtonDefaults.buttonColors(
+                    disabledContainerColor = MaterialTheme.colorScheme.primary,
+                    disabledContentColor = Color.White
+                )
+
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text(stringResource(R.string.login_button))
+                }
+            }
+
+            state.error?.let { error ->
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = error.getMessage(), color = MaterialTheme.colorScheme.error
+                )
+            }
         }
     }
 }
@@ -101,7 +137,6 @@ fun LoginPreview() {
 }
 
 
-
 @Composable
 @Preview(showBackground = true)
 fun LoadingPreview() {
@@ -111,7 +146,7 @@ fun LoadingPreview() {
         isLoading = true,
         error = null,
 
-    )
+        )
     LoginContent(state) {}
 }
 
