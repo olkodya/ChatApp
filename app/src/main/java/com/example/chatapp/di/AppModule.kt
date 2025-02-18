@@ -1,5 +1,7 @@
 package com.example.chatapp.di
 
+import android.content.Context
+import com.example.chatapp.feature.authorization.data.AuthPreferences
 import com.example.chatapp.feature.authorization.data.api.LoginApi
 import com.example.chatapp.feature.coinDetail.data.api.CoinDetailApi
 import com.example.chatapp.feature.coinList.data.model.api.CoinApi
@@ -8,6 +10,7 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -29,6 +32,14 @@ class AppModule {
             coerceInputValues = true
         }
     }
+
+    @Provides
+    @Singleton
+    fun provideContext(@ApplicationContext context: Context): Context = context
+
+    @Provides
+    @Singleton
+    fun provideAuthPreferences(context: Context): AuthPreferences = AuthPreferences(context)
 
     @Singleton
     @Provides
