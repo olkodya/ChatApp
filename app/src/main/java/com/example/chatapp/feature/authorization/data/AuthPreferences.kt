@@ -5,9 +5,11 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,13 +20,16 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 class AuthPreferences @Inject constructor(
     private val context: Context
 ) {
-    val authData: Flow<AuthData?> = context.dataStore.data.map { preferences ->
-        val token = preferences[KEY_AUTH_TOKEN]
-        val userId = preferences[KEY_USER_ID]
-        if (token != null && userId != null) {
-            AuthData(token, userId)
-        } else null
-    }
+    val authData: Flow<AuthData?> = context.dataStore.data
+        .catch { exception ->
+            emit(emptyPreferences())
+        }.map { preferences ->
+            val token = preferences[KEY_AUTH_TOKEN]
+            val userId = preferences[KEY_USER_ID]
+            if (token != null && userId != null) {
+                AuthData(token, userId)
+            } else null
+        }
 
     suspend fun saveAuthData(token: String, userId: String) {
         context.dataStore.edit { preferences ->
@@ -45,5 +50,5 @@ class AuthPreferences @Inject constructor(
 
 data class AuthData(
     val token: String,
-    val userId: String
+    val userId: String,
 )

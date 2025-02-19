@@ -19,18 +19,28 @@ class AuthViewModel @Inject constructor(
     private val authPreferences: AuthPreferences // добавляем AuthPreferences
 
 ) : ViewModel() {
+
     private val _isAuthenticated = MutableStateFlow(false)
     val isAuthenticated: StateFlow<Boolean> = _isAuthenticated.asStateFlow()
+    private var _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     init {
         checkAuth()
-        checkAuthData()
     }
 
     private fun checkAuth() {
         viewModelScope.launch {
-            _isAuthenticated.value = checkAuthUseCase()
-            Log.d("AuthViewModel", isAuthenticated.value.toString())
+            try {
+                val isAuth = checkAuthUseCase()
+                Log.d("AuthViewModel", "Initial auth check: $isAuth")
+                _isAuthenticated.value = isAuth
+                _isLoading.value = false
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error in initial auth check", e)
+                _isAuthenticated.value = false
+                _isLoading.value = false
+            }
         }
     }
 

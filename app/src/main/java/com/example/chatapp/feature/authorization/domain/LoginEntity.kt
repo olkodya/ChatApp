@@ -7,5 +7,4 @@ data class LoginEntity(
     val username: String,
     val name: String?,
     val status: String,
-
 )
