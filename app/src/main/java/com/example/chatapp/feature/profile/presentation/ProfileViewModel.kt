@@ -47,8 +47,12 @@ class ProfileViewModel @Inject constructor(
 
     private fun logout() {
         viewModelScope.launch {
-            logoutUseCase()
-            mutableActions.send(ProfileEvent.NavigateToLogin)
+            try {
+                logoutUseCase()
+                mutableActions.send(ProfileEvent.NavigateToLogin)
+            } catch (ex: Exception) {
+
+            }
         }
     }
 

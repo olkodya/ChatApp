@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.rememberNavController
@@ -15,7 +14,7 @@ import com.example.chatapp.feature.splashscreen.presentation.SplashViewModel
 import com.example.chatapp.feature.splashscreen.presentation.SplashViewModel.SplashEvent
 import com.example.chatapp.navigation.RootNavGraph
 import com.example.chatapp.navigation.Routes
-import com.example.chatapp.ui.theme.CoinCapAppTheme
+import com.example.chatapp.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -30,7 +29,7 @@ class MainActivity : ComponentActivity() {
         setupSplashScreen(
             onDestinationDefined = { destination ->
                 setContent {
-                    CoinCapAppTheme {
+                    AppTheme {
                         val navController = rememberNavController()
                         RootNavGraph(navController, destination)
                     }

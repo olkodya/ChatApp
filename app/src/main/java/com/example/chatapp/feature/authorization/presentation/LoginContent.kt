@@ -153,8 +153,7 @@ fun LoadingPreview() {
         password = "sfsfsf",
         isLoading = true,
         error = null,
-
-        )
+    )
     LoginContent(state) {}
 }
 
