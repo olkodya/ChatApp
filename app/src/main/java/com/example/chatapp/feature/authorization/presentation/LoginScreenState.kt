@@ -8,9 +8,10 @@ data class LoginScreenState(
     val password: String = "",
     val isLoading: Boolean = false,
     val error: LoginError? = null,
-){
+) {
     val isEmpty = login.isEmpty() || password.isEmpty()
 }
+
 
 sealed class LoginError {
     object NetworkError : LoginError()

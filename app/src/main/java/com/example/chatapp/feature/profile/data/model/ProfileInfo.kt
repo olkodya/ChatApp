@@ -1,5 +1,6 @@
 package com.example.chatapp.feature.profile.data.model
 
+import com.example.chatapp.feature.profile.domain.ProfileEntity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -45,3 +46,9 @@ data class CustomFields(
     @SerialName("twitter")
     val twitter: String,
 )
+
+
+fun ProfileInfo.toEntity(): ProfileEntity = ProfileEntity(
+    name = name,
+    avatarUrl = avatarUrl,
+    )

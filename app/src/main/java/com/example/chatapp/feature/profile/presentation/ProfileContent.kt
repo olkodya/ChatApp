@@ -31,9 +31,13 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.svg.SvgDecoder
+import com.example.chatapp.feature.profile.presentation.ProfileViewModel.ProfileAction
 
 @Composable
-fun ProfileContent(state: ProfileState) {
+fun ProfileContent(
+    state: ProfileState,
+    handleAction: (ProfileAction) -> Unit
+) {
 
     val context = LocalContext.current
 
@@ -74,10 +78,11 @@ fun ProfileContent(state: ProfileState) {
                 onLoading = { },
                 onError = { }
             )
-
         }
         Text(modifier = Modifier.fillMaxWidth(), text = state.name, textAlign = TextAlign.Center)
-        Button(modifier = Modifier.fillMaxWidth(), onClick = {}) { }
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { handleAction(ProfileAction.OnLogoutClick) }) { }
     }
 }
 
@@ -88,6 +93,7 @@ fun ProfilePreview() {
         ProfileState(
             name = "Кукарцева Ольга",
             imageUrl = "https://eltex2025.rocket.chat/avatar/kurt_olg"
-        )
+        ),
+        handleAction = { }
     )
 }

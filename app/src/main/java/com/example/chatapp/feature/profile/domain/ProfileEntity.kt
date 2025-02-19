@@ -1,5 +1,6 @@
 package com.example.chatapp.feature.profile.domain
 
-class ProfileEntity {
-
-}
+data class ProfileEntity(
+    val name: String,
+    val avatarUrl: String,
+)

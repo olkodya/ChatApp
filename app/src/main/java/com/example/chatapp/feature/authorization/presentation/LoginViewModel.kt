@@ -47,9 +47,10 @@ class LoginViewModel @Inject constructor(
     private fun login() {
         try {
             viewModelScope.launch {
-                loginUseCase(loginState.value.login,
+                loginUseCase(
+                    loginState.value.login,
                     loginState.value.password
-                ).onSuccess{
+                ).onSuccess {
                     mutableActions.send(LoginEvent.NavigateToMain)
                     mutableLoginState.value = loginState.value.copy(
                         error = null

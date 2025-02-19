@@ -33,10 +33,6 @@ data class UserInfo(
 )
 
 fun LoginResponse.toEntity(): LoginEntity = LoginEntity(
-    status = status,
     userId = data.userId,
     authToken = data.authToken,
-    _id = data.me?._id ?: "",
-    username = data.me?.username ?: "",
-    name = data.me?.name ?: "",
 )

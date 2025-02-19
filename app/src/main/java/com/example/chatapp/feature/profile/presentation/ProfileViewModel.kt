@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.chatapp.feature.authorization.presentation.LoginScreenState
 import com.example.chatapp.feature.authorization.presentation.LoginViewModel.LoginEvent
 import com.example.chatapp.feature.profile.domain.GetProfileInfoUseCase
+import com.example.chatapp.feature.profile.domain.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val getProfileInfoUseCase: GetProfileInfoUseCase
+    private val getProfileInfoUseCase: GetProfileInfoUseCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
 
     private val mutableProfileState = MutableStateFlow(ProfileState("", ""))
@@ -27,25 +29,28 @@ class ProfileViewModel @Inject constructor(
 
     init {
         getProfileInfo()
-
     }
 
-    private fun handleAction(action: ProfileAction) {
-        when(action){
-            ProfileAction.OnLogoutClick -> TODO()
+    fun handleAction(action: ProfileAction) {
+        when (action) {
+            ProfileAction.OnLogoutClick -> logout()
         }
-
     }
 
     private fun getProfileInfo() {
         viewModelScope.launch {
-            val response = getProfileInfoUseCase.invoke()
+            val response = getProfileInfoUseCase()
             mutableProfileState.value =
                 ProfileState(imageUrl = response.avatarUrl, name = response.name)
         }
     }
 
-
+    private fun logout() {
+        viewModelScope.launch {
+            logoutUseCase()
+            mutableActions.send(ProfileEvent.NavigateToLogin)
+        }
+    }
 
     sealed class ProfileAction {
         data object OnLogoutClick : ProfileAction()

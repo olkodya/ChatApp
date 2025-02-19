@@ -32,7 +32,12 @@ fun MainNavGraph(
         }
 
         composable<BottomNavigationItem.Profile> {
-            ProfileScreen()
+            ProfileScreen(
+                onNavigateToLogin = {
+                    rootNavHostController.popBackStack()
+                    rootNavHostController.navigate(Routes.ScreenLogin)
+                }
+            )
         }
     }
 }

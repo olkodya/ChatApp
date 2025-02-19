@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.chatapp.feature.authorization.data.AuthPreferences
 import com.example.chatapp.feature.authorization.data.LoginRepository
 import com.example.chatapp.feature.authorization.data.model.LoginData
+import com.example.chatapp.feature.authorization.data.model.toEntity
 import com.example.chatapp.feature.authorization.presentation.InvalidCredentialsException
 import kotlinx.coroutines.flow.collectLatest
 
@@ -17,7 +18,8 @@ class LoginUseCaseImpl @Inject constructor(
     override suspend fun invoke(
         username: String,
         password: String
-    ): Result<LoginData> {
+    ): Result<LoginEntity> {
+
         return try {
             val response = repository.login(username, password)
             response.data.let { loginData ->
@@ -26,11 +28,9 @@ class LoginUseCaseImpl @Inject constructor(
                         token = loginData.authToken,
                         userId = loginData.userId,
                     )
-                    Log.d("dsd", loginData.userId)
-                    Log.d("dsd", loginData.authToken)
                 }
             }
-            Result.success(response.data)
+            Result.success(response.toEntity())
         } catch (e: Exception) {
             if (e.message.toString().contains("HTTP 401"))
                 Result.failure(InvalidCredentialsException())

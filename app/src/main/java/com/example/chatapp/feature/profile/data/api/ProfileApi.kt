@@ -2,6 +2,7 @@ package com.example.chatapp.feature.profile.data.api
 
 import com.example.chatapp.feature.authorization.data.model.LoginRequest
 import com.example.chatapp.feature.authorization.data.model.LoginResponse
+import com.example.chatapp.feature.profile.data.model.LogoutResponse
 import com.example.chatapp.feature.profile.data.model.ProfileInfo
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -12,5 +13,5 @@ interface ProfileApi {
     suspend fun getUserInfo(): ProfileInfo
 
     @POST("api/v1/logout")
-    suspend fun logout()
+    suspend fun logout(): LogoutResponse
 }
