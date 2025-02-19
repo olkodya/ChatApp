@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Градиентный фон -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="linear"
+                android:angle="135"
+                android:startColor="#001B4D"
+                android:centerColor="#002B66"
+                android:endColor="#003366"/>
+        </shape>
+    </item>
+    
+    <!-- Логотип в центре -->
+    <item
+        android:width="80dp"
+        android:height="80dp"
+        android:gravity="center">
+        <vector
+            android:width="80dp"
+            android:height="80dp"
+            android:viewportWidth="62"
+            android:viewportHeight="62">
+            <!-- Круг с градиентом -->
+            <path
+                android:pathData="M31,31m-31,0a31,31 0,1 1,62 0a31,31 0,1 1,-62 0"
+                android:fillColor="#FFFFFF"/>
+            <!-- Иконка внутри -->
+            <path
+                android:pathData="M27.676,43.349C25.326,43.054 27.341,31.478 30.465,33.146C47.379,42.18 50.135,24.964 43.278,21.005C39.287,18.701 37.33,15.375 40.715,11.115C47.01,3.192 54.035,17.813 51.29,28.348C48.821,37.824 39.429,44.825 27.676,43.349Z"
+                android:fillColor="#204865"/>
+            <path
+                android:pathData="M33.812,20.574C36.033,20.853 34.128,31.754 31.174,30.177C15.185,21.638 12.581,37.953 19.063,41.696C22.836,43.874 24.685,47.018 21.486,51.045C15.535,58.535 8.894,44.713 11.489,34.755C13.823,25.797 22.701,19.179 33.812,20.574Z"
+                android:fillColor="#204865"/>
+        </vector>
+    </item>
+</layer-list>

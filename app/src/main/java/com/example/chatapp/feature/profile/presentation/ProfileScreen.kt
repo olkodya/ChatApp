@@ -15,10 +15,8 @@ fun ProfileScreen() {
 //            }
 //        }
 //    }
-
     ProfileContent(
         state = viewModel.profileState.collectAsState().value,
 
         )
-
 }

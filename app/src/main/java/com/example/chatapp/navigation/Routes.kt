@@ -5,20 +5,20 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class Routes {
     @Serializable
-    object ScreenMain
+    object ScreenMain : Routes()
 
     @Serializable
     data class ScreenDetail(
         val coinId: String,
         val coinName: String,
         val priceUsd: String,
-    )
+    ) : Routes()
 
     @Serializable
-    object ScreenLogin
+    object ScreenLogin : Routes()
 
     @Serializable
-    object ScreenSplash
+    object ScreenSplash : Routes()
 
 
 }

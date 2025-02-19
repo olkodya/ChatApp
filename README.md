@@ -1,4 +1,4 @@
-# CoinCapApp
+# ChatApp
 Финальное задание Eltex по курсу Android.  
 **Цель работы**: разработать мессенджер на основе дизайна проекта Elph и API [Rocket Chat](https://developer.rocket.chat/docs/api). 
 ## Применяемый стек:

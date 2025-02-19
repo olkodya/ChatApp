@@ -15,47 +15,50 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.chatapp.feature.authorization.presentation.AuthViewModel
+import com.example.chatapp.feature.splashscreen.presentation.SplashViewModel
 import com.example.chatapp.feature.authorization.presentation.LoginScreen
 import com.example.chatapp.feature.coinDetail.presentation.CoinDetailScreen
 
 @Composable
-fun RootNavGraph(navHostController: NavHostController) {
+fun RootNavGraph(
+    navHostController: NavHostController,
+    startDestination: Routes,
+) {
 
-    val authViewModel: AuthViewModel = hiltViewModel()
-    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
-    val isLoading by authViewModel.isLoading.collectAsState()
-
-    LaunchedEffect(isAuthenticated, isLoading) {
-        when {
-            isLoading -> {
-                Log.d("Navigation", "Loading...")
-            }
-            isAuthenticated -> {
-                Log.d("Navigation", "Navigating to Main")
-                navHostController.navigate(Routes.ScreenMain) {
-                    popUpTo(0) { inclusive = true }
-                }
-            }
-            else -> {
-                Log.d("Navigation", "Navigating to Login")
-                navHostController.navigate(Routes.ScreenLogin) {
-                    popUpTo(0) { inclusive = true }
-                }
-            }
-        }
-
-
-}
+    val authViewModel: SplashViewModel = hiltViewModel()
+//    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
+//    val isLoading by authViewModel.isLoading.collectAsState()
+//
+//    LaunchedEffect(isAuthenticated, isLoading) {
+//        when {
+//            isLoading -> {
+//                Log.d("Navigation", "Loading...")
+//            }
+//
+//            isAuthenticated -> {
+//                Log.d("Navigation", "Navigating to Main")
+//                navHostController.navigate(Routes.ScreenMain) {
+//                    popUpTo(0) { inclusive = true }
+//                }
+//            }
+//
+//            else -> {
+//                Log.d("Navigation", "Navigating to Login")
+//                navHostController.navigate(Routes.ScreenLogin) {
+//                    popUpTo(0) { inclusive = true }
+//                }
+//            }
+//        }
+//    }
 
     NavHost(
-        navController = navHostController, startDestination = Routes.ScreenSplash,
+        navController = navHostController,
+        startDestination = startDestination,
     ) {
 
-        composable<Routes.ScreenSplash> {
-            SplashScreen()
-
-        }
+//        composable<Routes.ScreenSplash> {
+//            SplashScreen()
+//        }
 
         composable<Routes.ScreenLogin> {
             LoginScreen(onNavigateToMain = {

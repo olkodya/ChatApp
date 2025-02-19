@@ -1,7 +1,6 @@
 package com.example.chatapp.feature.authorization.data
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -30,6 +29,16 @@ class AuthPreferences @Inject constructor(
                 AuthData(token, userId)
             } else null
         }
+
+    suspend fun getAuthData(): AuthData? {
+        val token = context.dataStore.updateData { it }[KEY_AUTH_TOKEN]
+        val userId = context.dataStore.updateData { it }[KEY_USER_ID]
+        return if (token != null && userId != null) {
+            AuthData(token, userId)
+        } else {
+            null
+        }
+    }
 
     suspend fun saveAuthData(token: String, userId: String) {
         context.dataStore.edit { preferences ->
