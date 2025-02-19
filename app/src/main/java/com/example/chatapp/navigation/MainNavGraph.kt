@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.chatapp.feature.coinList.presentation.CoinListScreen
-import com.example.chatapp.feature.exchangeList.presentation.ExchangeListScreen
+import com.example.chatapp.feature.profile.presentation.ProfileScreen
 
 @Composable
 fun MainNavGraph(
@@ -32,7 +32,7 @@ fun MainNavGraph(
         }
 
         composable<BottomNavigationItem.Profile> {
-            ExchangeListScreen()
+            ProfileScreen()
         }
     }
 }
