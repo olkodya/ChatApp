@@ -36,7 +36,7 @@ fun ProfileScreen(
                     showLogoutDialog = true
                 }
 
-                ProfileViewModel.ProfileEvent.ShowLogoutError -> TODO()
+                ProfileViewModel.ProfileEvent.ShowLogoutError -> {}
             }
         }
     }

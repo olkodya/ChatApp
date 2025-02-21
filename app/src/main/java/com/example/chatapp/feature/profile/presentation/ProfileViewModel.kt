@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.components.toErrorState
 import com.example.chatapp.di.model.UnauthorizedException
+import com.example.chatapp.feature.authorization.data.AuthPreferences
 import com.example.chatapp.feature.profile.domain.GetProfileInfoUseCase
 import com.example.chatapp.feature.profile.domain.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val getProfileInfoUseCase: GetProfileInfoUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val authPreferences: AuthPreferences,
 ) : ViewModel() {
 
     private val mutableProfileState =
@@ -44,7 +46,10 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching {
                 mutableProfileState.value = ProfileScreenState.Loading
-                getProfileInfoUseCase()
+                getProfileInfoUseCase(
+                    authPreferences.getAuthData()?.userId ?: "",
+                    authPreferences.getAuthData()?.token ?: ""
+                )
             }.onFailure { throwable ->
                 if (throwable is UnauthorizedException) {
                     logoutUser()

@@ -48,7 +48,7 @@ data class CustomFields(
 )
 
 
-fun ProfileInfo.toEntity(): ProfileEntity = ProfileEntity(
+fun ProfileInfo.toEntity(userId: String, token: String): ProfileEntity = ProfileEntity(
     name = name,
-    avatarUrl = avatarUrl,
+    avatarUrl = "${avatarUrl}?rc_uid=${userId}&rc_token=${token}",
 )

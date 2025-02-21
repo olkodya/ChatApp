@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.chatapp.feature.coinList.presentation.CoinListScreen
+import com.example.chatapp.feature.chatList.presentation.ChatListScreen
 import com.example.chatapp.feature.profile.presentation.ProfileScreen
 
 @Composable
@@ -14,11 +14,11 @@ fun MainNavGraph(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = BottomNavigationItem.Profile
+        startDestination = BottomNavigationItem.Chats
     ) {
 
         composable<BottomNavigationItem.Chats> {
-            CoinListScreen(
+       /*     CoinListScreen(
                 routeToCoinDetailScreen = { id, name, price ->
                     rootNavHostController.navigate(
                         Routes.ScreenDetail(
@@ -28,7 +28,8 @@ fun MainNavGraph(
                         )
                     )
                 },
-            )
+            )*/
+            ChatListScreen()
         }
 
         composable<BottomNavigationItem.Profile> {
