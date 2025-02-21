@@ -4,11 +4,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -54,11 +56,26 @@ fun BottomNavigationBar(
                     }
                 },
                 icon = {
-                    Icon(
-                        painter = painterResource(id = screen.icon),
-                        contentDescription = stringResource(screen.title)
-                    )
+                    if (currentRoute == screen) {
+                        Icon(
+                            painter = painterResource(id = screen.selectedIcon),
+                            contentDescription = stringResource(screen.title),
+                            tint = MaterialTheme.colorScheme.secondary
+//
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(id = screen.unselectedIcon),
+                            contentDescription = stringResource(screen.title),
+                            tint =   com.example.chatapp.ui.theme.DarkGray
+                        )
+                    }
                 },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.Transparent,
+                    selectedTextColor = MaterialTheme.colorScheme.secondary,
+                    unselectedTextColor = com.example.chatapp.ui.theme.DarkGray
+                )
             )
         }
     }

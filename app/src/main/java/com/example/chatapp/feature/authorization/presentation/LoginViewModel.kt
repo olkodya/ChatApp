@@ -50,14 +50,17 @@ class LoginViewModel @Inject constructor(
 
     private fun login() {
         try {
+            mutableLoginState.value = loginState.value.copy(isLoading = true)
             viewModelScope.launch {
                 loginUseCase(
                     loginState.value.login,
                     loginState.value.password
+
                 ).onSuccess {
                     mutableActions.send(LoginEvent.NavigateToMain)
                     mutableLoginState.value = loginState.value.copy(
-                        error = null
+//                        error = null,
+                        isLoading = false,
                     )
                 }.onFailure { throwable ->
                     val message = when (throwable) {
@@ -66,10 +69,10 @@ class LoginViewModel @Inject constructor(
                         else -> R.string.unknown_error_state_message
                     }
                     mutableActions.send(LoginEvent.ShowSnackbar(message))
+                    mutableLoginState.value = loginState.value.copy(isLoading = false)
                 }
             }
         } finally {
-            mutableLoginState.value = loginState.value.copy(isLoading = false)
         }
 
     }

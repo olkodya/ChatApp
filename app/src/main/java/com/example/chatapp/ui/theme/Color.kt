@@ -12,3 +12,12 @@ val Pink40 = Color(0xFF7D5260)
 
 val IncreaseColor = Color(0xFF4CAF50)
 val DecreaseColor = Color(0xFFF44336)
+
+val DarkBLue = Color(0xFF1B416B)
+val LightBlue = Color(0xFF329BDE)
+
+val LightGray = Color(0xFFCBCBCC)
+val DarkGray = Color(0xFF868686)
+val Secondary90 = Color(0xFFE8DEF8)
+
+

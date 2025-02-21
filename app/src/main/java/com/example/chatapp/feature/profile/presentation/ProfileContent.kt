@@ -15,25 +15,31 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.svg.SvgDecoder
+import com.example.chatapp.R
 import com.example.chatapp.components.ErrorState
 import com.example.chatapp.components.LoadingState
 import com.example.chatapp.feature.profile.presentation.ProfileViewModel.ProfileAction
@@ -112,7 +118,9 @@ fun ProfileInfo(state: ProfileScreenState.Content, handleAction: (ProfileAction)
                 .fillMaxWidth(),
             text = state.profileInfo.name,
             textAlign = TextAlign.Center,
-        )
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 17.sp,
+            )
 
         Card(
             modifier = Modifier
@@ -121,6 +129,12 @@ fun ProfileInfo(state: ProfileScreenState.Content, handleAction: (ProfileAction)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             onClick = { handleAction(ProfileAction.OnLogoutClick) },
             shape = RoundedCornerShape(10.dp),
+            colors = CardColors(
+                containerColor = MaterialTheme.colorScheme.onPrimary,
+                contentColor = MaterialTheme.colorScheme.secondary,
+                disabledContainerColor = Color.White,
+                disabledContentColor = Color.White
+            )
         ) {
             Row(
                 modifier = Modifier
@@ -129,15 +143,12 @@ fun ProfileInfo(state: ProfileScreenState.Content, handleAction: (ProfileAction)
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                androidx.compose.material3.Icon(
-                    painter = painterResource(com.example.chatapp.R.drawable.exit),
+                Icon(
+                    painter = painterResource(R.drawable.exit),
                     contentDescription = "",
+                    tint = MaterialTheme.colorScheme.secondary
                 )
-//                Icon(
-//                    imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-//                    contentDescription = "Logout icon",
-//                    tint = MaterialTheme.colorScheme.onSurface
-//                )
+
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = "Выйти",
@@ -146,9 +157,10 @@ fun ProfileInfo(state: ProfileScreenState.Content, handleAction: (ProfileAction)
                 )
                 Spacer(modifier = Modifier.weight(1f))
 
-                androidx.compose.material3.Icon(
-                    painter = painterResource(com.example.chatapp.R.drawable.shevron_right),
+                Icon(
+                    painter = painterResource(R.drawable.shevron_right),
                     contentDescription = "",
+                    tint = com.example.chatapp.ui.theme.LightGray
                 )
             }
         }
@@ -164,7 +176,12 @@ fun ProfilePreview() {
 //                name = "Кукарцева Ольга",
 //                imageUrl = "https://eltex2025.rocket.chat/avatar/kurt_olg"
 //            ),
-            state = ProfileScreenState.Content(profileInfo = ProfileState(name = "Кукарцева Ольга", imageUrl = "")),
+            state = ProfileScreenState.Content(
+                profileInfo = ProfileState(
+                    name = "Кукарцева Ольга",
+                    imageUrl = ""
+                )
+            ),
             handleAction = { }
         )
     }

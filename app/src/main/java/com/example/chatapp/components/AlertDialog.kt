@@ -1,10 +1,11 @@
 package com.example.chatapp.components
 
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -18,6 +19,7 @@ fun AlertDialog(
         title = {
             Text(text = dialogTitle)
         },
+        containerColor = MaterialTheme.colorScheme.onPrimary,
         text = {
             Text(text = dialogText)
         },
@@ -28,18 +30,31 @@ fun AlertDialog(
             TextButton(
                 onClick = {
                     onConfirmation()
-                }
+                },
+                colors = ButtonColors(
+                    contentColor = MaterialTheme.colorScheme.secondary,
+                    containerColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+
             ) {
-                Text("Confirm")
+                Text("Выйти")
             }
         },
         dismissButton = {
             TextButton(
                 onClick = {
                     onDismissRequest()
-                }
+                },
+                colors = ButtonColors(
+                    contentColor = MaterialTheme.colorScheme.secondary,
+                    containerColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                )
             ) {
-                Text("Dismiss")
+                Text("Отменить")
             }
         }
     )
