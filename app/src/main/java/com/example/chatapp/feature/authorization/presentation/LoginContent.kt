@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import com.example.chatapp.R
 import com.example.chatapp.feature.authorization.presentation.LoginViewModel.LoginAction
 
-
 @Composable
 fun LoginContent(
     state: LoginScreenState, handleAction: (LoginAction) -> Unit
@@ -84,7 +83,7 @@ fun LoginContent(
                 ),
                 singleLine = true,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(38.dp))
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -100,11 +99,13 @@ fun LoginContent(
                 ),
                 singleLine = true,
             )
-            Spacer(modifier = Modifier.height(16.dp))
+//            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.weight(1f))
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .alpha(if (!state.isEmpty) 1f else 0.5f),
+                    .alpha(if (!state.isEmpty) 1f else 0.5f)
+                    .padding(bottom = 64.dp),
                 onClick = { if (!state.isEmpty) handleAction(LoginAction.OnLoginClick) },
                 enabled = !state.isEmpty,
                 colors = ButtonDefaults.buttonColors(
@@ -123,12 +124,12 @@ fun LoginContent(
                     Text(stringResource(R.string.login_button))
                 }
             }
-            state.error?.let { error ->
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = error.getMessage(), color = MaterialTheme.colorScheme.error
-                )
-            }
+//            state.error?.let { error ->
+//                Spacer(modifier = Modifier.height(8.dp))
+//                Text(
+//                    text = error.getMessage(), color = MaterialTheme.colorScheme.error
+//                )
+//            }
         }
     }
 }

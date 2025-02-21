@@ -118,12 +118,12 @@ fun CoinListContent(
                         loadState.refresh is LoadState.Error -> {
                             val e = coinsPagingState.loadState.refresh as LoadState.Error
                             item {
-                                ErrorState(
-                                    message = e.error.localizedMessage
-                                        ?: stringResource(R.string.error_string),
-                                    modifier = Modifier.fillParentMaxSize(),
-                                    onRetryClick = { retry() }
-                                )
+//                                ErrorState(
+//                                    message = e.error.localizedMessage
+//                                        ?: stringResource(R.string.error_string),
+//                                    modifier = Modifier.fillParentMaxSize(),
+//                                    onRetryClick = { retry() }
+//                                )
                             }
                         }
 

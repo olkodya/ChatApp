@@ -15,7 +15,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.chatapp.feature.splashscreen.presentation.SplashViewModel
 import com.example.chatapp.feature.authorization.presentation.LoginScreen
 import com.example.chatapp.feature.coinDetail.presentation.CoinDetailScreen
 
@@ -24,48 +23,19 @@ fun RootNavGraph(
     navHostController: NavHostController,
     startDestination: Routes,
 ) {
-
-    val authViewModel: SplashViewModel = hiltViewModel()
-//    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
-//    val isLoading by authViewModel.isLoading.collectAsState()
-//
-//    LaunchedEffect(isAuthenticated, isLoading) {
-//        when {
-//            isLoading -> {
-//                Log.d("Navigation", "Loading...")
-//            }
-//
-//            isAuthenticated -> {
-//                Log.d("Navigation", "Navigating to Main")
-//                navHostController.navigate(Routes.ScreenMain) {
-//                    popUpTo(0) { inclusive = true }
-//                }
-//            }
-//
-//            else -> {
-//                Log.d("Navigation", "Navigating to Login")
-//                navHostController.navigate(Routes.ScreenLogin) {
-//                    popUpTo(0) { inclusive = true }
-//                }
-//            }
-//        }
-//    }
-
     NavHost(
         navController = navHostController,
         startDestination = startDestination,
     ) {
 
-//        composable<Routes.ScreenSplash> {
-//            SplashScreen()
-//        }
-
         composable<Routes.ScreenLogin> {
-            LoginScreen(onNavigateToMain = {
-                navHostController.navigate(Routes.ScreenMain) {
-                    popUpTo(Routes.ScreenLogin) { inclusive = true }
+            LoginScreen(
+                onNavigateToMain = {
+                    navHostController.navigate(Routes.ScreenMain) {
+                        popUpTo(Routes.ScreenLogin) { inclusive = true }
+                    }
                 }
-            })
+            )
         }
 
         composable<Routes.ScreenMain> {
@@ -80,15 +50,5 @@ fun RootNavGraph(
                 coinPrice = coin.priceUsd.toBigDecimal(),
             ) { navHostController.popBackStack() }
         }
-    }
-}
-
-@Composable
-private fun SplashScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
     }
 }

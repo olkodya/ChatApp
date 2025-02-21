@@ -7,7 +7,9 @@ import javax.inject.Inject
 
 class GetProfileInfoUseCaseImpl @Inject constructor(
     private val repository: ProfileRepository
-) :
-    GetProfileInfoUseCase {
-    override suspend fun invoke(): ProfileEntity = repository.getProfileInfo().toEntity()
+) : GetProfileInfoUseCase {
+
+    override suspend fun invoke(): ProfileEntity = repository
+        .getProfileInfo()
+        .toEntity()
 }

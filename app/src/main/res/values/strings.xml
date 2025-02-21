@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">ChatApp</string>
+    <string name="dismiss_snackbar_label">Ok</string>
     <string name="search_placeholder">Search</string>
     <string name="error_string">Error</string>
     <string name="try_again_string">Try Again</string>
@@ -11,17 +12,27 @@
     <string name="symbol">Symbol: %1$s</string>
     <string name="price">Price: %.5f %s</string>
     <string name="percent24hr_title">Percent 24 hour: </string>
-    <string name="percent24hr">%.5f %s</string>
+    <string name="percent24hr" translatable="false">%.5f %s</string>
     <string name="volumeUsd" translatable="true"> Volume: %.5f %s</string>
     <string name="percentTotalVolume" translatable="true"> Total volume: %.5f %s</string>
     <string name="exchangeUrl" translatable="true"> Exchange URL: %s</string>
     <string name="current_price">%1$s $</string>
-    <string name="assets_title">Assets</string>
+    <string name="assets_title" translatable="false">Assets</string>
     <string name="exchanges">Exchanges</string>
+    <string name="login_uncorrect_password_or_login">Неправильный логин или пароль</string>
     <string name="login_text_field">Логин</string>
     <string name="password_text_field">Пароль</string>
     <string name="login_button">Войти</string>
     <string name="bottom_nav_title_chat">Чаты</string>
     <string name="bottom_nav_title_profile">Профиль</string>
+
+    <string name="server_error_state_title">Ошибка сервера</string>
+    <string name="server_error_state_message">Произошла ошибка при обработке запроса. Попробуйте позже</string>
+
+    <string name="network_error_state_title">Нет подключения</string>
+    <string name="network_error_state_message">Отсутствует соединение с сервером, проверьте ваше интернет соединение и повторите позднее</string>
+
+    <string name="unknown_error_state_title">Что-то пошло не так</string>
+    <string name="unknown_error_state_message">Произошла непредвиденная ошибка. Попробуйте позже</string>
 
 </resources>

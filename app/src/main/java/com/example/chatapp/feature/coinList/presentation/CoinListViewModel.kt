@@ -40,15 +40,15 @@ class CoinListViewModel @Inject constructor(
     private var searchJob: Job? = null
 
     init {
-        loadAssets(fieldState.value)
-        viewModelScope.launch {
-            fieldState
-                .drop(1)
-                .debounce(1_500)
-                .collectLatest {
-                    loadAssets(fieldState.value)
-                }
-        }
+//        loadAssets(fieldState.value)
+//        viewModelScope.launch {
+//            fieldState
+//                .drop(1)
+//                .debounce(1_500)
+//                .collectLatest {
+//                    loadAssets(fieldState.value)
+//                }
+//        }
     }
 
     fun handleAction(action: CoinListAction) {

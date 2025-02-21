@@ -14,7 +14,7 @@ fun MainNavGraph(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = BottomNavigationItem.Chats
+        startDestination = BottomNavigationItem.Profile
     ) {
 
         composable<BottomNavigationItem.Chats> {

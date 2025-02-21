@@ -51,4 +51,4 @@ data class CustomFields(
 fun ProfileInfo.toEntity(): ProfileEntity = ProfileEntity(
     name = name,
     avatarUrl = avatarUrl,
-    )
+)

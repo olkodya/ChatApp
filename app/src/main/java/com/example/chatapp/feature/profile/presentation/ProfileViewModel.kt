@@ -2,8 +2,8 @@ package com.example.chatapp.feature.profile.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chatapp.feature.authorization.presentation.LoginScreenState
-import com.example.chatapp.feature.authorization.presentation.LoginViewModel.LoginEvent
+import com.example.chatapp.components.toErrorState
+import com.example.chatapp.di.model.UnauthorizedException
 import com.example.chatapp.feature.profile.domain.GetProfileInfoUseCase
 import com.example.chatapp.feature.profile.domain.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,11 +21,12 @@ class ProfileViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
 
-    private val mutableProfileState = MutableStateFlow(ProfileState("", ""))
-    val profileState: StateFlow<ProfileState> = mutableProfileState.asStateFlow()
+    private val mutableProfileState =
+        MutableStateFlow<ProfileScreenState>(ProfileScreenState.Loading)
+    val profileState: StateFlow<ProfileScreenState> = mutableProfileState.asStateFlow()
 
-    private val mutableActions = Channel<ProfileEvent>()
-    val action = mutableActions.receiveAsFlow()
+    private val mutableEvent = Channel<ProfileEvent>()
+    val event = mutableEvent.receiveAsFlow()
 
     init {
         getProfileInfo()
@@ -33,34 +34,61 @@ class ProfileViewModel @Inject constructor(
 
     fun handleAction(action: ProfileAction) {
         when (action) {
-            ProfileAction.OnLogoutClick -> logout()
+            ProfileAction.OnLogoutClick -> showLogoutDialog()
+            ProfileAction.OnCancelDialogClick -> TODO()
+            ProfileAction.OnConfirmDialogClick -> logoutUser()
         }
     }
 
     private fun getProfileInfo() {
         viewModelScope.launch {
-            val response = getProfileInfoUseCase()
-            mutableProfileState.value =
-                ProfileState(imageUrl = response.avatarUrl, name = response.name)
+            runCatching {
+                mutableProfileState.value = ProfileScreenState.Loading
+                getProfileInfoUseCase()
+            }.onFailure { throwable ->
+                if (throwable is UnauthorizedException) {
+                    logoutUser()
+                    return@launch
+                }
+
+                val errorState = throwable.toErrorState(
+                    onRetryClick = { getProfileInfo() }
+                )
+                mutableProfileState.value = ProfileScreenState.Error(state = errorState)
+            }.onSuccess { response ->
+                mutableProfileState.value = ProfileScreenState.Content(
+                    profileInfo = ProfileState(imageUrl = response.avatarUrl, name = response.name)
+                )
+            }
         }
     }
 
-    private fun logout() {
+    private fun showLogoutDialog() {
+        viewModelScope.launch {
+            mutableEvent.send(ProfileEvent.ShowLogoutDialog)
+        }
+    }
+
+    private fun logoutUser() {
         viewModelScope.launch {
             try {
                 logoutUseCase()
-                mutableActions.send(ProfileEvent.NavigateToLogin)
-            } catch (ex: Exception) {
-
+                mutableEvent.send(ProfileEvent.NavigateToLogin)
+            } catch (_: Exception) {
+                mutableEvent.send(ProfileEvent.ShowLogoutError)
             }
         }
     }
 
     sealed class ProfileAction {
         data object OnLogoutClick : ProfileAction()
+        data object OnConfirmDialogClick : ProfileAction()
+        data object OnCancelDialogClick : ProfileAction()
     }
 
     sealed class ProfileEvent {
+        data object ShowLogoutDialog : ProfileEvent()
+        data object ShowLogoutError : ProfileEvent()
         data object NavigateToLogin : ProfileEvent()
     }
 }

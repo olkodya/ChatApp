@@ -43,16 +43,13 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideOkHttp(authInterceptor: AuthInterceptor): OkHttpClient = OkHttpClient.Builder()
+    fun provideOkHttp(
+        authInterceptor: AuthInterceptor,
+        networkInterceptor: NetworkInterceptor
+    ): OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
         .addInterceptor(authInterceptor)
-//        .addInterceptor {
-//            it.proceed(
-//                it.request()
-//                    .newBuilder()
-//                    .build()
-//            )
-//        }
+        .addInterceptor(networkInterceptor)
         .let {
             it.addInterceptor(
                 HttpLoggingInterceptor().apply {

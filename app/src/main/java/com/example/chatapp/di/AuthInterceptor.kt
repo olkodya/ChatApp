@@ -12,6 +12,7 @@ import javax.inject.Singleton
 class AuthInterceptor @Inject constructor(
     private val authPreferences: AuthPreferences,
 ) : Interceptor {
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 

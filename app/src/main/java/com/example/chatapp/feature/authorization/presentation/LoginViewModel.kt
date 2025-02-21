@@ -1,7 +1,11 @@
 package com.example.chatapp.feature.authorization.presentation
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.chatapp.R
+import com.example.chatapp.di.model.NetworkException
+import com.example.chatapp.di.model.UnauthorizedException
 import com.example.chatapp.feature.authorization.domain.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -56,15 +60,12 @@ class LoginViewModel @Inject constructor(
                         error = null
                     )
                 }.onFailure { throwable ->
-                    val error = when (throwable) {
-                        is IOException -> LoginError.NetworkError
-                        is InvalidCredentialsException -> LoginError.InvalidCredentials
-                        else -> LoginError.NetworkError
+                    val message = when (throwable) {
+                        is UnauthorizedException -> R.string.login_uncorrect_password_or_login
+                        is NetworkException -> R.string.network_error_state_message
+                        else -> R.string.unknown_error_state_message
                     }
-                    mutableLoginState.value = loginState.value.copy(
-                        error = error,
-                        isLoading = false
-                    )
+                    mutableActions.send(LoginEvent.ShowSnackbar(message))
                 }
             }
         } finally {
@@ -81,5 +82,6 @@ class LoginViewModel @Inject constructor(
 
     sealed class LoginEvent {
         data object NavigateToMain : LoginEvent()
+        data class ShowSnackbar(@StringRes val message: Int) : LoginEvent()
     }
 }

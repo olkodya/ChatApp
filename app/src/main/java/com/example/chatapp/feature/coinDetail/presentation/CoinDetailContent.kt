@@ -68,16 +68,16 @@ fun CoinDetailContent(
 
                     state.hasError != null -> {
                         (if (state.hasError.equals("null")) stringResource(R.string.error_string) else state.hasError)?.let {
-                            ErrorState(
-                                Modifier.fillMaxSize(),
-                                message = it,
-                            ) {
-                                handleAction(
-                                    CoinDetailViewModel.CoinDetailAction.OnRetryClick(
-                                        state.coinId, state.coinName, state.currentPrice
-                                    )
-                                )
-                            }
+//                            ErrorState(
+//                                Modifier.fillMaxSize(),
+//                                message = it,
+//                            ) {
+//                                handleAction(
+//                                    CoinDetailViewModel.CoinDetailAction.OnRetryClick(
+//                                        state.coinId, state.coinName, state.currentPrice
+//                                    )
+//                                )
+//                            }
                         }
                     }
 
