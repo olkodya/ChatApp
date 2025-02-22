@@ -14,6 +14,8 @@ fun AlertDialog(
     onConfirmation: () -> Unit,
     dialogTitle: String,
     dialogText: String,
+    confirmButtonText: String,
+    dismissButtonText: String,
 ) {
     AlertDialog(
         title = {
@@ -39,7 +41,7 @@ fun AlertDialog(
                 )
 
             ) {
-                Text("Выйти")
+                Text(text = confirmButtonText)
             }
         },
         dismissButton = {
@@ -54,7 +56,7 @@ fun AlertDialog(
                     disabledContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
-                Text("Отменить")
+                Text(text = dismissButtonText)
             }
         }
     )
@@ -63,5 +65,5 @@ fun AlertDialog(
 @Preview(showBackground = true)
 @Composable
 fun AlertDialogPreview() {
-    AlertDialog({}, {}, )
+    AlertDialog({}, {})
 }

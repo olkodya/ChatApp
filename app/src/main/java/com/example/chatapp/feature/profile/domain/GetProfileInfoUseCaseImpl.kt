@@ -1,6 +1,5 @@
 package com.example.chatapp.feature.profile.domain
 
-import android.util.Log
 import com.example.chatapp.feature.profile.data.ProfileRepository
 import com.example.chatapp.feature.profile.data.model.toEntity
 import javax.inject.Inject

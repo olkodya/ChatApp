@@ -20,6 +20,4 @@ sealed class Routes {
 
     @Serializable
     object ScreenSplash : Routes()
-
-
 }

@@ -2,17 +2,13 @@ package com.example.chatapp.feature.authorization.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.chatapp.R
 import com.example.chatapp.components.ChatSnackbar
 import com.example.chatapp.components.ChatSnackbarVisuals
 
@@ -21,6 +17,7 @@ import com.example.chatapp.components.ChatSnackbarVisuals
 fun LoginScreen(
     onNavigateToMain: () -> Unit
 ) {
+
     val viewModel: LoginViewModel = hiltViewModel()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -47,8 +44,7 @@ fun LoginScreen(
     ) {
         LoginContent(
             state = viewModel.loginState.collectAsState().value,
-
-            ) {
+        ) {
             viewModel.handleAction(it)
         }
     }

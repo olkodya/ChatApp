@@ -3,8 +3,6 @@ package com.example.chatapp.di
 import android.content.Context
 import com.example.chatapp.feature.authorization.data.AuthPreferences
 import com.example.chatapp.feature.authorization.data.api.LoginApi
-import com.example.chatapp.feature.coinDetail.data.api.CoinDetailApi
-import com.example.chatapp.feature.coinList.data.model.api.CoinApi
 import com.example.chatapp.feature.profile.data.api.ProfileApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -69,18 +67,8 @@ class AppModule {
             .build()
 
     @Provides
-    fun provideCoinApi(retrofit: Retrofit): CoinApi = retrofit.create()
-
-
-    @Provides
-    fun provideCoinDetailApi(retrofit: Retrofit): CoinDetailApi = retrofit.create()
-
-    @Provides
     fun provideLoginApi(retrofit: Retrofit): LoginApi = retrofit.create()
 
     @Provides
     fun providesProfileApi(retrofit: Retrofit): ProfileApi = retrofit.create()
 }
-
-
-

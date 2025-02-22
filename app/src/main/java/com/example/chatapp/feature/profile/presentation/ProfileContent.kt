@@ -28,17 +28,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import coil3.svg.SvgDecoder
 import com.example.chatapp.R
 import com.example.chatapp.components.ErrorState
 import com.example.chatapp.components.LoadingState
@@ -50,8 +50,6 @@ fun ProfileContent(
     state: ProfileScreenState,
     handleAction: (ProfileAction) -> Unit
 ) {
-
-
     when (state) {
         is ProfileScreenState.Content -> ProfileInfo(state, handleAction)
         is ProfileScreenState.Error -> ErrorState(state = state.state)
@@ -59,19 +57,12 @@ fun ProfileContent(
     }
 }
 
-
 @Composable
 fun ProfileInfo(state: ProfileScreenState.Content, handleAction: (ProfileAction) -> Unit) {
     val screenHeight: Dp = LocalConfiguration.current.screenHeightDp.dp
     val headerViewHeight: Dp = screenHeight / 4
     val profileAvatarHeight: Dp = 120.dp
-    val context = LocalContext.current
 
-    val imageLoader = ImageLoader.Builder(context)
-        .components {
-            add(SvgDecoder.Factory())
-        }
-        .build()
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -100,12 +91,11 @@ fun ProfileInfo(state: ProfileScreenState.Content, handleAction: (ProfileAction)
                         .size(profileAvatarHeight)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.secondary),
-                    model = ImageRequest.Builder(context)
+                    model = ImageRequest.Builder(LocalPlatformContext.current)
                         .data(state.profileInfo.imageUrl)
                         .crossfade(true)
                         .build(),
-                    contentDescription = "Profile avatar",
-                    imageLoader = imageLoader,
+                    contentDescription = stringResource(R.string.profile_avatar_content_description),
                     contentScale = ContentScale.Crop,
                     onLoading = { },
                     onError = { }
@@ -120,7 +110,7 @@ fun ProfileInfo(state: ProfileScreenState.Content, handleAction: (ProfileAction)
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.SemiBold,
             fontSize = 17.sp,
-            )
+        )
 
         Card(
             modifier = Modifier
@@ -145,13 +135,13 @@ fun ProfileInfo(state: ProfileScreenState.Content, handleAction: (ProfileAction)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.exit),
-                    contentDescription = "",
+                    contentDescription = stringResource(R.string.profile_exit_icon_content_description),
                     tint = MaterialTheme.colorScheme.secondary
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = "Выйти",
+                    text = stringResource(R.string.profile_logout_button_text),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -159,8 +149,8 @@ fun ProfileInfo(state: ProfileScreenState.Content, handleAction: (ProfileAction)
 
                 Icon(
                     painter = painterResource(R.drawable.shevron_right),
-                    contentDescription = "",
-                    tint = com.example.chatapp.ui.theme.LightGray
+                    contentDescription = stringResource(R.string.profile_shevron_icon_content_description),
+                    tint = MaterialTheme.colorScheme.surfaceVariant
                 )
             }
         }
@@ -172,10 +162,6 @@ fun ProfileInfo(state: ProfileScreenState.Content, handleAction: (ProfileAction)
 fun ProfilePreview() {
     AppTheme {
         ProfileContent(
-//            ProfileScreenState(
-//                name = "Кукарцева Ольга",
-//                imageUrl = "https://eltex2025.rocket.chat/avatar/kurt_olg"
-//            ),
             state = ProfileScreenState.Content(
                 profileInfo = ProfileState(
                     name = "Кукарцева Ольга",

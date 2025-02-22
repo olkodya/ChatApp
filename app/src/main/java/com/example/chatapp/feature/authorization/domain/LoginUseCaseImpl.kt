@@ -1,13 +1,8 @@
 package com.example.chatapp.feature.authorization.domain
 
-import android.util.Log
 import com.example.chatapp.feature.authorization.data.AuthPreferences
 import com.example.chatapp.feature.authorization.data.LoginRepository
-import com.example.chatapp.feature.authorization.data.model.LoginData
 import com.example.chatapp.feature.authorization.data.model.toEntity
-import com.example.chatapp.feature.authorization.presentation.InvalidCredentialsException
-import kotlinx.coroutines.flow.collectLatest
-
 import javax.inject.Inject
 
 class LoginUseCaseImpl @Inject constructor(
@@ -31,11 +26,8 @@ class LoginUseCaseImpl @Inject constructor(
                 }
             }
             Result.success(response.toEntity())
-        } catch (e: Exception) {
-            if (e.message.toString().contains("HTTP 401"))
-                Result.failure(InvalidCredentialsException())
-            else
-                Result.failure(e)
+        } catch (exception: Exception) {
+            Result.failure(exception)
         }
     }
 }

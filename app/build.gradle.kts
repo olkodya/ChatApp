@@ -91,14 +91,11 @@ dependencies {
 
     implementation (libs.kotlinx.serialization.json)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
-    implementation ("androidx.core:core-splashscreen:1.0.0-beta02")
+
+    implementation ("androidx.core:core-splashscreen:1.1.0-rc01")
+
     implementation("androidx.datastore:datastore-preferences:1.1.2")
     implementation("io.coil-kt.coil3:coil-compose:3.1.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
     implementation("io.coil-kt.coil3:coil-svg:3.1.0")
-
-
-
-
-
 }

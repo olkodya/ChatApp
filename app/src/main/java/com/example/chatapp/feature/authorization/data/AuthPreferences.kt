@@ -19,6 +19,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 class AuthPreferences @Inject constructor(
     private val context: Context
 ) {
+
     val authData: Flow<AuthData?> = context.dataStore.data
         .catch { exception ->
             emit(emptyPreferences())

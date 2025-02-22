@@ -61,13 +61,12 @@ fun BottomNavigationBar(
                             painter = painterResource(id = screen.selectedIcon),
                             contentDescription = stringResource(screen.title),
                             tint = MaterialTheme.colorScheme.secondary
-//
                         )
                     } else {
                         Icon(
                             painter = painterResource(id = screen.unselectedIcon),
                             contentDescription = stringResource(screen.title),
-                            tint =   com.example.chatapp.ui.theme.DarkGray
+                            tint = com.example.chatapp.ui.theme.DarkGray
                         )
                     }
                 },

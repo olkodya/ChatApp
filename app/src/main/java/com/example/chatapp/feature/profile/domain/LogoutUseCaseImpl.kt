@@ -7,8 +7,8 @@ import javax.inject.Inject
 class LogoutUseCaseImpl @Inject constructor(
     private val repository: ProfileRepository,
     private val authPreferences: AuthPreferences,
-) :
-    LogoutUseCase {
+) : LogoutUseCase {
+
     override suspend fun invoke() {
         repository.logout()
         authPreferences.clear()

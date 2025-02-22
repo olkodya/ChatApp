@@ -2,11 +2,8 @@
 <resources>
     <style name="Theme.ChatApp" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="Theme.ChatApp.Splash" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.ChatApp.Splash" parent="Theme.SplashScreen">
         <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
-        <item name="windowSplashScreenAnimationDuration">1000</item>
-<!--        <item name="android:windowFullscreen">true</item>-->
         <item name="postSplashScreenTheme">@style/Theme.ChatApp</item>
     </style>
 </resources>

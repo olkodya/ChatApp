@@ -7,6 +7,7 @@ import javax.inject.Inject
 class ProfileRepositoryImpl @Inject constructor(
     private val api: ProfileApi
 ) : ProfileRepository {
+
     override suspend fun getProfileInfo(): ProfileInfo = api.getUserInfo()
     override suspend fun logout() = api.logout()
 }

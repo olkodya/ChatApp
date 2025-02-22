@@ -47,8 +47,8 @@ data class CustomFields(
     val twitter: String,
 )
 
-
 fun ProfileInfo.toEntity(userId: String, token: String): ProfileEntity = ProfileEntity(
     name = name,
-    avatarUrl = "${avatarUrl}?rc_uid=${userId}&rc_token=${token}",
+//    avatarUrl = "${avatarUrl}?rc_uid=${userId}&rc_token=${token}",
+    avatarUrl = avatarUrl
 )

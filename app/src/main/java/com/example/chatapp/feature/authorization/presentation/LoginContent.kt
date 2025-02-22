@@ -23,6 +23,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -55,7 +56,8 @@ import com.example.chatapp.feature.authorization.presentation.LoginViewModel.Log
 fun LoginContent(
     state: LoginScreenState, handleAction: (LoginAction) -> Unit
 ) {
-    val focusManager = LocalFocusManager.current  // получаем FocusManager
+
+    val focusManager = LocalFocusManager.current
     var passwordVisible by remember { mutableStateOf(false) }
 
     Box(
@@ -68,6 +70,7 @@ fun LoginContent(
             contentDescription = null,
             contentScale = ContentScale.FillBounds
         )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -75,7 +78,6 @@ fun LoginContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-
             Spacer(modifier = Modifier.height(120.dp))
 
             Image(
@@ -88,7 +90,7 @@ fun LoginContent(
 
             Text(
                 modifier = Modifier.padding(top = 2.dp, bottom = 2.dp),
-                text = "Введите логин и пароль для входа",
+                text = stringResource(R.string.login_information_text),
                 color = Color.White,
                 fontSize = 17.sp,
                 textAlign = TextAlign.Center,
@@ -130,7 +132,7 @@ fun LoginContent(
                     },
                     placeholder = {
                         Text(
-                            stringResource(R.string.login_text_field),
+                            stringResource(R.string.login_login_text_field),
                             fontSize = 14.sp,
                         )
                     },
@@ -142,7 +144,9 @@ fun LoginContent(
                     ),
                 )
             }
+
             Spacer(modifier = Modifier.height(38.dp))
+
             BasicTextField(
                 value = state.password,
                 onValueChange = { value -> handleAction(LoginAction.OnPasswordFieldChanged(value)) },
@@ -153,7 +157,6 @@ fun LoginContent(
                 singleLine = true,
             ) { innerTextField ->
                 TextFieldDefaults.DecorationBox(
-
                     value = state.password,
                     innerTextField = innerTextField,
                     enabled = true,
@@ -169,11 +172,10 @@ fun LoginContent(
                     },
                     placeholder = {
                         Text(
-                            stringResource(R.string.password_text_field),
+                            stringResource(R.string.login_password_text_field),
                             fontSize = 14.sp,
                         )
                     },
-
                     contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
                         start = 12.dp,
                         top = 11.dp,
@@ -181,17 +183,17 @@ fun LoginContent(
                         bottom = 11.dp
                     ),
                     trailingIcon = {
-                        if(state.password.isNotEmpty())
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(
-                                painter = painterResource(
-                                    if (passwordVisible) R.drawable.outline_visibility_off_24
-                                    else R.drawable.outline_visibility_24
-                                ),
-                                contentDescription = if (passwordVisible) "Скрыть пароль" else "Показать пароль",
-                                tint = Color(0xFF1E4B7B),
-                            )
-                        }
+                        if (state.password.isNotEmpty())
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    painter = painterResource(
+                                        if (passwordVisible) R.drawable.outline_visibility_off_24
+                                        else R.drawable.outline_visibility_24
+                                    ),
+                                    contentDescription = if (passwordVisible) "Скрыть пароль" else "Показать пароль",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                )
+                            }
                     },
                 )
             }
@@ -208,7 +210,7 @@ fun LoginContent(
                 enabled = !state.isEmpty,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
-                    contentColor = Color(0xFF1E4B7B),
+                    contentColor = Color.Black,
                     disabledContainerColor = Color.White.copy(alpha = 0.5f)
                 ),
                 shape = RoundedCornerShape(8.dp)
@@ -230,7 +232,6 @@ fun LoginPreview() {
         login = "aads",
         password = "sfsfsf",
         isLoading = false,
-        error = null,
     )
     LoginContent(state) {}
 }
@@ -242,7 +243,6 @@ fun LoadingPreview() {
         login = "asas",
         password = "sfsfsf",
         isLoading = true,
-        error = null,
     )
     LoginContent(state) {}
 }
@@ -254,7 +254,6 @@ fun ErrorPreview() {
         login = "asas",
         password = "sfsfsf",
         isLoading = true,
-        error = null,
     )
     LoginContent(state) {}
 }

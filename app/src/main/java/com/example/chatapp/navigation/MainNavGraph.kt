@@ -18,17 +18,6 @@ fun MainNavGraph(
     ) {
 
         composable<BottomNavigationItem.Chats> {
-       /*     CoinListScreen(
-                routeToCoinDetailScreen = { id, name, price ->
-                    rootNavHostController.navigate(
-                        Routes.ScreenDetail(
-                            coinId = id,
-                            coinName = name,
-                            priceUsd = price.toString()
-                        )
-                    )
-                },
-            )*/
             ChatListScreen()
         }
 

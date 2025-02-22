@@ -26,4 +26,3 @@ sealed class BottomNavigationItem(
             R.string.bottom_nav_title_profile
         )
 }
-

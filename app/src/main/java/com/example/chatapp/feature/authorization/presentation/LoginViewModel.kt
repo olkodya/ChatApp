@@ -53,18 +53,15 @@ class LoginViewModel @Inject constructor(
             mutableLoginState.value = loginState.value.copy(isLoading = true)
             viewModelScope.launch {
                 loginUseCase(
-                    loginState.value.login,
-                    loginState.value.password
-
+                    loginState.value.login, loginState.value.password
                 ).onSuccess {
                     mutableActions.send(LoginEvent.NavigateToMain)
                     mutableLoginState.value = loginState.value.copy(
-//                        error = null,
                         isLoading = false,
                     )
                 }.onFailure { throwable ->
                     val message = when (throwable) {
-                        is UnauthorizedException -> R.string.login_uncorrect_password_or_login
+                        is UnauthorizedException -> R.string.login_incorrect_password_or_login
                         is NetworkException -> R.string.network_error_state_message
                         else -> R.string.unknown_error_state_message
                     }
@@ -74,7 +71,6 @@ class LoginViewModel @Inject constructor(
             }
         } finally {
         }
-
     }
 
     sealed class LoginAction {

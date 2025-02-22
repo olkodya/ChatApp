@@ -7,6 +7,7 @@ import com.example.chatapp.di.model.UnauthorizedException
 import com.example.chatapp.feature.authorization.data.AuthPreferences
 import com.example.chatapp.feature.profile.domain.GetProfileInfoUseCase
 import com.example.chatapp.feature.profile.domain.LogoutUseCase
+import com.example.chatapp.feature.profile.domain.toState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +38,6 @@ class ProfileViewModel @Inject constructor(
     fun handleAction(action: ProfileAction) {
         when (action) {
             ProfileAction.OnLogoutClick -> showLogoutDialog()
-            ProfileAction.OnCancelDialogClick -> TODO()
             ProfileAction.OnConfirmDialogClick -> logoutUser()
         }
     }
@@ -61,9 +61,10 @@ class ProfileViewModel @Inject constructor(
                 )
                 mutableProfileState.value = ProfileScreenState.Error(state = errorState)
             }.onSuccess { response ->
-                mutableProfileState.value = ProfileScreenState.Content(
-                    profileInfo = ProfileState(imageUrl = response.avatarUrl, name = response.name)
-                )
+                mutableProfileState.value =
+                    ProfileScreenState.Content(
+                        profileInfo = response.toState()
+                    )
             }
         }
     }
@@ -88,7 +89,6 @@ class ProfileViewModel @Inject constructor(
     sealed class ProfileAction {
         data object OnLogoutClick : ProfileAction()
         data object OnConfirmDialogClick : ProfileAction()
-        data object OnCancelDialogClick : ProfileAction()
     }
 
     sealed class ProfileEvent {

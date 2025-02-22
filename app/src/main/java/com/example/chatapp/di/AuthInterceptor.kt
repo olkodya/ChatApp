@@ -15,7 +15,6 @@ class AuthInterceptor @Inject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-
         val authToken = runBlocking { authPreferences.authData.first()?.token }
         val userId = runBlocking { authPreferences.authData.first()?.userId }
         val newRequest = if (!authToken.isNullOrEmpty()) {
