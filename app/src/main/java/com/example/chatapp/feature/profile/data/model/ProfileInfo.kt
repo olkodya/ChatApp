@@ -24,9 +24,6 @@ data class ProfileInfo(
     val active: Boolean,
     @SerialName("roles")
     val roles: List<String>,
-    //val settings: Settings
-//    @SerialName("customFields")
-//    val customFields: CustomFields?,
     @SerialName("avatarUrl")
     val avatarUrl: String,
     @SerialName("success")
@@ -39,12 +36,6 @@ data class Email(
     val address: String,
     @SerialName("verified")
     val verified: Boolean,
-)
-
-@Serializable
-data class CustomFields(
-    @SerialName("twitter")
-    val twitter: String,
 )
 
 fun ProfileInfo.toEntity(userId: String, token: String): ProfileEntity = ProfileEntity(

@@ -3,6 +3,7 @@ package com.example.chatapp.di
 import android.content.Context
 import com.example.chatapp.feature.authorization.data.AuthPreferences
 import com.example.chatapp.feature.authorization.data.api.LoginApi
+import com.example.chatapp.feature.chatList.data.api.ChatListApi
 import com.example.chatapp.feature.profile.data.api.ProfileApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -17,6 +18,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.create
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 
@@ -41,6 +43,7 @@ class AppModule {
 
     @Singleton
     @Provides
+    @Named("RestOkHttpClient")
     fun provideOkHttp(
         authInterceptor: AuthInterceptor,
         networkInterceptor: NetworkInterceptor
@@ -59,7 +62,16 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
+    @Named("WebSocketOkHttpClient")
+    fun provideSocketOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .build()
+
+    @Singleton
+    @Provides
+    fun provideRetrofit(
+        @Named("RestOkHttpClient") okHttpClient: OkHttpClient
+    ): Retrofit =
         Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl("https://eltex2025.rocket.chat/")
@@ -71,4 +83,8 @@ class AppModule {
 
     @Provides
     fun providesProfileApi(retrofit: Retrofit): ProfileApi = retrofit.create()
+
+
+    @Provides
+    fun providesChatListApi(retrofit: Retrofit): ChatListApi = retrofit.create()
 }

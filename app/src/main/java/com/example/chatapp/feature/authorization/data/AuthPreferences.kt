@@ -26,25 +26,31 @@ class AuthPreferences @Inject constructor(
         }.map { preferences ->
             val token = preferences[KEY_AUTH_TOKEN]
             val userId = preferences[KEY_USER_ID]
-            if (token != null && userId != null) {
-                AuthData(token, userId)
+            val password = preferences[KEY_PASSWORD_SHA256]
+            val username = preferences[KEY_USERNAME]
+            if (token != null && userId != null && password != null && username != null) {
+                AuthData(token, userId, password, username)
             } else null
         }
 
     suspend fun getAuthData(): AuthData? {
         val token = context.dataStore.updateData { it }[KEY_AUTH_TOKEN]
         val userId = context.dataStore.updateData { it }[KEY_USER_ID]
-        return if (token != null && userId != null) {
-            AuthData(token, userId)
+        val password = context.dataStore.updateData { it }[KEY_PASSWORD_SHA256]
+        val username = context.dataStore.updateData { it }[KEY_USERNAME]
+        return if (token != null && userId != null && password != null && username != null) {
+            AuthData(token, userId, password, username)
         } else {
             null
         }
     }
 
-    suspend fun saveAuthData(token: String, userId: String) {
+    suspend fun saveAuthData(token: String, userId: String, password: String, username: String) {
         context.dataStore.edit { preferences ->
             preferences[KEY_AUTH_TOKEN] = token
             preferences[KEY_USER_ID] = userId
+            preferences[KEY_PASSWORD_SHA256] = password
+            preferences[KEY_USERNAME] = username
         }
     }
 
@@ -52,13 +58,18 @@ class AuthPreferences @Inject constructor(
         context.dataStore.edit { it.clear() }
     }
 
-    companion object {
+    private companion object {
         private val KEY_AUTH_TOKEN = stringPreferencesKey("auth_token")
         private val KEY_USER_ID = stringPreferencesKey("user_id")
+        private val KEY_PASSWORD_SHA256 = stringPreferencesKey("password_256")
+        private val KEY_USERNAME = stringPreferencesKey("username")
+
     }
 }
 
 data class AuthData(
     val token: String,
     val userId: String,
+    val password: String,
+    val username: String,
 )
