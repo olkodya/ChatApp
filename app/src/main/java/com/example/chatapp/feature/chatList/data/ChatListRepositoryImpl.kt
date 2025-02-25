@@ -14,9 +14,14 @@ import com.example.chatapp.feature.chatList.data.model.WebSocketMessage
 import com.example.chatapp.feature.chatList.data.model.toWebSocketMessage
 import com.example.chatapp.feature.chatList.domain.model.RoomEntity
 import com.example.chatapp.feature.chatList.domain.model.toEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
@@ -40,7 +45,10 @@ class ChatListRepositoryImpl @Inject constructor(
     private val authPreferences: AuthPreferences,
 ) : ChatListRepository {
 
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     private lateinit var webSocket: WebSocket
+//    private lateinit var authData: AuthData
     private var shouldReconnect = true
     private val formattedJson = Json {
         ignoreUnknownKeys = true
@@ -49,10 +57,43 @@ class ChatListRepositoryImpl @Inject constructor(
     }
 
     private val roomsMutableStateFlow = MutableStateFlow<List<RoomEntity>?>(null)
-    val roomsStateFlow: StateFlow<List<RoomEntity>?> = roomsMutableStateFlow
+    val roomsStateFlow: StateFlow<List<RoomEntity>?> = roomsMutableStateFlow.asStateFlow()
+    
+    private fun checkAndLoadConversationalistInfo() {
+//        roomsStateFlow.value?.forEach { room ->
+//            repositoryScope.launch {
+//                room.userId?.let { userId ->
+//                    api.getUsers(userId)
+//                }
+//            }
+//        }
+
+            roomsStateFlow.value?.forEach { room ->
+                room.userId?.let { userId ->
+                    repositoryScope.launch {
+                        try {
+                            val response = api.getUsers(userId)
+                            // Обновляем StateFlow сразу после получения каждого ответа
+                            roomsMutableStateFlow.value = roomsMutableStateFlow.value?.map { currentRoom ->
+                                if (currentRoom.id == room.id) {
+                                    currentRoom.copy(
+                                        name = response.user.name,
+                                        userName = response.user.username,
+                                    )
+                                } else {
+                                    currentRoom
+                                }
+                            }
+                        } catch (e: Exception) {
+                            println("Ошибка при загрузке пользователя $userId: ${e.message}")
+                        }
+                    }
+                }
+            }
+    }
 
     override suspend fun observeRooms(): StateFlow<List<RoomEntity>?> {
-        val authData: AuthData = authPreferences.getAuthData()
+        val authData = authPreferences.getAuthData()
             ?: return throw IOException("Auth data not set")
         if (::webSocket.isInitialized.not()) {
             connect()
@@ -114,14 +155,16 @@ class ChatListRepositoryImpl @Inject constructor(
                 formattedJson.decodeFromString(
                     RoomsResponse.serializer(),
                     text
-                ).result.update.map { it.toEntity() }
+                ).result.update.map { it.toEntity(0, "sf") }
             roomsMutableStateFlow.value = entities
+            checkAndLoadConversationalistInfo()
         }
 
         SUBSCRIPTIONS_CALL_ID -> {
             val subscriptions: SubscriptionsResponse =
                 formattedJson.decodeFromString(SubscriptionsResponse.serializer(), text)
             Log.d("d", subscriptions.toString())
+            subscriptions.result.update.meagreSubscriptionsToRoomsStateFlow()
         }
 
         else -> Unit
@@ -131,6 +174,7 @@ class ChatListRepositoryImpl @Inject constructor(
     private fun subscriptionsProcessing(text: String, eventName: String) = when {
         eventName.contains(ROOMS_CHANGED_EVENT_NAME) -> {
             roomsChangedProcessing(text = text)
+            checkAndLoadConversationalistInfo()
         }
 
         eventName.contains(SUBSCRIPTIONS_CHANGED_EVENT_NAME) -> {
@@ -154,7 +198,7 @@ class ChatListRepositoryImpl @Inject constructor(
                     formattedJson.decodeFromJsonElement(
                         deserializer = RoomResponse.serializer(),
                         element = arg
-                    ).toEntity()
+                    ).toEntity(0, "")
                 } catch (_: Exception) {
                     null
                 }
@@ -187,9 +231,23 @@ class ChatListRepositoryImpl @Inject constructor(
                     null
                 }
             }
-        Log.d("asds", subscriptionsUpdates.toString())
+        Log.d("d", subscriptionsUpdates.toString())
+        subscriptionsUpdates.meagreSubscriptionsToRoomsStateFlow()
     }
 
+    fun List<SubscriptionResponse>.meagreSubscriptionsToRoomsStateFlow() {
+        roomsMutableStateFlow.update { currentRooms ->
+            val roomsMap = currentRooms?.associateBy { it.id }?.toMutableMap()
+            forEach { subscription ->
+                roomsMap?.get(subscription.rid)?.let { room ->
+                    roomsMap[subscription.rid] = room.copy(
+                        unreadMessagesNumber = subscription.unread
+                    )
+                }
+            }
+            roomsMap?.values?.toList()
+        }
+    }
 
     private val webSocketListener = object : WebSocketListener() {
         //called when connection succeeded

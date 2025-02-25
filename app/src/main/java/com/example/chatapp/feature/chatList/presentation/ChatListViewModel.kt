@@ -46,13 +46,13 @@ class ChatListViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching {
                 val roomsEntities: StateFlow<List<RoomEntity>?> = observeRoomsUseCase()
-                roomsEntities.collectLatest {
+                roomsEntities.collectLatest { updatedRooms ->
                     if (roomsEntities.value == null) {
                         mutableChatListState.value = ChatListScreenState.Loading
 
                     } else
                         mutableChatListState.value =
-                            ChatListScreenState.Content(rooms = roomsEntities.value?.map { it.toRoomState() }
+                            ChatListScreenState.Content(rooms = updatedRooms?.map { it.toRoomState() }
                                 ?: emptyList())
                 }
             }.onFailure {

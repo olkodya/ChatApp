@@ -90,7 +90,7 @@ fun ProfileInfo(state: ProfileScreenState.Content, handleAction: (ProfileAction)
                     modifier = Modifier
                         .size(profileAvatarHeight)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.secondary),
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
                     model = ImageRequest.Builder(LocalPlatformContext.current)
                         .data(state.profileInfo.imageUrl)
                         .crossfade(true)

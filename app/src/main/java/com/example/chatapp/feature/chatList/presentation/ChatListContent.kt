@@ -23,7 +23,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -45,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.chatapp.components.LoadingState
+import com.example.chatapp.components.Shimmer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -194,26 +194,20 @@ private fun ChatList(state: ChatListScreenState.Content) {
             .fillMaxWidth()
     ) {
         items(
-            state.rooms.size,
-            key = { id -> state.rooms[id].id }) { index ->
+            count = state.rooms.size,
+            key = { id -> state.rooms[id].id },
+        ) { index ->
+
             val chat = state.rooms[index]
-            ChatItem(
-                title = chat.name,
-                message = chat.lastMassage,
-                time = chat.lastMessageDate,
-                isStarred = true
-            )
+
+            ChatItem(chatState = chat)
         }
     }
 }
 
 @Composable
 private fun ChatItem(
-    title: String,
-    message: String,
-    time: String,
-    avatar: String? = null,
-    isStarred: Boolean = false
+    chatState: RoomState,
 ) {
     Row(
         modifier = Modifier
@@ -221,47 +215,52 @@ private fun ChatItem(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (isStarred) {
-            Icon(
-                imageVector = Icons.Default.Star,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(40.dp)
-            )
-        } else {
-            AsyncImage(
-                model = avatar,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-            )
-        }
+
+        AsyncImage(
+            model = chatState.showedImageUrl,
+            contentDescription = null,
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .size(40.dp)
+                .clip(CircleShape)
+        )
 
         Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 12.dp)
         ) {
+            val showedName = chatState.name
+            if (showedName != null) {
+                Text(
+                    text = showedName,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp
+                )
+            } else {
+                Shimmer(
+                    modifier = Modifier
+                        .height(20.dp)
+                        .width(150.dp)
+                )
+            }
+            chatState.lastMassage?.let { lastMassage ->
+                Text(
+                    text = lastMassage,
+                    color = Color.Gray,
+                    fontSize = 14.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+        chatState.lastMessageDate?.let { lastMessageDate ->
             Text(
-                text = title,
-                fontWeight = FontWeight.Medium,
-                fontSize = 16.sp
-            )
-            Text(
-                text = message,
+                text = lastMessageDate,
                 color = Color.Gray,
-                fontSize = 14.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                fontSize = 12.sp
             )
         }
-
-        Text(
-            text = time,
-            color = Color.Gray,
-            fontSize = 12.sp
-        )
     }
 }
 

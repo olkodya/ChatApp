@@ -39,25 +39,26 @@ data class SubscriptionsSubscriptionResponse(
 
 @Serializable
 data class SubscriptionResponse(
-    @SerialName("_id")
-    val id: String,
+//    @SerialName("_id")
+//    val id: String,
     @SerialName("rid")
     val rid: String,
-    @SerialName("u")
-    val user: User,
-    @SerialName("_updatedAt")
-    val updatedAt: Date,
-    val alert: Boolean,
-    val fname: String? = null,
-    val groupMentions: Int,
-    val name: String,
-    val open: Boolean,
-    val t: String,
-    val ts: Date,
+//    @SerialName("u")
+//    val user: User,
+//    @SerialName("_updatedAt")
+//    val updatedAt: Date,
+//    val alert: Boolean,
+//    val fname: String? = null,
+//    val groupMentions: Int,
+//    val name: String,
+//    val open: Boolean,
+//    val t: String,
+//    val ts: Date,
+    @SerialName("unread")
     val unread: Int,
-    val userMentions: Int,
-    @SerialName("ls")
-    val ls: Date,
+//    val userMentions: Int,
+//    @SerialNae("ls")
+//    val ls: Damte,
 )
 
 @Serializable
