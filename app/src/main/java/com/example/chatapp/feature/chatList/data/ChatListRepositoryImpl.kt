@@ -11,7 +11,6 @@ import com.example.chatapp.feature.chatList.data.model.RoomsResponseSubscription
 import com.example.chatapp.feature.chatList.data.model.SubscriptionResponse
 import com.example.chatapp.feature.chatList.data.model.SubscriptionsResponse
 import com.example.chatapp.feature.chatList.data.model.SubscriptionsSubscriptionResponse
-import com.example.chatapp.feature.chatList.data.model.UserListResponse
 import com.example.chatapp.feature.chatList.data.model.WebSocketMessage
 import com.example.chatapp.feature.chatList.data.model.toWebSocketMessage
 import com.example.chatapp.feature.chatList.domain.model.RoomEntity
@@ -50,8 +49,6 @@ class ChatListRepositoryImpl @Inject constructor(
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var authData: AuthData
     private lateinit var webSocket: WebSocket
-
-    //    private lateinit var authData: AuthData
     private var shouldReconnect = true
     private val formattedJson = Json {
         ignoreUnknownKeys = true
@@ -80,7 +77,6 @@ class ChatListRepositoryImpl @Inject constructor(
                                 }
                             }
                     } catch (e: Exception) {
-                        println("Ошибка при загрузке пользователя $userId: ${e.message}")
                     }
                 }
             }
@@ -257,13 +253,10 @@ class ChatListRepositoryImpl @Inject constructor(
     }
 
     private val webSocketListener = object : WebSocketListener() {
-        //called when connection succeeded
-        //we are sending a message just after the socket is opened
         override fun onOpen(webSocket: WebSocket, response: Response) {
             Log.e("socketCheck", "onOpen()")
         }
 
-        //called when text message received
         override fun onMessage(webSocket: WebSocket, text: String) {
             try {
                 if (text.contains("ping")) {
@@ -284,19 +277,15 @@ class ChatListRepositoryImpl @Inject constructor(
 
                     eventName != null -> subscriptionsProcessing(text = text, eventName = eventName)
                 }
-            } catch (e: Exception) {
-                Log.e("socketCheck", e.toString())
+            } catch (exception: Exception) {
             }
         }
 
-        //called when binary message received
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
             Log.e("socketCheck", "onClosing()")
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-            //called when no more messages and the connection should be released
-            Log.e("socketCheck", "onClosed()")
             if (shouldReconnect) reconnect()
         }
 

@@ -1,6 +1,5 @@
 package com.example.chatapp
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,7 +22,6 @@ import com.example.chatapp.navigation.RootNavGraph
 import com.example.chatapp.navigation.Routes
 import com.example.chatapp.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,7 +40,7 @@ class MainActivity : ComponentActivity() {
         setupSplashScreen(
             onDestinationDefined = { destination ->
                 setContent {
-                    setupImageLoader(coilInterceptor)
+                    SetupImageLoader(coilInterceptor)
                     AppTheme {
                         val navController = rememberNavController()
                         RootNavGraph(navController, destination)
@@ -56,7 +54,6 @@ class MainActivity : ComponentActivity() {
         var keepSplashScreenOn = true
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                delay(100000)
                 splashViewModel.events.collect { event ->
                     when (event) {
                         SplashEvent.NavigateToLogin -> onDestinationDefined(Routes.ScreenLogin)
@@ -73,7 +70,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun setupImageLoader(coilInterceptor: CoilInterceptor) {
+private fun SetupImageLoader(coilInterceptor: CoilInterceptor) {
     setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context)
             .components {
@@ -81,11 +78,9 @@ private fun setupImageLoader(coilInterceptor: CoilInterceptor) {
             }
             .memoryCache {
                 MemoryCache.Builder()
-                    // Set the max size to 25% of the app's available memory.
                     .maxSizePercent(context = context, percent = 0.25)
                     .build()
             }
-            // Show a short crossfade when loading images asynchronously.
             .crossfade(false)
             .build()
     }

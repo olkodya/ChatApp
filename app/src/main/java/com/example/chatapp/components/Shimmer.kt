@@ -39,8 +39,6 @@ fun Shimmer(
         start = Offset.Zero,
         end = Offset(x = translateAnim.value, y = translateAnim.value)
     )
-
-
     Box(
         modifier = modifier.background(brush, RoundedCornerShape(4.dp))
     ) {

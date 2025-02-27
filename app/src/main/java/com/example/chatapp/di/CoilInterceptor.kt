@@ -30,4 +30,3 @@ class CoilInterceptor @Inject constructor(
         return chain.withRequest(newRequest).proceed()
     }
 }
-

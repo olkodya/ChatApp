@@ -7,7 +7,6 @@ data class ProfileEntity(
     val avatarUrl: String,
 )
 
-
 fun ProfileEntity.toState(): ProfileState =
     ProfileState(
         name = name,

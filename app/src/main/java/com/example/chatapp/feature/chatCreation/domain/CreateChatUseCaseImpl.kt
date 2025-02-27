@@ -1,4 +1,4 @@
-package com.example.chatapp.feature.chatList.domain
+package com.example.chatapp.feature.chatCreation.domain
 
 import com.example.chatapp.feature.chatList.data.ChatListRepository
 import javax.inject.Inject

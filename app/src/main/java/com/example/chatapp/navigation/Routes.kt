@@ -9,11 +9,7 @@ sealed class Routes {
     object ScreenMain : Routes()
 
     @Serializable
-    data class ScreenDetail(
-        val coinId: String,
-        val coinName: String,
-        val priceUsd: String,
-    ) : Routes()
+    object ScreenChat : Routes()
 
     @Serializable
     object ScreenLogin : Routes()

@@ -1,7 +1,7 @@
-package com.example.chatapp.feature.chatList.di
+package com.example.chatapp.feature.chatCreation.di
 
-import com.example.chatapp.feature.chatList.domain.CreateChatUseCase
-import com.example.chatapp.feature.chatList.domain.CreateChatUseCaseImpl
+import com.example.chatapp.feature.chatCreation.domain.CreateChatUseCase
+import com.example.chatapp.feature.chatCreation.domain.CreateChatUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

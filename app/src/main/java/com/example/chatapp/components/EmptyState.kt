@@ -31,6 +31,6 @@ fun EmptyState(
 fun EmptyStatePreview() {
     EmptyState(
         modifier = Modifier,
-        message = "Coins not found"
+        message = "Not Found"
     )
 }

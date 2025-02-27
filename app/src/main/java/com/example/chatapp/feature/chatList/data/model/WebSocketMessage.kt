@@ -11,7 +11,6 @@ sealed class WebSocketMessage(
     @SerialName("msg")
     open val msg: String,
 ) {
-
     @Serializable
     data class Connect(
         @SerialName("version")
@@ -25,7 +24,6 @@ sealed class WebSocketMessage(
         @Transient
         override val msg: String = "pong"
     ) : WebSocketMessage(msg)
-
 
     @Serializable
     data class Authorize(

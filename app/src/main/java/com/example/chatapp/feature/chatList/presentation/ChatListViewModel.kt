@@ -2,14 +2,11 @@ package com.example.chatapp.feature.chatList.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chatapp.feature.chatList.domain.CreateChatUseCase
-import com.example.chatapp.feature.chatList.domain.GetUsersUseCase
 import com.example.chatapp.feature.chatList.domain.ObserveRoomsUseCase
 import com.example.chatapp.feature.chatList.domain.model.RoomEntity
-import com.example.chatapp.feature.chatList.domain.model.UserEntity
 import com.example.chatapp.feature.chatList.domain.model.toRoomState
-import com.example.chatapp.feature.chatList.domain.model.toUserState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,22 +19,11 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
     private val observeRoomsUseCase: ObserveRoomsUseCase,
-    private val getUsersUseCase: GetUsersUseCase,
-    private val createChatUseCase: CreateChatUseCase
 ) : ViewModel() {
-    private val mutableChatsFieldState: MutableStateFlow<String> = MutableStateFlow("")
-    val chatsFieldState: StateFlow<String> = mutableChatsFieldState.asStateFlow()
-
-    private val mutableUsersFieldState: MutableStateFlow<String> = MutableStateFlow("")
-    val usersFieldState: StateFlow<String> = mutableUsersFieldState.asStateFlow()
 
     private val mutableChatListState =
-        MutableStateFlow<ChatListScreenState>(ChatListScreenState.Loading)
+        MutableStateFlow<ChatListScreenState>(ChatListScreenState())
     val chatListState: StateFlow<ChatListScreenState> = mutableChatListState.asStateFlow()
-
-    private val mutableUserListState =
-        MutableStateFlow<UserListState>(UserListState.Loading)
-    val userListState: StateFlow<UserListState> = mutableUserListState.asStateFlow()
 
     private val mutableEvents = Channel<ChatListEvent>()
     val events = mutableEvents.receiveAsFlow()
@@ -48,78 +34,74 @@ class ChatListViewModel @Inject constructor(
 
     fun handleAction(action: ChatListAction) {
         when (action) {
-            ChatListAction.OnAddChatClicked -> getUsers()
-            is ChatListAction.OnChatClicked -> Unit
+            is ChatListAction.OnChatClicked -> navigateToChat(id = action.chatId)
             is ChatListAction.OnSearchChatsFieldEdited -> chatsFieldChanged(action.query)
-            is ChatListAction.OnSearchUsersFieldEdited -> usersFieldChanged(action.query)
-            is ChatListAction.OnUserClicked -> createChat(username = action.username)
+            ChatListAction.OnCancelButtonClick -> {
+                hideBottomSheet()
+            }
+
+            ChatListAction.OnAddChatClicked -> showBottomSheet()
         }
     }
 
     private fun loadChats() {
-        mutableChatListState.value = ChatListScreenState.Loading
+        mutableChatListState.value = chatListState.value.copy(errorState = null, isLoading = true)
         viewModelScope.launch {
             runCatching {
                 val roomsEntities: StateFlow<List<RoomEntity>?> = observeRoomsUseCase()
                 roomsEntities.collectLatest { updatedRooms ->
                     if (roomsEntities.value == null) {
-                        mutableChatListState.value = ChatListScreenState.Loading
-
-                    } else
                         mutableChatListState.value =
-                            ChatListScreenState.Content(rooms = updatedRooms?.map { it.toRoomState() }
-                                ?: emptyList())
+                            chatListState.value.copy(errorState = null, isLoading = true)
+                    } else {
+                        val roomsList = updatedRooms?.map { it.toRoomState() } ?: emptyList()
+                        mutableChatListState.value = chatListState.value.copy(
+                            errorState = null,
+                            isLoading = false,
+                            rooms = roomsList.toImmutableList()
+                        )
+                    }
                 }
             }.onFailure {
                 print(it)
-                mutableChatListState.value = ChatListScreenState.Loading
             }
         }
     }
 
-    private fun createChat(username: String) {
+    private fun navigateToChat(id: String) {
         viewModelScope.launch {
-            runCatching {
-                createChatUseCase(username = username)
-
-            }.onFailure {
-                print(it.message)
-            }
+            mutableEvents.send(ChatListEvent.NavigateToChat(chatId = id))
         }
+
     }
 
-    private fun getUsers() {
+    private fun showBottomSheet() {
         viewModelScope.launch {
-            runCatching {
-                val usersEntities: List<UserEntity> = getUsersUseCase()
-                mutableUserListState.value =
-                    UserListState.Content(users = usersEntities.map { it.toUserState() })
-            }.onFailure {
-                print(it.message)
-            }
             mutableEvents.send(ChatListEvent.ShowBottomSheet)
-
         }
     }
 
     private fun chatsFieldChanged(query: String) {
-        mutableChatsFieldState.value = query
+        mutableChatListState.value = chatListState.value.copy(searchQuery = query)
     }
 
-    private fun usersFieldChanged(query: String) {
-        mutableUsersFieldState.value = query
+
+    fun hideBottomSheet() {
+        viewModelScope.launch {
+            mutableEvents.send(ChatListEvent.HideBottomSheet)
+        }
     }
 
     sealed class ChatListAction {
         data class OnSearchChatsFieldEdited(val query: String) : ChatListAction()
-        data class OnSearchUsersFieldEdited(val query: String) : ChatListAction()
         data class OnChatClicked(val chatId: String) : ChatListAction()
         data object OnAddChatClicked : ChatListAction()
-        data class OnUserClicked(val username: String) : ChatListAction()
+        data object OnCancelButtonClick : ChatListAction()
     }
 
     sealed class ChatListEvent {
-        data object NavigateToChat : ChatListEvent()
+        data class NavigateToChat(val chatId: String) : ChatListEvent()
         data object ShowBottomSheet : ChatListEvent()
+        data object HideBottomSheet : ChatListEvent()
     }
 }

@@ -52,8 +52,8 @@ class ProfileViewModel @Inject constructor(
                 )
             }.onFailure { throwable ->
                 if (throwable is UnauthorizedException) {
-                    // logoutUser()
-                    // return@launch
+                     logoutUser()
+                     return@launch
                 }
 
                 val errorState = throwable.toErrorState(

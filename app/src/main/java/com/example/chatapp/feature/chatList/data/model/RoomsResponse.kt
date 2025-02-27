@@ -21,7 +21,6 @@ data class RoomsResponse(
     )
 }
 
-
 @Serializable
 data class RoomsResponseSubscription(
     val msg: String,

@@ -1,8 +1,8 @@
-package com.example.chatapp.feature.chatList.domain
+package com.example.chatapp.feature.chatCreation.domain
 
+import com.example.chatapp.feature.chatCreation.domain.model.UserEntity
 import com.example.chatapp.feature.chatList.data.ChatListRepositoryImpl
-import com.example.chatapp.feature.chatList.data.model.toEntity
-import com.example.chatapp.feature.chatList.domain.model.UserEntity
+import com.example.chatapp.feature.chatList.data.toEntity
 import javax.inject.Inject
 
 class GetUsersUseCaseImpl @Inject constructor(private val repositoryImpl: ChatListRepositoryImpl) :

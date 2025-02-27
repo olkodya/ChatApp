@@ -26,6 +26,8 @@
     <string name="login_information_text">Введите логин и пароль для входа</string>
     <string name="login_incorrect_password_or_login">Неправильный логин или пароль</string>
     <string name="dismiss_snackbar_label">Ок</string>
+    <string name="login_hide_content_description">Скрыть пароль</string>
+    <string name="login_show_password_content_description">Показать пароль</string>
 
     <!--   Profile feature   -->
     <string name="profile_avatar_content_description">Profile avatar</string>
@@ -43,7 +45,6 @@
     <string name="bottom_nav_title_profile">Профиль</string>
 
 
-
     <!--   Errors   -->
     <string name="server_error_state_title">Ошибка сервера</string>
     <string name="server_error_state_message">Произошла ошибка при обработке запроса. Попробуйте позже</string>
@@ -53,6 +54,26 @@
 
     <string name="unknown_error_state_title">Что-то пошло не так</string>
     <string name="unknown_error_state_message">Произошла непредвиденная ошибка. Попробуйте позже</string>
+
+
+    <!--   Components   -->
+    <string name="search_text_field_content_description">Поиск</string>
+
+    <!--   Create Chat   -->
+    <string name="create_chat_cancel_button_text">Отменить</string>
+    <string name="create_chat_title">Новый чат</string>
+    <string name="create_chat_search_placeholder">Поиск по контактам</string>
+    <string name="create_chat_contacts_title">Контакты</string>
+    <string name="create_chat_user_list_empty">Список пользователей пуст</string>
+    <string name="create_chat_not_found_first">По вашему запросу </string>
+    <string name="create_chat_not_found_second">ничего не найдено</string>
+    <string name="create_chat_nor_found_query"> \"%s\" </string>
+    <string name="chat_list_title">Чаты</string>
+    <string name="chat_list_add_icon_content_description">Добавить</string>
+    <string name="chat_list_search_plaseholder">Поиск по чатам</string>
+    <string name="chat_list_last_message_read_content_descriptiom">Last message read</string>
+    <string name="chat_list_last_message_unread_content_descriptiom">Last message read</string>
+    <string name="chat_list_empty" />
 
 
 </resources>

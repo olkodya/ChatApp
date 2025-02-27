@@ -1,8 +1,6 @@
 package com.example.chatapp.feature.chatList.presentation
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,13 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +36,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -54,25 +47,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.chatapp.R
-import com.example.chatapp.components.EmptyState
 import com.example.chatapp.components.LoadingState
 import com.example.chatapp.components.SearchTextField
 import com.example.chatapp.components.Shimmer
 import com.example.chatapp.ui.theme.AppTheme
+import kotlinx.collections.immutable.persistentListOf
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatListContent(
-    fieldState: String,
     chatListState: ChatListScreenState,
     handleAction: (ChatListViewModel.ChatListAction) -> Unit
 ) {
     val screenHeight: Dp = LocalConfiguration.current.screenHeightDp.dp
     val headerHeight: Dp = screenHeight / 5
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
-    var showBottomSheet by remember { mutableStateOf(false) }
+
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
@@ -95,7 +84,7 @@ fun ChatListContent(
                 ) {
                     Spacer(Modifier.weight(1f))
                     Text(
-                        text = "Чаты", modifier = Modifier
+                        text = stringResource(R.string.chat_list_title), modifier = Modifier
                             .weight(1f)
                             .wrapContentWidth(),
                         color = Color.White,
@@ -117,113 +106,56 @@ fun ChatListContent(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Add,
-                                contentDescription = "Добавить",
+                                contentDescription = stringResource(R.string.chat_list_add_icon_content_description),
                             )
                         }
                     }
                 }
                 Spacer(Modifier.weight(1f))
-//                BasicTextField(
-//                    value = fieldState,
-//                    onValueChange = { value ->
-//                        handleAction(
-//                            ChatListViewModel.ChatListAction.OnSearchFieldEdited(
-//                                value
-//                            )
-//                        )
-//                    },
-//                    modifier = Modifier
-//                        .wrapContentHeight()
-//                        .fillMaxWidth()
-//                        .padding(bottom = 8.dp),
-//                    singleLine = true,
-//                ) { innerTextField ->
-//                    TextFieldDefaults.DecorationBox(
-//                        value = fieldState,
-//                        innerTextField = innerTextField,
-//                        enabled = true,
-//                        singleLine = true,
-//                        visualTransformation = VisualTransformation.None,
-//                        interactionSource = MutableInteractionSource(),
-//                        container = {
-//                            Box(
-//                                Modifier
-//                                    .fillMaxWidth()
-//                                    .background(Color.White, RoundedCornerShape(8.dp))
-//                            )
-//                        },
-//                        placeholder = {
-//                            Row(
-//                                verticalAlignment = Alignment.CenterVertically
-//                            ) {
-//                                Icon(
-//                                    imageVector = Icons.Default.Search,
-//                                    contentDescription = "Поиск",
-//                                    tint = Color.Gray,
-//                                    modifier = Modifier.size(20.dp)
-//                                )
-//                                Spacer(modifier = Modifier.width(8.dp))
-//                                Text(
-//                                    text = "Поиск по чатам",
-//                                    fontSize = 14.sp,
-//                                    color = Color.Gray
-//                                )
-//                            }
-//                        },
-//                        contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
-//                            start = 12.dp,
-//                            top = 11.dp,
-//                            end = 12.dp,
-//                            bottom = 11.dp
-//                        ),
-//                    )
-//                }
                 SearchTextField(
-                    fieldState,
+                    value = chatListState.searchQuery,
+                    isEnabled = chatListState.isSuccessLoaded,
                     onValueChange = { value ->
                         handleAction(ChatListViewModel.ChatListAction.OnSearchChatsFieldEdited(value))
                     },
-                    placeholder = "Поиск по чатам",
+                    placeholder = stringResource(R.string.chat_list_search_plaseholder),
                     paddingValues = PaddingValues(bottom = 8.dp)
                 )
             }
         }
-        when (chatListState) {
-            is ChatListScreenState.Content -> {
-                if (chatListState.rooms.isNotEmpty()) ChatList(state = chatListState) else {
-                    EmptyState(message = "Список чатов пуст")
-                }
-            }
 
-            is ChatListScreenState.Error -> Unit
-            ChatListScreenState.Loading -> LoadingState()
+        if (chatListState.isLoading) {
+            LoadingState()
+        } else if (chatListState.errorState != null) {
+        } else {
+            ChatList(state = chatListState, handleAction = handleAction)
         }
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun ChatList(state: ChatListScreenState.Content) {
+private fun ChatList(
+    state: ChatListScreenState,
+    handleAction: (ChatListViewModel.ChatListAction) -> Unit
+) {
+
     LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth(),
-        contentPadding = PaddingValues(bottom = 300.dp)
+        modifier = Modifier.fillMaxWidth(),
     ) {
         items(
             count = state.rooms.size,
             key = { id -> state.rooms[id].id },
         ) { index ->
             val chat = state.rooms[index]
-
-            ChatItem(chatState = chat)
+            ChatItem(chatState = chat, handleAction)
         }
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun ChatItem(
     chatState: RoomState,
+    handleAction: (ChatListViewModel.ChatListAction) -> Unit,
 ) {
     val bordersColor = MaterialTheme.colorScheme.surfaceVariant
     Row(
@@ -231,7 +163,7 @@ private fun ChatItem(
             .height(72.dp)
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 0.dp)
-            .clickable {}
+            .clickable { handleAction(ChatListViewModel.ChatListAction.OnChatClicked(chatState.id)) }
             .drawBehind {
                 drawLine(
                     color = bordersColor,
@@ -260,7 +192,7 @@ private fun ChatItem(
             if (showedName != null) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically, // Выравнивание по вертикали
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
@@ -279,25 +211,30 @@ private fun ChatItem(
                     }
                 }
             } else {
+
                 Shimmer(
                     modifier = Modifier
                         .height(20.dp)
                         .width(150.dp)
                 )
             }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween // Добавляем распределение элементов
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
+
                 Text(
-                    text = chatState.showedLastMessageAuthor ?: "",
+                    text = chatState.showedLastMessageAuthor
+                        ?: stringResource(R.string.chat_list_empty),
                     color = MaterialTheme.colorScheme.tertiary,
                     fontSize = 14.sp,
                     maxLines = 1,
                 )
+
                 Text(
-                    text = chatState.lastMassage ?: "",
+                    text = chatState.lastMassage ?: stringResource(R.string.chat_list_empty),
                     color = MaterialTheme.colorScheme.tertiary,
                     fontSize = 14.sp,
                     maxLines = 1,
@@ -339,7 +276,7 @@ fun MessageDoneMark(chatState: RoomState) {
     if (chatState.numberOfCheckMark == 1)
         Icon(
             painter = painterResource(R.drawable.unread_24),
-            contentDescription = "Last message read",
+            contentDescription = stringResource(R.string.chat_list_last_message_read_content_descriptiom),
             Modifier
                 .padding(end = 4.dp)
                 .size(12.dp),
@@ -348,18 +285,15 @@ fun MessageDoneMark(chatState: RoomState) {
             ) else if (chatState.numberOfCheckMark == 2) {
         Icon(
             painter = painterResource(R.drawable.read_24),
-            contentDescription = "Last message read",
+            contentDescription = stringResource(R.string.chat_list_last_message_unread_content_descriptiom),
             Modifier
                 .padding(end = 4.dp)
                 .size(12.dp),
             tint = MaterialTheme.colorScheme.secondary
         )
-    } else {
-
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun ChatCardPreview() {
@@ -370,25 +304,23 @@ fun ChatCardPreview() {
                 imageUrl = "",
                 type = "c",
                 name = "ssd",
-                lastMassage = "Коммутаторы коммутируютddddddddddddddddd",
+                lastMassage = "Коммутаторы коммутируют",
                 lastMessageDate = 0,
                 lastMessageAuthor = "xsxs",
                 isMeMessageAuthor = false,
                 unreadMessagesNumber = 1,
                 userName = "Ольга Кукарцева",
             )
-        )
+        ) { }
     }
 }
 
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun ChatCardPreviewAuthorIsMe() {
     AppTheme {
         ChatItem(
-            RoomState(
+            chatState = RoomState(
                 id = "1",
                 imageUrl = "",
                 type = "c",
@@ -399,20 +331,19 @@ fun ChatCardPreviewAuthorIsMe() {
                 isMeMessageAuthor = true,
                 unreadMessagesNumber = 1,
                 userName = "Ольга Кукарцева",
-            )
+            ),
+            handleAction = {}
         )
     }
 }
 
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun ChatListPreview() {
     AppTheme {
         ChatListContent(
-            fieldState = "", chatListState = ChatListScreenState.Content(
-                rooms = listOf(
+            chatListState = ChatListScreenState(
+                rooms = persistentListOf(
                     RoomState(
                         id = "1",
                         imageUrl = "",

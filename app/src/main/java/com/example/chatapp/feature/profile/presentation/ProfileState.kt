@@ -11,6 +11,7 @@ sealed class ProfileScreenState {
         val profileInfo: ProfileState
     ) : ProfileScreenState()
 
+    @Immutable
     data object Loading : ProfileScreenState()
 
     @Immutable

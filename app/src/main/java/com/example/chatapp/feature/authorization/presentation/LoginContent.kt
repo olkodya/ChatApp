@@ -190,7 +190,10 @@ fun LoginContent(
                                         if (passwordVisible) R.drawable.outline_visibility_off_24
                                         else R.drawable.outline_visibility_24
                                     ),
-                                    contentDescription = if (passwordVisible) "Скрыть пароль" else "Показать пароль",
+                                    contentDescription = stringResource(
+                                        if (passwordVisible) R.string.login_hide_content_description
+                                        else R.string.login_show_password_content_description
+                                    ),
                                     tint = MaterialTheme.colorScheme.primary,
                                 )
                             }

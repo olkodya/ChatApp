@@ -42,7 +42,6 @@ fun ChatSnackbar(
     dismissActionContentColor: Color = SnackbarDefaults.dismissActionContentColor,
 ) {
     val chatSnackbarVisuals = snackbarData.visuals as? ChatSnackbarVisuals ?: return
-
     val dismissActionComposable: (@Composable () -> Unit)? =
         if (chatSnackbarVisuals.withDismissAction) {
             @Composable {
@@ -55,7 +54,6 @@ fun ChatSnackbar(
         } else {
             null
         }
-
     Snackbar(
         modifier = modifier.padding(12.dp),
         action = null,

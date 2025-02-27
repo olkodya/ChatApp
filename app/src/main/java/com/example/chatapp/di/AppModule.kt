@@ -31,6 +31,7 @@ class AppModule {
             ignoreUnknownKeys = true
             coerceInputValues = true
         }
+        val BASE_URL = "https://eltex2025.rocket.chat/"
     }
 
     @Provides
@@ -74,7 +75,7 @@ class AppModule {
     ): Retrofit =
         Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl("https://eltex2025.rocket.chat/")
+            .baseUrl(BASE_URL)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
 

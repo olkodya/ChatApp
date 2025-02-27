@@ -10,7 +10,7 @@ class GetProfileInfoUseCaseImpl @Inject constructor(
 
     override suspend fun invoke(userId: String, token: String): ProfileEntity {
         val res = repository.getProfileInfo()
-            .toEntity(userId, token)
+            .toEntity()
         return res
     }
 }

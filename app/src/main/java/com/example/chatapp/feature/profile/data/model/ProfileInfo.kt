@@ -38,8 +38,7 @@ data class Email(
     val verified: Boolean,
 )
 
-fun ProfileInfo.toEntity(userId: String, token: String): ProfileEntity = ProfileEntity(
+fun ProfileInfo.toEntity(): ProfileEntity = ProfileEntity(
     name = name,
-//    avatarUrl = "${avatarUrl}?rc_uid=${userId}&rc_token=${token}",
     avatarUrl = avatarUrl
 )

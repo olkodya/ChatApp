@@ -1,28 +1,25 @@
 package com.example.chatapp.feature.chatList.presentation
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Immutable
 import com.example.chatapp.components.ErrorState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+
 @Immutable
-sealed class ChatListScreenState {
-
-    @Immutable
-    data class Content(
-        val rooms: List<RoomState>
-    ) : ChatListScreenState()
-
-    @Immutable
-    data object Loading : ChatListScreenState()
-
-    @Immutable
-    data class Error(val state: ErrorState) : ChatListScreenState()
+data class ChatListScreenState(
+    val errorState: ErrorState? = null,
+    val isLoading: Boolean = false,
+    val searchQuery: String = "",
+    val rooms: ImmutableList<RoomState> = persistentListOf<RoomState>(),
+) {
+    val isSuccessLoaded: Boolean
+        get() = isLoading == false && errorState == null && rooms.isNotEmpty()
 }
 
 @Immutable
@@ -34,22 +31,13 @@ data class RoomState(
     val lastMassage: String?,
     val lastMessageDate: Long?,
     private val lastMessageAuthor: String?,
-    private val isMeMessageAuthor: Boolean, // Don't work, not truth value
+    private val isMeMessageAuthor: Boolean,
     val unreadMessagesNumber: Int,
     val userName: String?,
 ) {
 
-    val showedName: String?
-        get() = if (isMeMessageAuthor.not()) {
-            lastMessageAuthor
-        } else {
-            null
-        }
-
-
     val showedImageUrl: String
         get() {
-            //name is null
             val i = if (type == "c") {
                 "https://eltex2025.rocket.chat/avatar/room/$id"
             } else {
@@ -83,7 +71,6 @@ data class RoomState(
         }
 
     val showedLastMessageDate: String?
-        @RequiresApi(Build.VERSION_CODES.O)
         get() = lastMessageDate?.let { timestamp ->
             val messageDateTime = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(timestamp),

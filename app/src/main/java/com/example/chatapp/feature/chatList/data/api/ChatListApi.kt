@@ -1,9 +1,9 @@
 package com.example.chatapp.feature.chatList.data.api
 
+import com.example.chatapp.feature.chatList.data.UserInfoResponse
+import com.example.chatapp.feature.chatList.data.UserListResponse
 import com.example.chatapp.feature.chatList.data.model.CreateChatRequest
 import com.example.chatapp.feature.chatList.data.model.RoomsResponse
-import com.example.chatapp.feature.chatList.data.model.UserInfoResponse
-import com.example.chatapp.feature.chatList.data.model.UserListResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -22,6 +22,4 @@ interface ChatListApi {
 
     @POST("/api/v1/im.create")
     suspend fun createDM(@Body body: CreateChatRequest)
-
 }
-

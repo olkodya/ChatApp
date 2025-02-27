@@ -1,6 +1,6 @@
-package com.example.chatapp.feature.chatList.domain.model
+package com.example.chatapp.feature.chatCreation.domain.model
 
-import com.example.chatapp.feature.chatList.presentation.UserState
+import com.example.chatapp.feature.chatCreation.presentation.UserState
 
 data class UserEntity(
     val id: String,

@@ -8,5 +8,3 @@ data class CreateChatRequest(
     @SerialName("username")
     val username: String,
 )
-
-
