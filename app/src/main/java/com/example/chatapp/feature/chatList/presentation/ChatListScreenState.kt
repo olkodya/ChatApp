@@ -26,85 +26,36 @@ data class ChatListScreenState(
 data class RoomState(
     val id: String,
     val imageUrl: String?,
-    private val type: String,
+    val type: RoomType,
     val name: String?,
     val lastMassage: String?,
-    val lastMessageDate: Long?,
-    private val lastMessageAuthor: String?,
-    private val isMeMessageAuthor: Boolean,
-    val unreadMessagesNumber: Int,
+    val lastUpdateTimestamp: Long?,
+    val lastMessageAuthor: String?,
+    val isMeMessageAuthor: Boolean,
+    val unreadMessagesCount: Int?,
     val userName: String?,
+    val numberOfCheckMark: Int?,
 ) {
 
-    val showedImageUrl: String
-        get() {
-            val i = if (type == "c") {
-                "https://eltex2025.rocket.chat/avatar/room/$id"
-            } else {
-                "https://eltex2025.rocket.chat/avatar/$userName"
-            }
-            return i
-        }
-
-    val showedUnreadMessages: Int?
-        get() = when {
-            isMeMessageAuthor.not() && unreadMessagesNumber != 0 -> unreadMessagesNumber
-            else -> null
-        }
+    @Immutable
+    enum class RoomType {
+        DIRECT,                 // Direct messages
+        PUBLIC_CHANNEL,         // Public channel
+        PRIVATE_CHANNEL,        // Private channel
+        DISCUSSIONS,            // Team or channel discussions
+        TEAMS,                  // Workspace teams
+        LIVECHAT,               // Livechat
+        VOIP,                   // Omnichannel VoIP rooms
+        UNKNOWN;
+    }
 
     val showedLastMessageAuthor: String?
         get() = when {
-            type == "c" -> {
+            type == RoomType.PUBLIC_CHANNEL -> {
                 if (isMeMessageAuthor) "Вы: "
                 else if (lastMessageAuthor == null) ""
                 else "${lastMessageAuthor}: "
             }
-
             else -> null
-        }
-
-    val numberOfCheckMark: Int?
-        get() = when {
-            (isMeMessageAuthor && unreadMessagesNumber > 0) -> 1
-            (isMeMessageAuthor && unreadMessagesNumber == 0) -> 2
-            else -> null
-        }
-
-    val showedLastMessageDate: String?
-        get() = lastMessageDate?.let { timestamp ->
-            val messageDateTime = LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(timestamp),
-                ZoneId.systemDefault()
-            )
-            val now = LocalDateTime.now()
-
-            when {
-                messageDateTime.toLocalDate() == now.toLocalDate() -> {
-                    messageDateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
-                }
-
-                ChronoUnit.DAYS.between(
-                    messageDateTime.toLocalDate(),
-                    now.toLocalDate()
-                ) < 7 -> {
-                    when (messageDateTime.format(DateTimeFormatter.ofPattern("EE"))
-                        .lowercase()) {
-                        "mon" -> "Пн"
-                        "tue" -> "Вт"
-                        "wed" -> "Ср"
-                        "thu" -> "Чт"
-                        "fri" -> "Пт"
-                        "sat" -> "Сб"
-                        "sun" -> "Вс"
-                        else -> messageDateTime.format(DateTimeFormatter.ofPattern("EE"))
-                    }
-                        .lowercase()
-                        .replaceFirstChar { it.uppercase() }
-                }
-
-                else -> {
-                    messageDateTime.format(DateTimeFormatter.ofPattern("dd.MM"))
-                }
-            }
         }
 }

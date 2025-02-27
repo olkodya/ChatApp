@@ -47,6 +47,8 @@ data class RoomResponse(
     val usernames: List<String>? = null,
     @SerialName("msgs")
     val msgs: Int,
+//    @SerialName("ts")
+//    val ts: Long,
     @SerialName("uids")
     val uids: List<String>? = null,
     @SerialName("lastMessage")

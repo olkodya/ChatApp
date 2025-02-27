@@ -50,8 +50,14 @@ import com.example.chatapp.R
 import com.example.chatapp.components.LoadingState
 import com.example.chatapp.components.SearchTextField
 import com.example.chatapp.components.Shimmer
+import com.example.chatapp.feature.chatList.presentation.RoomState.RoomType
 import com.example.chatapp.ui.theme.AppTheme
 import kotlinx.collections.immutable.persistentListOf
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -175,7 +181,7 @@ private fun ChatItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = chatState.showedImageUrl,
+            model = chatState.imageUrl,
             contentDescription = null,
             modifier = Modifier
                 .size(44.dp)
@@ -202,12 +208,8 @@ private fun ChatItem(
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     MessageDoneMark(chatState)
-                    chatState.showedLastMessageDate?.let { lastMessageDate ->
-                        Text(
-                            text = lastMessageDate,
-                            color = MaterialTheme.colorScheme.tertiary,
-                            fontSize = 12.sp
-                        )
+                    chatState.lastUpdateTimestamp?.let { lastUpdateTimestamp ->
+                        LastRoomUpdateDate(timestamp = lastUpdateTimestamp)
                     }
                 }
             } else {
@@ -224,32 +226,92 @@ private fun ChatItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
-                Text(
-                    text = chatState.showedLastMessageAuthor
-                        ?: stringResource(R.string.chat_list_empty),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontSize = 14.sp,
-                    maxLines = 1,
-                )
-
-                Text(
-                    text = chatState.lastMassage ?: stringResource(R.string.chat_list_empty),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontSize = 14.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
-                if (chatState.showedUnreadMessages != null)
-                    MessageCounter(chatState)
+                LastMessageAuthor(chatState)
+                chatState.lastMassage?.let { lastMassage ->
+                    Text(
+                        text = lastMassage,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                chatState.unreadMessagesCount?.let { unreadMessagesCount ->
+                    MessageCounter(unreadMessagesCount)
+                }
             }
         }
     }
 }
 
 @Composable
-fun MessageCounter(chatState: RoomState) {
+private fun LastMessageAuthor(state: RoomState) {
+    val showedLastMessageAuthor: String? = when {
+        state.type == RoomType.PUBLIC_CHANNEL -> {
+            if (state.isMeMessageAuthor) "Вы: "
+            else if (state.lastMessageAuthor == null) ""
+            else "${state.lastMessageAuthor}: "
+        }
+        else -> null
+    }
+    showedLastMessageAuthor?.let { author ->
+        Text(
+            text = author,
+            color = MaterialTheme.colorScheme.tertiary,
+            fontSize = 14.sp,
+            maxLines = 1,
+        )
+    }
+}
+
+@Composable
+private fun LastRoomUpdateDate(timestamp: Long) {
+
+    val messageDateTime = LocalDateTime.ofInstant(
+        Instant.ofEpochMilli(timestamp),
+        ZoneId.systemDefault()
+    )
+    val now = LocalDateTime.now()
+
+    val showedLastMessageDate: String = when {
+        messageDateTime.toLocalDate() == now.toLocalDate() -> {
+            messageDateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+        }
+
+        ChronoUnit.DAYS.between(
+            messageDateTime.toLocalDate(),
+            now.toLocalDate()
+        ) < 7 -> {
+            when (messageDateTime.format(DateTimeFormatter.ofPattern("EE"))
+                .lowercase()) {
+                "mon" -> "Пн"
+                "tue" -> "Вт"
+                "wed" -> "Ср"
+                "thu" -> "Чт"
+                "fri" -> "Пт"
+                "sat" -> "Сб"
+                "sun" -> "Вс"
+                else -> messageDateTime.format(DateTimeFormatter.ofPattern("EE"))
+            }
+                .lowercase()
+                .replaceFirstChar { it.uppercase() }
+        }
+
+        else -> {
+            messageDateTime.format(DateTimeFormatter.ofPattern("dd.MM"))
+        }
+    }
+
+    Text(
+        text = showedLastMessageDate,
+        color = MaterialTheme.colorScheme.tertiary,
+        fontSize = 12.sp
+    )
+}
+
+@Composable
+fun MessageCounter(unreadMessagesCount: Int) {
     Box(
         Modifier
             .padding(start = 4.dp)
@@ -260,7 +322,7 @@ fun MessageCounter(chatState: RoomState) {
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 4.dp),
-            text = chatState.showedUnreadMessages.toString(),
+            text = unreadMessagesCount.toString(),
             textAlign = TextAlign.Center,
             style = TextStyle(lineHeight = 13.sp),
             fontSize = 13.sp,
@@ -301,15 +363,16 @@ fun ChatCardPreview() {
         ChatItem(
             RoomState(
                 id = "1",
+                userName = "",
                 imageUrl = "",
-                type = "c",
+                type = RoomState.RoomType.PUBLIC_CHANNEL,
                 name = "ssd",
                 lastMassage = "Коммутаторы коммутируют",
-                lastMessageDate = 0,
+                lastUpdateTimestamp = 0,
                 lastMessageAuthor = "xsxs",
                 isMeMessageAuthor = false,
-                unreadMessagesNumber = 1,
-                userName = "Ольга Кукарцева",
+                unreadMessagesCount = 1,
+                numberOfCheckMark = 1,
             )
         ) { }
     }
@@ -322,15 +385,16 @@ fun ChatCardPreviewAuthorIsMe() {
         ChatItem(
             chatState = RoomState(
                 id = "1",
+                userName = "",
                 imageUrl = "",
-                type = "c",
+                type = RoomState.RoomType.DIRECT,
                 name = "ssd",
                 lastMassage = "Коммутаторы коммутируютdd",
-                lastMessageDate = 0,
+                lastUpdateTimestamp = 0,
                 lastMessageAuthor = "xsxs",
                 isMeMessageAuthor = true,
-                unreadMessagesNumber = 1,
-                userName = "Ольга Кукарцева",
+                unreadMessagesCount = 1,
+                numberOfCheckMark = 1,
             ),
             handleAction = {}
         )
@@ -346,15 +410,16 @@ fun ChatListPreview() {
                 rooms = persistentListOf(
                     RoomState(
                         id = "1",
+                        userName = "",
                         imageUrl = "",
-                        type = "c",
+                        type = RoomState.RoomType.DIRECT,
                         name = "Ольга Кукарцева",
                         lastMassage = "Коммутаторы коммутируют",
-                        lastMessageDate = 0,
+                        lastUpdateTimestamp = 0,
                         lastMessageAuthor = "xsxs",
                         isMeMessageAuthor = false,
-                        unreadMessagesNumber = 1,
-                        userName = "",
+                        unreadMessagesCount = 1,
+                        numberOfCheckMark = 1,
                     )
                 )
             )

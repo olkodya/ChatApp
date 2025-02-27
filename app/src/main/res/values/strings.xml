@@ -73,7 +73,6 @@
     <string name="chat_list_search_plaseholder">Поиск по чатам</string>
     <string name="chat_list_last_message_read_content_descriptiom">Last message read</string>
     <string name="chat_list_last_message_unread_content_descriptiom">Last message read</string>
-    <string name="chat_list_empty" />
 
 
 </resources>
