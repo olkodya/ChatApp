@@ -1,5 +1,6 @@
 package com.example.chatapp.feature.chatList.data.model
 
+import com.example.chatapp.feature.chatList.domain.model.UserEntity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -18,6 +19,18 @@ data class UserInfo(
     val status: String,
     val active: Boolean,
     val name: String,
-    val utcOffset: Int,
-    val canViewAllInfo: Boolean
+    val utcOffset: Int? = null,
+    val canViewAllInfo: Boolean? = false
+)
+
+@Serializable
+data class UserListResponse(
+    val users: List<UserInfo>
+)
+
+
+fun UserInfo.toEntity(): UserEntity = UserEntity(
+    id = id,
+    username = username,
+    name = name,
 )

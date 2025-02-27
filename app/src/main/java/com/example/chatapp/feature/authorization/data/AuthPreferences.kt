@@ -63,7 +63,6 @@ class AuthPreferences @Inject constructor(
         private val KEY_USER_ID = stringPreferencesKey("user_id")
         private val KEY_PASSWORD_SHA256 = stringPreferencesKey("password_256")
         private val KEY_USERNAME = stringPreferencesKey("username")
-
     }
 }
 

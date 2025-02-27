@@ -4,12 +4,14 @@ import android.util.Log
 import com.example.chatapp.feature.authorization.data.AuthData
 import com.example.chatapp.feature.authorization.data.AuthPreferences
 import com.example.chatapp.feature.chatList.data.api.ChatListApi
+import com.example.chatapp.feature.chatList.data.model.CreateChatRequest
 import com.example.chatapp.feature.chatList.data.model.RoomResponse
 import com.example.chatapp.feature.chatList.data.model.RoomsResponse
 import com.example.chatapp.feature.chatList.data.model.RoomsResponseSubscription
 import com.example.chatapp.feature.chatList.data.model.SubscriptionResponse
 import com.example.chatapp.feature.chatList.data.model.SubscriptionsResponse
 import com.example.chatapp.feature.chatList.data.model.SubscriptionsSubscriptionResponse
+import com.example.chatapp.feature.chatList.data.model.UserListResponse
 import com.example.chatapp.feature.chatList.data.model.WebSocketMessage
 import com.example.chatapp.feature.chatList.data.model.toWebSocketMessage
 import com.example.chatapp.feature.chatList.domain.model.RoomEntity
@@ -46,9 +48,10 @@ class ChatListRepositoryImpl @Inject constructor(
 ) : ChatListRepository {
 
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
+    private lateinit var authData: AuthData
     private lateinit var webSocket: WebSocket
-//    private lateinit var authData: AuthData
+
+    //    private lateinit var authData: AuthData
     private var shouldReconnect = true
     private val formattedJson = Json {
         ignoreUnknownKeys = true
@@ -58,23 +61,15 @@ class ChatListRepositoryImpl @Inject constructor(
 
     private val roomsMutableStateFlow = MutableStateFlow<List<RoomEntity>?>(null)
     val roomsStateFlow: StateFlow<List<RoomEntity>?> = roomsMutableStateFlow.asStateFlow()
-    
-    private fun checkAndLoadConversationalistInfo() {
-//        roomsStateFlow.value?.forEach { room ->
-//            repositoryScope.launch {
-//                room.userId?.let { userId ->
-//                    api.getUsers(userId)
-//                }
-//            }
-//        }
 
-            roomsStateFlow.value?.forEach { room ->
-                room.userId?.let { userId ->
-                    repositoryScope.launch {
-                        try {
-                            val response = api.getUsers(userId)
-                            // Обновляем StateFlow сразу после получения каждого ответа
-                            roomsMutableStateFlow.value = roomsMutableStateFlow.value?.map { currentRoom ->
+    private fun checkAndLoadConversationalistInfo() {
+        roomsStateFlow.value?.forEach { room ->
+            room.userId?.let { userId ->
+                repositoryScope.launch {
+                    try {
+                        val response = api.getUsersInfo(userId)
+                        roomsMutableStateFlow.value =
+                            roomsMutableStateFlow.value?.map { currentRoom ->
                                 if (currentRoom.id == room.id) {
                                     currentRoom.copy(
                                         name = response.user.name,
@@ -84,16 +79,16 @@ class ChatListRepositoryImpl @Inject constructor(
                                     currentRoom
                                 }
                             }
-                        } catch (e: Exception) {
-                            println("Ошибка при загрузке пользователя $userId: ${e.message}")
-                        }
+                    } catch (e: Exception) {
+                        println("Ошибка при загрузке пользователя $userId: ${e.message}")
                     }
                 }
             }
+        }
     }
 
     override suspend fun observeRooms(): StateFlow<List<RoomEntity>?> {
-        val authData = authPreferences.getAuthData()
+        authData = authPreferences.getAuthData()
             ?: return throw IOException("Auth data not set")
         if (::webSocket.isInitialized.not()) {
             connect()
@@ -144,6 +139,10 @@ class ChatListRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getUsers(): UserListResponse = api.getUsersList()
+    override suspend fun createChat(username: String) =
+        api.createDM(CreateChatRequest(username = username))
+
     fun disconnect() {
         if (::webSocket.isInitialized) webSocket.close(1000, "Do not need connection anymore.")
         shouldReconnect = false
@@ -155,7 +154,7 @@ class ChatListRepositoryImpl @Inject constructor(
                 formattedJson.decodeFromString(
                     RoomsResponse.serializer(),
                     text
-                ).result.update.map { it.toEntity(0, "sf") }
+                ).result.update.map { it.toEntity(0, authData.userId) }
             roomsMutableStateFlow.value = entities
             checkAndLoadConversationalistInfo()
         }
@@ -170,7 +169,6 @@ class ChatListRepositoryImpl @Inject constructor(
         else -> Unit
     }
 
-
     private fun subscriptionsProcessing(text: String, eventName: String) = when {
         eventName.contains(ROOMS_CHANGED_EVENT_NAME) -> {
             roomsChangedProcessing(text = text)
@@ -183,7 +181,6 @@ class ChatListRepositoryImpl @Inject constructor(
 
         else -> Unit
     }
-
 
     private fun roomsChangedProcessing(text: String) {
         val roomsResponseSubscription: RoomsResponseSubscription =
@@ -198,7 +195,7 @@ class ChatListRepositoryImpl @Inject constructor(
                     formattedJson.decodeFromJsonElement(
                         deserializer = RoomResponse.serializer(),
                         element = arg
-                    ).toEntity(0, "")
+                    ).toEntity(0, authData.userId)
                 } catch (_: Exception) {
                     null
                 }
@@ -207,12 +204,23 @@ class ChatListRepositoryImpl @Inject constructor(
         roomsMutableStateFlow.update { currentRooms ->
             val roomsMap = currentRooms?.associateBy { it.id }?.toMutableMap()
             updatedRooms.forEach { room ->
-                roomsMap?.set(room.id, room)
+                roomsMap?.get(room.id)?.let { element ->
+                    roomsMap[room.id] = element.copy(
+                        id = room.id,
+                        type = room.type,
+                        lastMessageContent = room.lastMessageContent,
+                        lastMessageAuthor = room.lastMessageAuthor,
+                        lastMessageAuthorId = room.lastMessageAuthorId,
+                        isMeMessageAuthor = room.isMeMessageAuthor
+                    )
+                }
+                if (roomsMap?.get(room.id) == null) {
+                    roomsMap?.set(room.id, room)
+                }
             }
             roomsMap?.values?.toList()
         }
     }
-
 
     fun subscriptionsChangedProcessing(text: String) {
         val subscriptionsSubscriptionResponse: SubscriptionsSubscriptionResponse =
@@ -231,7 +239,6 @@ class ChatListRepositoryImpl @Inject constructor(
                     null
                 }
             }
-        Log.d("d", subscriptionsUpdates.toString())
         subscriptionsUpdates.meagreSubscriptionsToRoomsStateFlow()
     }
 

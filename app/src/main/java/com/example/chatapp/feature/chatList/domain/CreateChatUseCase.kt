@@ -1,4 +1,9 @@
 package com.example.chatapp.feature.chatList.domain
 
-class CreateChatUseCase {
+import com.example.chatapp.feature.chatList.domain.model.RoomEntity
+import kotlinx.coroutines.flow.StateFlow
+
+interface CreateChatUseCase {
+
+    suspend operator fun invoke(username: String)
 }
