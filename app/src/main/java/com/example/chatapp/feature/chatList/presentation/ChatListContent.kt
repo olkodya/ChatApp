@@ -227,16 +227,20 @@ private fun ChatItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 LastMessageAuthor(chatState)
-                chatState.lastMassage?.let { lastMassage ->
+
+                if (chatState.lastMassage != null) {
                     Text(
-                        text = lastMassage,
+                        text = chatState.lastMassage,
                         color = MaterialTheme.colorScheme.tertiary,
                         fontSize = 14.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f)
                     )
+                } else {
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
+
                 chatState.unreadMessagesCount?.let { unreadMessagesCount ->
                     MessageCounter(unreadMessagesCount)
                 }
@@ -249,10 +253,11 @@ private fun ChatItem(
 private fun LastMessageAuthor(state: RoomState) {
     val showedLastMessageAuthor: String? = when {
         state.type == RoomType.PUBLIC_CHANNEL -> {
-            if (state.isMeMessageAuthor) "Вы: "
+            if (state.isMeMessageAuthor) stringResource(R.string.chat_list_you)
             else if (state.lastMessageAuthor == null) ""
             else "${state.lastMessageAuthor}: "
         }
+
         else -> null
     }
     showedLastMessageAuthor?.let { author ->
@@ -285,13 +290,13 @@ private fun LastRoomUpdateDate(timestamp: Long) {
         ) < 7 -> {
             when (messageDateTime.format(DateTimeFormatter.ofPattern("EE"))
                 .lowercase()) {
-                "mon" -> "Пн"
-                "tue" -> "Вт"
-                "wed" -> "Ср"
-                "thu" -> "Чт"
-                "fri" -> "Пт"
-                "sat" -> "Сб"
-                "sun" -> "Вс"
+                "mon" -> stringResource(R.string.chat_list_weekday_monday)
+                "tue" -> stringResource(R.string.chat_list_weekday_tuesday)
+                "wed" -> stringResource(R.string.chat_list_weekday_wednesday)
+                "thu" -> stringResource(R.string.chat_list_weekday_thursday)
+                "fri" -> stringResource(R.string.chat_list_weekday_friday)
+                "sat" -> stringResource(R.string.chat_list_weekday_saturday)
+                "sun" -> stringResource(R.string.chat_list_weekday_sunday)
                 else -> messageDateTime.format(DateTimeFormatter.ofPattern("EE"))
             }
                 .lowercase()

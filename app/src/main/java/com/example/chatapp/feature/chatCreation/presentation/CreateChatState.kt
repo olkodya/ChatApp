@@ -7,6 +7,7 @@ import com.example.chatapp.components.ErrorState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.immutableListOf
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 @Immutable
 data class CreateChatState(
@@ -26,12 +27,12 @@ data class CreateChatState(
      * задавать ограничение в 2 символа для поиска нет
      **/
 
-    val filteredUsersByQuery: List<UserState>
+    val filteredUsersByQuery: ImmutableList<UserState>
         get() = users.filter { user ->
             val nameLowerCase: String = user.name.toLowerCase(Locale.current)
             val searchQueryLowerCase: String = searchQuery.toLowerCase(Locale.current)
             nameLowerCase.contains(searchQueryLowerCase)
-        }
+        }.toImmutableList()
 }
 
 @Immutable

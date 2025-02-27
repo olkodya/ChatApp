@@ -2,6 +2,7 @@ package com.example.chatapp.feature.chatCreation.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.chatapp.components.toErrorState
 import com.example.chatapp.feature.chatCreation.domain.CreateChatUseCase
 import com.example.chatapp.feature.chatCreation.domain.GetUsersUseCase
 import com.example.chatapp.feature.chatCreation.domain.model.toUserState
@@ -67,7 +68,10 @@ class CreateChatViewModel @Inject constructor(
                     errorState = null
                 )
             }.onFailure {
-
+                mutableUserListState.value = userListState.value.copy(
+                    errorState = it.toErrorState { getUsers() },
+                    isLoading = false
+                )
             }
         }
     }

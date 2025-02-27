@@ -69,10 +69,18 @@
     <string name="create_chat_not_found_second">ничего не найдено</string>
     <string name="create_chat_nor_found_query"> \"%s\" </string>
     <string name="chat_list_title">Чаты</string>
-    <string name="chat_list_add_icon_content_description">Добавить</string>
-    <string name="chat_list_search_plaseholder">Поиск по чатам</string>
-    <string name="chat_list_last_message_read_content_descriptiom">Last message read</string>
-    <string name="chat_list_last_message_unread_content_descriptiom">Last message read</string>
+    <string name="chat_list_add_icon_content_description">Добавить чат</string>
+    <string name="chat_list_search_plaseholder">Поиск</string>
+    <string name="chat_list_last_message_read_content_descriptiom">Сообщение прочитано</string>
+    <string name="chat_list_last_message_unread_content_descriptiom">Сообщение не прочитано</string>
+    <string name="chat_list_weekday_monday">Пн</string>
+    <string name="chat_list_weekday_tuesday">Вт</string>
+    <string name="chat_list_weekday_wednesday">Ср</string>
+    <string name="chat_list_weekday_thursday">Чт</string>
+    <string name="chat_list_weekday_friday">Пт</string>
+    <string name="chat_list_weekday_saturday">Сб</string>
+    <string name="chat_list_weekday_sunday">Вс</string>
+    <string name="chat_list_you">Вы: </string>
 
 
 </resources>

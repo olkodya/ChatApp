@@ -16,7 +16,7 @@ data class ChatListScreenState(
     val errorState: ErrorState? = null,
     val isLoading: Boolean = false,
     val searchQuery: String = "",
-    val rooms: ImmutableList<RoomState> = persistentListOf<RoomState>(),
+    val rooms: ImmutableList<RoomState> = persistentListOf(),
 ) {
     val isSuccessLoaded: Boolean
         get() = isLoading == false && errorState == null && rooms.isNotEmpty()
