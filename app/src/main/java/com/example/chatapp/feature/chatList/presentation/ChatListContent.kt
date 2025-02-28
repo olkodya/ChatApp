@@ -51,7 +51,7 @@ import com.example.chatapp.components.LoadingState
 import com.example.chatapp.components.SearchTextField
 import com.example.chatapp.components.Shimmer
 import com.example.chatapp.feature.chatList.presentation.RoomState.LastMessageType
-import com.example.chatapp.feature.chatList.presentation.RoomState.RoomType
+import com.example.chatapp.feature.chatList.presentation.RoomState.RoomTypeState
 import com.example.chatapp.ui.theme.AppTheme
 import kotlinx.collections.immutable.persistentListOf
 import java.time.Instant
@@ -63,13 +63,14 @@ import java.time.temporal.ChronoUnit
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatListContent(
+    modifier: Modifier = Modifier,
     chatListState: ChatListScreenState,
     handleAction: (ChatListViewModel.ChatListAction) -> Unit
 ) {
     val screenHeight: Dp = LocalConfiguration.current.screenHeightDp.dp
     val headerHeight: Dp = screenHeight / 5
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -244,7 +245,7 @@ private fun ChatItem(
 @Composable
 private fun LastMessageAuthor(state: RoomState) {
     val showedLastMessageAuthor: String? = when {
-        state.type == RoomType.PUBLIC_CHANNEL -> {
+        state.type == RoomTypeState.PUBLIC_CHANNEL -> {
             if (state.isMeMessageAuthor) stringResource(R.string.chat_list_you)
             else if (state.lastMessageAuthor == null) ""
             else "${state.lastMessageAuthor}: "
@@ -400,7 +401,7 @@ fun ChatCardPreview() {
                 id = "1",
                 userName = "",
                 imageUrl = "",
-                type = RoomType.PUBLIC_CHANNEL,
+                type = RoomTypeState.PUBLIC_CHANNEL,
                 name = "ssd",
                 lastMassage = "Коммутаторы коммутируют",
                 lastUpdateTimestamp = 0,
@@ -424,7 +425,7 @@ fun ChatCardPreviewAuthorIsMe() {
                 id = "1",
                 userName = "",
                 imageUrl = "",
-                type = RoomType.DIRECT,
+                type = RoomTypeState.DIRECT,
                 name = "ssd",
                 lastMassage = "Коммутаторы коммутируютdd",
                 lastUpdateTimestamp = 0,
@@ -451,7 +452,7 @@ fun ChatListPreview() {
                         id = "1",
                         userName = "",
                         imageUrl = "",
-                        type = RoomType.DIRECT,
+                        type = RoomTypeState.DIRECT,
                         name = "Ольга Кукарцева",
                         lastMassage = "Коммутаторы коммутируют",
                         lastUpdateTimestamp = 0,

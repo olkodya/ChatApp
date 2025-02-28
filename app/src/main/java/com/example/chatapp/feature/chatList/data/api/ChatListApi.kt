@@ -18,7 +18,7 @@ interface ChatListApi {
     suspend fun getUsersInfo(@Query("userId") userId: String): UserInfoResponse
 
     @GET("/api/v1/users.list")
-    suspend fun getUsersList(): UserListResponse
+    suspend fun getUsersList(@Query("count") count: Int): UserListResponse
 
     @POST("/api/v1/im.create")
     suspend fun createDM(@Body body: CreateChatRequest)

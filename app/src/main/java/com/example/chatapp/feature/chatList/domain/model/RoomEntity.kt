@@ -10,7 +10,7 @@ data class RoomEntity(
     val userName: String?,
     val name: String?,
     val userId: String?,
-    val lastMessageType: LastMessageType?,
+    val lastMessageType: LastMessageType,
     val isLastMessageExist: Boolean,
     val lastMessageContent: String?,
     val lastMessageAuthor: String?,
@@ -130,18 +130,18 @@ fun RoomEntity.toRoomState() = RoomState(
         else -> null
     },
     isLastMessageExist = isLastMessageExist,
-    lastMessageType = lastMessageType?.toState()
+    lastMessageType = lastMessageType.toState()
 )
 
-fun RoomType.toState(): RoomState.RoomType = when (this) {
-    RoomType.DIRECT -> RoomState.RoomType.DIRECT
-    RoomType.PUBLIC_CHANNEL -> RoomState.RoomType.PUBLIC_CHANNEL
-    RoomType.PRIVATE_CHANNEL -> RoomState.RoomType.PRIVATE_CHANNEL
-    RoomType.DISCUSSIONS -> RoomState.RoomType.DISCUSSIONS
-    RoomType.TEAMS -> RoomState.RoomType.TEAMS
-    RoomType.LIVECHAT -> RoomState.RoomType.LIVECHAT
-    RoomType.VOIP -> RoomState.RoomType.VOIP
-    RoomType.UNKNOWN -> RoomState.RoomType.UNKNOWN
+fun RoomType.toState(): RoomState.RoomTypeState = when (this) {
+    RoomType.DIRECT -> RoomState.RoomTypeState.DIRECT
+    RoomType.PUBLIC_CHANNEL -> RoomState.RoomTypeState.PUBLIC_CHANNEL
+    RoomType.PRIVATE_CHANNEL -> RoomState.RoomTypeState.PRIVATE_CHANNEL
+    RoomType.DISCUSSIONS -> RoomState.RoomTypeState.DISCUSSIONS
+    RoomType.TEAMS -> RoomState.RoomTypeState.TEAMS
+    RoomType.LIVECHAT -> RoomState.RoomTypeState.LIVECHAT
+    RoomType.VOIP -> RoomState.RoomTypeState.VOIP
+    RoomType.UNKNOWN -> RoomState.RoomTypeState.UNKNOWN
 }
 
 

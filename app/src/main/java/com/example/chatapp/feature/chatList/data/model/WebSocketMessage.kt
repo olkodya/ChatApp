@@ -4,6 +4,12 @@ import com.example.chatapp.feature.authorization.data.AuthData
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.JsonTransformingSerializer
+import kotlinx.serialization.json.jsonObject
 
 
 @Serializable
@@ -133,6 +139,78 @@ sealed class WebSocketMessage(
             )
         }
     }
+
+    @Serializable
+    data class MessagesSubscribe(
+        @SerialName("name")
+        private val name: String = "stream-room-messages",
+        @SerialName("id")
+        val id: String,
+        @SerialName("params")
+        val params: List<String>,
+    ) : WebSocketMessage(msg = "sub") {
+
+        companion object {
+            fun messagesFactory(id: String, roomId: String) = RoomsSubscribe(
+                id = id,
+                params = listOf(
+                    roomId,
+                    "false",
+                )
+            )
+        }
+    }
+
+    @Serializable
+    data class LoadHistoryRequest(
+        val method: String = "loadHistory",
+        val id: String,
+        val params: List<@Serializable(with = ParamTypeSerializer::class) ParamType?>
+    ) : WebSocketMessage(msg = "method") {
+        companion object {
+            fun create(
+                id: String,
+                roomId: String,
+                limit: Int = 50,
+                date: Long = 0
+            ) = LoadHistoryRequest(
+                id = id,
+                params = listOf(
+                    ParamType.StringValue(roomId),
+                    ParamType.NullValue,
+                    ParamType.IntValue(limit),
+                    ParamType.DateValue(date)
+                )
+            )
+        }
+    }
+
+    @Serializable
+    sealed class ParamType {
+        @Serializable
+        data class StringValue(val value: String) : ParamType()
+
+        @Serializable
+        data class IntValue(val value: Int) : ParamType()
+
+        @Serializable
+        data class DateValue(
+            val value: Long
+        ) : ParamType()
+
+        @Serializable
+        data object NullValue : ParamType()
+    }
+
+    object ParamTypeSerializer : JsonTransformingSerializer<ParamType>(ParamType.serializer()) {
+        override fun transformSerialize(element: JsonElement): JsonElement {
+            return when (val param = element.jsonObject["value"]) {
+                null -> JsonNull
+                is JsonPrimitive -> param
+                else -> JsonObject(mapOf("\$date" to param))
+            }
+        }
+    }
 }
 
 fun AuthData.toWebSocketMessage() = WebSocketMessage.Authorize(
@@ -148,3 +226,4 @@ fun AuthData.toWebSocketMessage() = WebSocketMessage.Authorize(
         )
     )
 )
+

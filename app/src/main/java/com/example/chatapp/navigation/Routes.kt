@@ -9,7 +9,14 @@ sealed class Routes {
     object ScreenMain : Routes()
 
     @Serializable
-    object ScreenChat : Routes()
+    data class ScreenChat(
+        val roomId: String,
+    ) : Routes() {
+
+        companion object {
+            const val ROOM_ID_ARG_KEY = "roomId"
+        }
+    }
 
     @Serializable
     object ScreenLogin : Routes()

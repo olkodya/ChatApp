@@ -21,8 +21,7 @@ class ChatListViewModel @Inject constructor(
     private val observeRoomsUseCase: ObserveRoomsUseCase,
 ) : ViewModel() {
 
-    private val mutableChatListState =
-        MutableStateFlow<ChatListScreenState>(ChatListScreenState())
+    private val mutableChatListState = MutableStateFlow<ChatListScreenState>(ChatListScreenState())
     val chatListState: StateFlow<ChatListScreenState> = mutableChatListState.asStateFlow()
 
     private val mutableEvents = Channel<ChatListEvent>()

@@ -4,7 +4,7 @@
     <style name="Theme.ChatApp" parent="android:Theme.Material.NoActionBar" />
 
     <style name="Theme.ChatApp.Splash" parent="android:Theme.Material.NoActionBar" >
-        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowSplashScreenBackground">#FF1B416B</item>
         <item name="postSplashScreenTheme">@style/Theme.ChatApp</item>
     </style>
 </resources>

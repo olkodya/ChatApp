@@ -20,7 +20,7 @@ data class ChatListScreenState(
 data class RoomState(
     val id: String,
     val imageUrl: String?,
-    val type: RoomType,
+    val type: RoomTypeState,
     val name: String?,
     val lastMassage: String?,
     val lastUpdateTimestamp: Long?,
@@ -30,11 +30,11 @@ data class RoomState(
     val unreadMessagesCount: Int?,
     val userName: String?,
     val numberOfCheckMark: Int?,
-    val lastMessageType: LastMessageType?
+    val lastMessageType: LastMessageType
 ) {
 
     @Immutable
-    enum class RoomType {
+    enum class RoomTypeState {
         DIRECT,                 // Direct messages
         PUBLIC_CHANNEL,         // Public channel
         PRIVATE_CHANNEL,        // Private channel

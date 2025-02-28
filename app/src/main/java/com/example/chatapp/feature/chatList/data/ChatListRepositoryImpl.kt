@@ -3,6 +3,10 @@ package com.example.chatapp.feature.chatList.data
 import android.util.Log
 import com.example.chatapp.feature.authorization.data.AuthData
 import com.example.chatapp.feature.authorization.data.AuthPreferences
+import com.example.chatapp.feature.chat.data.model.MessageResponse
+import com.example.chatapp.feature.chat.data.model.MessagesResponse
+import com.example.chatapp.feature.chat.di.MessageEntity
+import com.example.chatapp.feature.chat.di.toEntity
 import com.example.chatapp.feature.chatList.data.api.ChatListApi
 import com.example.chatapp.feature.chatList.data.model.CreateChatRequest
 import com.example.chatapp.feature.chatList.data.model.RoomResponse
@@ -61,6 +65,9 @@ class ChatListRepositoryImpl @Inject constructor(
     private val roomsMutableStateFlow = MutableStateFlow<List<RoomEntity>?>(null)
     val roomsStateFlow: StateFlow<List<RoomEntity>?> = roomsMutableStateFlow.asStateFlow()
 
+    private val messagesMutableStateFlow = MutableStateFlow<List<MessageEntity>?>(null)
+    val messagesStateFlow: StateFlow<List<MessageEntity>?> = messagesMutableStateFlow.asStateFlow()
+
     private fun checkAndLoadConversationalistInfo() {
         roomsStateFlow.value?.forEach { room ->
             room.userId?.let { userId ->
@@ -86,6 +93,27 @@ class ChatListRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun observeMessages(roomId: String): StateFlow<List<MessageEntity>?> {
+        if (::webSocket.isInitialized.not()) {
+            connect()
+        }
+        sendMessage(
+            WebSocketMessage.LoadHistoryRequest.create(
+                id = MASSAGES_CALL_ID,
+                roomId = roomId,
+                limit = GET_MASSAGES_LIMIT
+            )
+        )
+
+        sendMessage(
+            WebSocketMessage.MessagesSubscribe.messagesFactory(
+                id = MESSAGES_SUB_ID,
+                roomId = roomId,
+            )
+        )
+        return messagesStateFlow
+    }
+
     override suspend fun observeRooms(): StateFlow<List<RoomEntity>?> {
         authData = authPreferences.getAuthData()
             ?: return throw IOException("Auth data not set")
@@ -106,6 +134,17 @@ class ChatListRepositoryImpl @Inject constructor(
                 userId = authData.userId,
             )
         )
+
+//        webSocket.send("{\n" +
+//                "    \"msg\": \"sub\",\n" +
+//                "    \"id\": \"89sc494\",\n" +
+//                "    \"name\": \"stream-room-messages\",\n" +
+//                "    \"params\":[\n" +
+//                "        \"Gkf5efjgyZPKGtf7MyksHEAttGvxcWf5FW\",\n" +
+//                "        false\n" +
+//                "    ]\n" +
+//                "}")
+
         return roomsStateFlow
     }
 
@@ -138,7 +177,7 @@ class ChatListRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUsers(): UserListResponse = api.getUsersList()
+    override suspend fun getUsers(): UserListResponse = api.getUsersList(count = USER_LIST_COUNT)
     override suspend fun createChat(username: String) =
         api.createDM(CreateChatRequest(username = username))
 
@@ -165,6 +204,22 @@ class ChatListRepositoryImpl @Inject constructor(
             subscriptions.result.update.meagreSubscriptionsToRoomsStateFlow()
         }
 
+        MASSAGES_CALL_ID -> {
+            try {
+                val messagesResponse: List<MessageResponse>? =
+                    formattedJson.decodeFromString<MessagesResponse>(text)
+                        .result
+                        ?.messages
+                val messagesEntity: List<MessageEntity>? = messagesResponse
+                    ?.map { it.toEntity(authData.userId) }
+
+                messagesMutableStateFlow.value = messagesEntity
+
+            } catch (e: Exception) {
+                Log.d("s", e.toString())
+            }
+        }
+
         else -> Unit
     }
 
@@ -176,6 +231,10 @@ class ChatListRepositoryImpl @Inject constructor(
 
         eventName.contains(SUBSCRIPTIONS_CHANGED_EVENT_NAME) -> {
             subscriptionsChangedProcessing(text = text)
+        }
+
+        eventName.contains(SUBSCRIPTIONS_STREAM_ROOM_MESSAGE) -> {
+            messagesChangedProcessing(text = text)
         }
 
         else -> Unit
@@ -223,6 +282,49 @@ class ChatListRepositoryImpl @Inject constructor(
         }
     }
 
+    private fun messagesChangedProcessing(text: String) {
+//        val messagesResponseSubscription:  =
+//            formattedJson.decodeFromString(
+//                RoomsResponseSubscription.serializer(),
+//                text
+//            )
+
+//        val updatedRooms: List<RoomEntity> =
+//            roomsResponseSubscription.fields.args.mapNotNull { arg ->
+//                try {
+//                    formattedJson.decodeFromJsonElement(
+//                        deserializer = RoomResponse.serializer(),
+//                        element = arg
+//                    ).toEntity(0, authData.userId, authData.username)
+//                } catch (_: Exception) {
+//                    null
+//                }
+//            }
+//
+//        roomsMutableStateFlow.update { currentRooms ->
+//            val roomsMap = currentRooms?.associateBy { it.id }?.toMutableMap()
+//            updatedRooms.forEach { room ->
+//                roomsMap?.get(room.id)?.let { element ->
+//                    roomsMap[room.id] = element.copy(
+//                        id = room.id,
+//                        type = room.type,
+//                        lastMessageContent = room.lastMessageContent,
+//                        lastUpdateTimestamp = room.lastUpdateTimestamp,
+//                        lastMessageAuthor = room.lastMessageAuthor,
+//                        lastMessageAuthorId = room.lastMessageAuthorId,
+//                        isMeMessageAuthor = room.isMeMessageAuthor,
+//                        lastMessageType = room.lastMessageType
+//                    )
+//                }
+//                if (roomsMap?.get(room.id) == null) {
+//                    roomsMap?.set(room.id, room)
+//                }
+//            }
+//            roomsMap?.values?.toList()
+//        }
+    }
+
+
     fun subscriptionsChangedProcessing(text: String) {
         val subscriptionsSubscriptionResponse: SubscriptionsSubscriptionResponse =
             formattedJson.decodeFromString(
@@ -263,6 +365,7 @@ class ChatListRepositoryImpl @Inject constructor(
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
+            Log.e("text", text)
             try {
                 if (text.contains("ping")) {
                     sendMessage(WebSocketMessage.Pong())
@@ -274,6 +377,11 @@ class ChatListRepositoryImpl @Inject constructor(
                     .jsonObject["fields"]
                     ?.jsonObject["eventName"]?.jsonPrimitive?.content
 
+                val name: String? = Json.parseToJsonElement(text)
+                    .jsonObject["fields"]
+                    ?.jsonObject["name"]?.jsonPrimitive?.content
+
+                Log.d("sfsfsvsdvsv", responseId.toString())
                 when {
                     responseId != null && responseId != "id" -> callsProcessing(
                         text = text,
@@ -281,6 +389,8 @@ class ChatListRepositoryImpl @Inject constructor(
                     )
 
                     eventName != null -> subscriptionsProcessing(text = text, eventName = eventName)
+
+                    name != null -> subscriptionsProcessing(text = text, eventName = name)
                 }
             } catch (exception: Exception) {
             }
@@ -304,9 +414,14 @@ class ChatListRepositoryImpl @Inject constructor(
         const val BASE_URL = "wss://eltex2025.rocket.chat/websocket"
         const val ROOMS_CALL_ID = "0be860f3-8cf9-4645-82c5-64aed6b6677b"
         const val ROOMS_SUB_ID = "333330f3-8cf9-4645-82c5-64aed6b6677b"
+        const val MASSAGES_CALL_ID = "477ca7f6-d8e9-4921-a407-b32da33e1b9a"
+        const val GET_MASSAGES_LIMIT = 500
         const val SUBSCRIPTIONS_SUB_ID = "9agqd13-8cf9-46s5-8235-64aef6b6677b"
+        const val MESSAGES_SUB_ID = "f38bd715-97bf-48fd-b27a-12b825133f85"
         const val ROOMS_CHANGED_EVENT_NAME = "rooms-changed"
         const val SUBSCRIPTIONS_CHANGED_EVENT_NAME = "subscriptions-changed"
+        const val SUBSCRIPTIONS_STREAM_ROOM_MESSAGE = "stream-room-messages"
         const val SUBSCRIPTIONS_CALL_ID = "71e86485-8a19-4645-82c5-64acd6b66777"
+        const val USER_LIST_COUNT = 500
     }
 }

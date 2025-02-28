@@ -5,7 +5,6 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import com.example.chatapp.components.ErrorState
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.immutableListOf
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 

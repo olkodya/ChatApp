@@ -5,7 +5,6 @@ import com.example.chatapp.feature.chatList.domain.model.RoomEntity
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
-
 class ObserveRoomsUseCaseImpl @Inject constructor(
     private val chatListRepository: ChatListRepository,
 ) : ObserveRoomsUseCase {
