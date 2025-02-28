@@ -13,7 +13,7 @@ data class RoomEntity(
     val lastMessageContent: String?,
     val lastMessageAuthor: String?,
     val lastMessageAuthorId: String,
-    val lastMessageDate: Long?,
+    val lastUpdateTimestamp: Long?,
     val isMeMessageAuthor: Boolean,
     val unreadMessagesNumber: Int,
 ) {
@@ -46,7 +46,7 @@ fun RoomResponse.toEntity(unreadMessagesNumber: Int, userId: String): RoomEntity
         lastMessageAuthor = lastMessage?.author?.name,
         lastMessageAuthorId = lastMessage?.author?.id ?: "",
 
-        lastMessageDate = lastMessage?.updatedAt?.date,
+        lastUpdateTimestamp = lastMessage?.updatedAt?.date,
 //        lastMessageDate = if (msgs == 0) ts else lastMessage?.updatedAt?.date,
 
         unreadMessagesNumber = unreadMessagesNumber,
@@ -65,7 +65,7 @@ fun RoomEntity.toRoomState() = RoomState(
     name = name,
     userName = userName,
     lastMassage = lastMessageContent,
-    lastUpdateTimestamp = lastMessageDate,
+    lastUpdateTimestamp = lastUpdateTimestamp,
     lastMessageAuthor = lastMessageAuthor,
     isMeMessageAuthor = isMeMessageAuthor,
     unreadMessagesCount = when {

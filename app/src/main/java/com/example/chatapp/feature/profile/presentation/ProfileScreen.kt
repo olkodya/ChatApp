@@ -27,7 +27,7 @@ fun ProfileScreen(
             },
             dialogTitle = stringResource(R.string.profile_logout_dialog_title),
             dialogText = stringResource(R.string.profile_logout_dialog_body),
-            confirmButtonText = stringResource(R.string.profile_logout_dilaog_confirm_text),
+            confirmButtonText = stringResource(R.string.profile_logout_dialog_confirm_text),
             dismissButtonText = stringResource(R.string.profile_logout_dialog_dismiss_text),
         )
     }

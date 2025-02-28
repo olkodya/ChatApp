@@ -13,7 +13,4 @@ sealed class Routes {
 
     @Serializable
     object ScreenLogin : Routes()
-
-    @Serializable
-    object ScreenSplash : Routes()
 }

@@ -54,7 +54,9 @@ class ChatListViewModel @Inject constructor(
                         mutableChatListState.value =
                             chatListState.value.copy(errorState = null, isLoading = true)
                     } else {
-                        val roomsList = updatedRooms?.map { it.toRoomState() } ?: emptyList()
+                        val roomsList = updatedRooms
+                            ?.sortedByDescending { it.lastUpdateTimestamp }
+                            ?.map { it.toRoomState() } ?: emptyList()
                         mutableChatListState.value = chatListState.value.copy(
                             errorState = null,
                             isLoading = false,

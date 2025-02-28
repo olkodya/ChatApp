@@ -4,12 +4,6 @@ import androidx.compose.runtime.Immutable
 import com.example.chatapp.components.ErrorState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
-
 
 @Immutable
 data class ChatListScreenState(
@@ -48,14 +42,4 @@ data class RoomState(
         VOIP,                   // Omnichannel VoIP rooms
         UNKNOWN;
     }
-
-    val showedLastMessageAuthor: String?
-        get() = when {
-            type == RoomType.PUBLIC_CHANNEL -> {
-                if (isMeMessageAuthor) "Вы: "
-                else if (lastMessageAuthor == null) ""
-                else "${lastMessageAuthor}: "
-            }
-            else -> null
-        }
 }

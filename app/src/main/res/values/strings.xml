@@ -1,86 +1,65 @@
 <resources>
     <string name="app_name">ChatApp</string>
 
+    <!-- Common -->
     <string name="error_string">Error</string>
     <string name="try_again_string">Try Again</string>
-    <string name="exchanges_tool_bar_title">Exchanges</string>
-    <string name="empty_coins">Coins not found</string>
-    <string name="hashtag" translatable="false">%1$s#</string>
-    <string name="percent" translatable="false">%</string>
-    <string name="usd" translatable="false">$</string>
-    <string name="symbol">Symbol: %1$s</string>
-    <string name="price">Price: %.5f %s</string>
-    <string name="percent24hr_title">Percent 24 hour: </string>
-    <string name="percent24hr" translatable="false">%.5f %s</string>
-    <string name="volumeUsd" translatable="true"> Volume: %.5f %s</string>
-    <string name="percentTotalVolume" translatable="true"> Total volume: %.5f %s</string>
-    <string name="exchangeUrl" translatable="true"> Exchange URL: %s</string>
-    <string name="current_price">%1$s $</string>
-    <string name="assets_title" translatable="false">Assets</string>
+    <string name="search_text_field_content_description">Search</string>
 
+    <!-- Login -->
+    <string name="login_login_text_field">Login</string>
+    <string name="login_password_text_field">Password</string>
+    <string name="login_button">Sign in</string>
+    <string name="login_information_text">Enter your login and password</string>
+    <string name="login_incorrect_password_or_login">Incorrect login or password</string>
+    <string name="dismiss_snackbar_label">OK</string>
+    <string name="login_hide_content_description">Hide password</string>
+    <string name="login_show_password_content_description">Show password</string>
 
-    <!--   Login feature   -->
-    <string name="login_login_text_field">Логин</string>
-    <string name="login_password_text_field">Пароль</string>
-    <string name="login_button">Войти</string>
-    <string name="login_information_text">Введите логин и пароль для входа</string>
-    <string name="login_incorrect_password_or_login">Неправильный логин или пароль</string>
-    <string name="dismiss_snackbar_label">Ок</string>
-    <string name="login_hide_content_description">Скрыть пароль</string>
-    <string name="login_show_password_content_description">Показать пароль</string>
-
-    <!--   Profile feature   -->
+    <!-- Profile -->
     <string name="profile_avatar_content_description">Profile avatar</string>
-    <string name="profile_logout_button_text">Выйти</string>
-    <string name="profile_shevron_icon_content_description">" "</string>
-    <string name="profile_exit_icon_content_description">" "</string>
-    <string name="profile_logout_dialog_title">Выйти из аккаунта</string>
-    <string name="profile_logout_dialog_body">Вы уверены, что хотите выйти?</string>
-    <string name="profile_logout_dilaog_confirm_text">Выйти</string>
-    <string name="profile_logout_dialog_dismiss_text">Отменить</string>
+    <string name="profile_logout_button_text">Log out</string>
+    <string name="profile_shevron_icon_content_description">Chevron icon</string>
+    <string name="profile_exit_icon_content_description">Exit icon</string>
+    <string name="profile_logout_dialog_title">Log out</string>
+    <string name="profile_logout_dialog_body">Are you sure you want to log out?</string>
+    <string name="profile_logout_dialog_confirm_text">Log out</string>
+    <string name="profile_logout_dialog_dismiss_text">Cancel</string>
 
+    <!-- Bottom Navigation -->
+    <string name="bottom_nav_title_chat">Chats</string>
+    <string name="bottom_nav_title_profile">Profile</string>
 
-    <!--    Bottom navigation bar   -->
-    <string name="bottom_nav_title_chat">Чаты</string>
-    <string name="bottom_nav_title_profile">Профиль</string>
+    <!-- Errors -->
+    <string name="server_error_state_title">Server error</string>
+    <string name="server_error_state_message">An error occurred while processing the request. Please try again later</string>
+    <string name="network_error_state_title">No connection</string>
+    <string name="network_error_state_message">No connection to server, check your internet connection and try again later</string>
+    <string name="unknown_error_state_title">Something went wrong</string>
+    <string name="unknown_error_state_message">An unexpected error occurred. Please try again later</string>
 
+    <!-- Chat List -->
+    <string name="chat_list_title">Chats</string>
+    <string name="chat_list_add_icon_content_description">Add chat</string>
+    <string name="chat_list_search_plaseholder">Search</string>
+    <string name="chat_list_last_message_read_content_descriptiom">Message read</string>
+    <string name="chat_list_last_message_unread_content_descriptiom">Message unread</string>
+    <string name="chat_list_weekday_monday">Mon</string>
+    <string name="chat_list_weekday_tuesday">Tue</string>
+    <string name="chat_list_weekday_wednesday">Wed</string>
+    <string name="chat_list_weekday_thursday">Thu</string>
+    <string name="chat_list_weekday_friday">Fri</string>
+    <string name="chat_list_weekday_saturday">Sat</string>
+    <string name="chat_list_weekday_sunday">Sun</string>
+    <string name="chat_list_you">You: </string>
 
-    <!--   Errors   -->
-    <string name="server_error_state_title">Ошибка сервера</string>
-    <string name="server_error_state_message">Произошла ошибка при обработке запроса. Попробуйте позже</string>
-
-    <string name="network_error_state_title">Нет подключения</string>
-    <string name="network_error_state_message">Отсутствует соединение с сервером, проверьте ваше интернет соединение и повторите позднее</string>
-
-    <string name="unknown_error_state_title">Что-то пошло не так</string>
-    <string name="unknown_error_state_message">Произошла непредвиденная ошибка. Попробуйте позже</string>
-
-
-    <!--   Components   -->
-    <string name="search_text_field_content_description">Поиск</string>
-
-    <!--   Create Chat   -->
-    <string name="create_chat_cancel_button_text">Отменить</string>
-    <string name="create_chat_title">Новый чат</string>
-    <string name="create_chat_search_placeholder">Поиск по контактам</string>
-    <string name="create_chat_contacts_title">Контакты</string>
-    <string name="create_chat_user_list_empty">Список пользователей пуст</string>
-    <string name="create_chat_not_found_first">По вашему запросу </string>
-    <string name="create_chat_not_found_second">ничего не найдено</string>
-    <string name="create_chat_nor_found_query"> \"%s\" </string>
-    <string name="chat_list_title">Чаты</string>
-    <string name="chat_list_add_icon_content_description">Добавить чат</string>
-    <string name="chat_list_search_plaseholder">Поиск</string>
-    <string name="chat_list_last_message_read_content_descriptiom">Сообщение прочитано</string>
-    <string name="chat_list_last_message_unread_content_descriptiom">Сообщение не прочитано</string>
-    <string name="chat_list_weekday_monday">Пн</string>
-    <string name="chat_list_weekday_tuesday">Вт</string>
-    <string name="chat_list_weekday_wednesday">Ср</string>
-    <string name="chat_list_weekday_thursday">Чт</string>
-    <string name="chat_list_weekday_friday">Пт</string>
-    <string name="chat_list_weekday_saturday">Сб</string>
-    <string name="chat_list_weekday_sunday">Вс</string>
-    <string name="chat_list_you">Вы: </string>
-
-
+    <!-- Create Chat -->
+    <string name="create_chat_cancel_button_text">Cancel</string>
+    <string name="create_chat_title">New chat</string>
+    <string name="create_chat_search_placeholder">Search contacts</string>
+    <string name="create_chat_contacts_title">Contacts</string>
+    <string name="create_chat_user_list_empty">User list is empty</string>
+    <string name="create_chat_not_found_first">No results for </string>
+    <string name="create_chat_not_found_second">found</string>
+    <string name="create_chat_nor_found_query">\"%s\"</string>
 </resources>

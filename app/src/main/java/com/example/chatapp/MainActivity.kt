@@ -13,8 +13,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.rememberNavController
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
+import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
-import coil3.request.crossfade
+import coil3.util.DebugLogger
 import com.example.chatapp.di.CoilInterceptor
 import com.example.chatapp.feature.splashscreen.presentation.SplashViewModel
 import com.example.chatapp.feature.splashscreen.presentation.SplashViewModel.SplashEvent
@@ -23,8 +24,9 @@ import com.example.chatapp.navigation.Routes
 import com.example.chatapp.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import okio.Path
+import okio.Path.Companion.toOkioPath
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -40,7 +42,10 @@ class MainActivity : ComponentActivity() {
         setupSplashScreen(
             onDestinationDefined = { destination ->
                 setContent {
-                    SetupImageLoader(coilInterceptor)
+                    SetupImageLoader(
+                        coilInterceptor = coilInterceptor,
+                        diskPath = applicationContext.cacheDir.resolve("image_cache").toOkioPath(),
+                    )
                     AppTheme {
                         val navController = rememberNavController()
                         RootNavGraph(navController, destination)
@@ -70,7 +75,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun SetupImageLoader(coilInterceptor: CoilInterceptor) {
+private fun SetupImageLoader(
+    coilInterceptor: CoilInterceptor,
+    diskPath: Path,
+) {
     setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context)
             .components {
@@ -81,7 +89,17 @@ private fun SetupImageLoader(coilInterceptor: CoilInterceptor) {
                     .maxSizePercent(context = context, percent = 0.25)
                     .build()
             }
-            .crossfade(false)
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(diskPath)
+                    .maxSizeBytes(512L * 1024 * 1024) // 512MB
+                    .build()
+            }
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    logger(DebugLogger())
+                }
+            }
             .build()
     }
 }
