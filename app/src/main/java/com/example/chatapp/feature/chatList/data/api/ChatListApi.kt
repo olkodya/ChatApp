@@ -1,7 +1,7 @@
 package com.example.chatapp.feature.chatList.data.api
 
-import com.example.chatapp.feature.chatList.data.UserInfoResponse
-import com.example.chatapp.feature.chatList.data.UserListResponse
+import com.example.chatapp.feature.chatList.data.model.UserInfoResponse
+import com.example.chatapp.feature.chatList.data.model.UserListResponse
 import com.example.chatapp.feature.chatList.data.model.CreateChatRequest
 import com.example.chatapp.feature.chatList.data.model.RoomsResponse
 import retrofit2.http.Body

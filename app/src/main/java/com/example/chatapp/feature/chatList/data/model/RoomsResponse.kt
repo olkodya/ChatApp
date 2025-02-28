@@ -47,8 +47,8 @@ data class RoomResponse(
     val usernames: List<String>? = null,
     @SerialName("msgs")
     val msgs: Int,
-//    @SerialName("ts")
-//    val ts: Long,
+    @SerialName("ts")
+    val ts: Date?,
     @SerialName("uids")
     val uids: List<String>? = null,
     @SerialName("lastMessage")
@@ -60,17 +60,21 @@ data class RoomResponse(
         @SerialName("_id")
         val id: String,
         @SerialName("_updatedAt")
-        val updatedAt: UpdatedAtResponse,
+        val updatedAt: Date,
         @SerialName("md")
         val message: List<MessageResponse>? = null,
         @SerialName("u")
         val author: MessageAuthorResponse,
+        @SerialName("file")
+        val file: File? = null
     ) {
 
         @Serializable
-        data class UpdatedAtResponse(
-            @SerialName("\$date")
-            val date: Long,
+        data class File(
+            @SerialName("_id")
+            val id: String,
+            @SerialName("type")
+            val type: String,
         )
 
         @Serializable

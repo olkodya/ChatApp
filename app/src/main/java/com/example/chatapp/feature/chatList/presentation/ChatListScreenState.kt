@@ -26,9 +26,11 @@ data class RoomState(
     val lastUpdateTimestamp: Long?,
     val lastMessageAuthor: String?,
     val isMeMessageAuthor: Boolean,
+    val isLastMessageExist: Boolean,
     val unreadMessagesCount: Int?,
     val userName: String?,
     val numberOfCheckMark: Int?,
+    val lastMessageType: LastMessageType?
 ) {
 
     @Immutable
@@ -40,6 +42,15 @@ data class RoomState(
         TEAMS,                  // Workspace teams
         LIVECHAT,               // Livechat
         VOIP,                   // Omnichannel VoIP rooms
+        UNKNOWN;
+    }
+
+    @Immutable
+    enum class LastMessageType {
+        TEXT,
+        VIDEO,
+        IMAGE,
+        DOCUMENT,
         UNKNOWN;
     }
 }

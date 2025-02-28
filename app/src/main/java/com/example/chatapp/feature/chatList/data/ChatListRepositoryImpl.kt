@@ -11,6 +11,7 @@ import com.example.chatapp.feature.chatList.data.model.RoomsResponseSubscription
 import com.example.chatapp.feature.chatList.data.model.SubscriptionResponse
 import com.example.chatapp.feature.chatList.data.model.SubscriptionsResponse
 import com.example.chatapp.feature.chatList.data.model.SubscriptionsSubscriptionResponse
+import com.example.chatapp.feature.chatList.data.model.UserListResponse
 import com.example.chatapp.feature.chatList.data.model.WebSocketMessage
 import com.example.chatapp.feature.chatList.data.model.toWebSocketMessage
 import com.example.chatapp.feature.chatList.domain.model.RoomEntity
@@ -18,6 +19,7 @@ import com.example.chatapp.feature.chatList.domain.model.toEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,6 +67,7 @@ class ChatListRepositoryImpl @Inject constructor(
                 repositoryScope.launch {
                     try {
                         val response = api.getUsersInfo(userId)
+                        delay(1000)
                         roomsMutableStateFlow.value =
                             roomsMutableStateFlow.value?.map { currentRoom ->
                                 if (currentRoom.id == room.id) {
@@ -205,9 +208,11 @@ class ChatListRepositoryImpl @Inject constructor(
                         id = room.id,
                         type = room.type,
                         lastMessageContent = room.lastMessageContent,
+                        lastUpdateTimestamp = room.lastUpdateTimestamp,
                         lastMessageAuthor = room.lastMessageAuthor,
                         lastMessageAuthorId = room.lastMessageAuthorId,
-                        isMeMessageAuthor = room.isMeMessageAuthor
+                        isMeMessageAuthor = room.isMeMessageAuthor,
+                        lastMessageType = room.lastMessageType
                     )
                 }
                 if (roomsMap?.get(room.id) == null) {

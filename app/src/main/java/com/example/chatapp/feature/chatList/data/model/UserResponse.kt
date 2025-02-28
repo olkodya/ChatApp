@@ -1,4 +1,4 @@
-package com.example.chatapp.feature.chatList.data
+package com.example.chatapp.feature.chatList.data.model
 
 import com.example.chatapp.feature.chatCreation.domain.model.UserEntity
 import kotlinx.serialization.SerialName

@@ -50,6 +50,7 @@ import com.example.chatapp.R
 import com.example.chatapp.components.LoadingState
 import com.example.chatapp.components.SearchTextField
 import com.example.chatapp.components.Shimmer
+import com.example.chatapp.feature.chatList.presentation.RoomState.LastMessageType
 import com.example.chatapp.feature.chatList.presentation.RoomState.RoomType
 import com.example.chatapp.ui.theme.AppTheme
 import kotlinx.collections.immutable.persistentListOf
@@ -208,12 +209,13 @@ private fun ChatItem(
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     MessageDoneMark(chatState)
-                    chatState.lastUpdateTimestamp?.let { lastUpdateTimestamp ->
-                        LastRoomUpdateDate(timestamp = lastUpdateTimestamp)
+                    if (chatState.lastMessageType != LastMessageType.UNKNOWN) {
+                        chatState.lastUpdateTimestamp?.let { lastUpdateTimestamp ->
+                            LastRoomUpdateDate(timestamp = lastUpdateTimestamp)
+                        }
                     }
                 }
             } else {
-
                 Shimmer(
                     modifier = Modifier
                         .height(20.dp)
@@ -227,20 +229,7 @@ private fun ChatItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 LastMessageAuthor(chatState)
-
-                if (chatState.lastMassage != null) {
-                    Text(
-                        text = chatState.lastMassage,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        fontSize = 14.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
-                    )
-                } else {
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
-
+                LastMessageText(chatState, Modifier.weight(1f))
                 chatState.unreadMessagesCount?.let { unreadMessagesCount ->
                     MessageCounter(unreadMessagesCount)
                 }
@@ -269,6 +258,44 @@ private fun LastMessageAuthor(state: RoomState) {
         )
     }
 }
+
+@Composable
+private fun LastMessageText(state: RoomState, modifier: Modifier) {
+    val lastMessageText: String? = when (state.lastMessageType) {
+        LastMessageType.IMAGE -> {
+            "Изображение"
+        }
+
+        LastMessageType.VIDEO -> {
+            "Видео"
+        }
+
+        LastMessageType.DOCUMENT -> {
+            "Документ"
+        }
+
+        LastMessageType.TEXT -> {
+            state.lastMassage
+        }
+
+        LastMessageType.UNKNOWN -> {
+            "Сообщений нет"
+        }
+
+        else -> null
+    }
+    lastMessageText?.let {
+        Text(
+            text = lastMessageText,
+            color = MaterialTheme.colorScheme.tertiary,
+            fontSize = 14.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = modifier
+        )
+    }
+}
+
 
 @Composable
 private fun LastRoomUpdateDate(timestamp: Long) {
@@ -370,7 +397,7 @@ fun ChatCardPreview() {
                 id = "1",
                 userName = "",
                 imageUrl = "",
-                type = RoomState.RoomType.PUBLIC_CHANNEL,
+                type = RoomType.PUBLIC_CHANNEL,
                 name = "ssd",
                 lastMassage = "Коммутаторы коммутируют",
                 lastUpdateTimestamp = 0,
@@ -378,6 +405,8 @@ fun ChatCardPreview() {
                 isMeMessageAuthor = false,
                 unreadMessagesCount = 1,
                 numberOfCheckMark = 1,
+                isLastMessageExist = true,
+                lastMessageType = LastMessageType.TEXT
             )
         ) { }
     }
@@ -392,7 +421,7 @@ fun ChatCardPreviewAuthorIsMe() {
                 id = "1",
                 userName = "",
                 imageUrl = "",
-                type = RoomState.RoomType.DIRECT,
+                type = RoomType.DIRECT,
                 name = "ssd",
                 lastMassage = "Коммутаторы коммутируютdd",
                 lastUpdateTimestamp = 0,
@@ -400,6 +429,8 @@ fun ChatCardPreviewAuthorIsMe() {
                 isMeMessageAuthor = true,
                 unreadMessagesCount = 1,
                 numberOfCheckMark = 1,
+                isLastMessageExist = true,
+                lastMessageType = LastMessageType.TEXT
             ),
             handleAction = {}
         )
@@ -417,7 +448,7 @@ fun ChatListPreview() {
                         id = "1",
                         userName = "",
                         imageUrl = "",
-                        type = RoomState.RoomType.DIRECT,
+                        type = RoomType.DIRECT,
                         name = "Ольга Кукарцева",
                         lastMassage = "Коммутаторы коммутируют",
                         lastUpdateTimestamp = 0,
@@ -425,6 +456,8 @@ fun ChatListPreview() {
                         isMeMessageAuthor = false,
                         unreadMessagesCount = 1,
                         numberOfCheckMark = 1,
+                        isLastMessageExist = true,
+                        lastMessageType = LastMessageType.TEXT
                     )
                 )
             )

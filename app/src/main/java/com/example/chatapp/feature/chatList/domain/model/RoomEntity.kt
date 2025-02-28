@@ -10,6 +10,8 @@ data class RoomEntity(
     val userName: String?,
     val name: String?,
     val userId: String?,
+    val lastMessageType: LastMessageType?,
+    val isLastMessageExist: Boolean,
     val lastMessageContent: String?,
     val lastMessageAuthor: String?,
     val lastMessageAuthorId: String,
@@ -33,30 +35,65 @@ data class RoomEntity(
                 RoomType.entries.find { it.value == value } ?: UNKNOWN
         }
     }
+
+    enum class LastMessageType(val value: String) {
+        TEXT("text"),
+        IMAGE("image"),
+        VIDEO("video"),
+        DOCUMENT("document"),
+        UNKNOWN("unknown");
+
+        companion object {
+//            fun fromString(value: String): LastMessageType {
+//
+//            }
+        }
+
+    }
 }
 
 fun RoomResponse.toEntity(unreadMessagesNumber: Int, userId: String): RoomEntity {
+    val lastMessageType = if (lastMessage?.message != null) {
+        RoomEntity.LastMessageType.TEXT
+    } else {
+        if (lastMessage?.file != null) {
+            if (lastMessage.file.type.contains("video")) {
+                RoomEntity.LastMessageType.VIDEO
+            } else if (lastMessage.file.type.contains("image")) {
+                RoomEntity.LastMessageType.IMAGE
+            } else {
+                RoomEntity.LastMessageType.DOCUMENT
+            }
+        } else {
+            RoomEntity.LastMessageType.UNKNOWN
+        }
+    }
+
+
     return RoomEntity(
         id = id,
         name = name,
-        userName = null,
+        userName = usernames?.firstOrNull(),
         userId = uids?.firstOrNull(),
         type = RoomType.fromString(type),
         lastMessageContent = if (msgs == 0) "Сообщений нет" else lastMessage?.message?.firstOrNull()?.value?.firstOrNull()?.value,
         lastMessageAuthor = lastMessage?.author?.name,
         lastMessageAuthorId = lastMessage?.author?.id ?: "",
-
-        lastUpdateTimestamp = lastMessage?.updatedAt?.date,
-//        lastMessageDate = if (msgs == 0) ts else lastMessage?.updatedAt?.date,
-
+        lastUpdateTimestamp = if (msgs == 0) {
+            ts?.date
+        } else {
+            lastMessage?.updatedAt?.date
+        },
         unreadMessagesNumber = unreadMessagesNumber,
-        isMeMessageAuthor = lastMessage != null && userId == lastMessage.author.id
+        isMeMessageAuthor = lastMessage != null && userId == lastMessage.author.id,
+        isLastMessageExist = msgs != 0,
+        lastMessageType = lastMessageType
     )
 }
 
 fun RoomEntity.toRoomState() = RoomState(
     id = id,
-    imageUrl = if (type == RoomEntity.RoomType.PUBLIC_CHANNEL) {
+    imageUrl = if (type == RoomType.PUBLIC_CHANNEL) {
         "https://eltex2025.rocket.chat/avatar/room/$id"
     } else {
         "https://eltex2025.rocket.chat/avatar/$userName"
@@ -77,15 +114,26 @@ fun RoomEntity.toRoomState() = RoomState(
         (isMeMessageAuthor && unreadMessagesNumber == 0) -> 2
         else -> null
     },
+    isLastMessageExist = isLastMessageExist,
+    lastMessageType = lastMessageType?.toState()
 )
 
-fun RoomEntity.RoomType.toState(): RoomState.RoomType = when (this) {
-    RoomEntity.RoomType.DIRECT -> RoomState.RoomType.DIRECT
-    RoomEntity.RoomType.PUBLIC_CHANNEL -> RoomState.RoomType.PUBLIC_CHANNEL
-    RoomEntity.RoomType.PRIVATE_CHANNEL -> RoomState.RoomType.PRIVATE_CHANNEL
-    RoomEntity.RoomType.DISCUSSIONS -> RoomState.RoomType.DISCUSSIONS
-    RoomEntity.RoomType.TEAMS -> RoomState.RoomType.TEAMS
-    RoomEntity.RoomType.LIVECHAT -> RoomState.RoomType.LIVECHAT
-    RoomEntity.RoomType.VOIP -> RoomState.RoomType.VOIP
-    RoomEntity.RoomType.UNKNOWN -> RoomState.RoomType.UNKNOWN
+fun RoomType.toState(): RoomState.RoomType = when (this) {
+    RoomType.DIRECT -> RoomState.RoomType.DIRECT
+    RoomType.PUBLIC_CHANNEL -> RoomState.RoomType.PUBLIC_CHANNEL
+    RoomType.PRIVATE_CHANNEL -> RoomState.RoomType.PRIVATE_CHANNEL
+    RoomType.DISCUSSIONS -> RoomState.RoomType.DISCUSSIONS
+    RoomType.TEAMS -> RoomState.RoomType.TEAMS
+    RoomType.LIVECHAT -> RoomState.RoomType.LIVECHAT
+    RoomType.VOIP -> RoomState.RoomType.VOIP
+    RoomType.UNKNOWN -> RoomState.RoomType.UNKNOWN
+}
+
+
+fun RoomEntity.LastMessageType.toState(): RoomState.LastMessageType = when (this) {
+    RoomEntity.LastMessageType.TEXT -> RoomState.LastMessageType.TEXT
+    RoomEntity.LastMessageType.IMAGE -> RoomState.LastMessageType.IMAGE
+    RoomEntity.LastMessageType.VIDEO -> RoomState.LastMessageType.VIDEO
+    RoomEntity.LastMessageType.DOCUMENT -> RoomState.LastMessageType.DOCUMENT
+    RoomEntity.LastMessageType.UNKNOWN -> RoomState.LastMessageType.UNKNOWN
 }
