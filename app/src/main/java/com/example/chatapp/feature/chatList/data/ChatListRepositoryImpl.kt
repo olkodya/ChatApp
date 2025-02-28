@@ -153,7 +153,7 @@ class ChatListRepositoryImpl @Inject constructor(
                 formattedJson.decodeFromString(
                     RoomsResponse.serializer(),
                     text
-                ).result.update.map { it.toEntity(0, authData.userId) }
+                ).result.update.map { it.toEntity(0, authData.userId, authData.username) }
             roomsMutableStateFlow.value = entities
             checkAndLoadConversationalistInfo()
         }
@@ -194,7 +194,7 @@ class ChatListRepositoryImpl @Inject constructor(
                     formattedJson.decodeFromJsonElement(
                         deserializer = RoomResponse.serializer(),
                         element = arg
-                    ).toEntity(0, authData.userId)
+                    ).toEntity(0, authData.userId, authData.username)
                 } catch (_: Exception) {
                     null
                 }

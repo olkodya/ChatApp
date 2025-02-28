@@ -52,7 +52,11 @@ data class RoomEntity(
     }
 }
 
-fun RoomResponse.toEntity(unreadMessagesNumber: Int, userId: String): RoomEntity {
+fun RoomResponse.toEntity(
+    unreadMessagesNumber: Int,
+    userId: String,
+    userNameMe: String
+): RoomEntity {
     val lastMessageType = if (lastMessage?.message != null) {
         RoomEntity.LastMessageType.TEXT
     } else {
@@ -69,11 +73,22 @@ fun RoomResponse.toEntity(unreadMessagesNumber: Int, userId: String): RoomEntity
         }
     }
 
+    val userName = usernames?.size?.let {
+        if (it > 1) {
+            if (usernames[0] != userNameMe)
+                usernames[0]
+            else {
+                usernames[1]
+            }
+        } else {
+            userNameMe
+        }
+    }
 
     return RoomEntity(
         id = id,
         name = name,
-        userName = usernames?.firstOrNull(),
+        userName = userName,
         userId = uids?.firstOrNull(),
         type = RoomType.fromString(type),
         lastMessageContent = if (msgs == 0) "Сообщений нет" else lastMessage?.message?.firstOrNull()?.value?.firstOrNull()?.value,

@@ -196,31 +196,34 @@ private fun ChatItem(
                 .padding(start = 8.dp)
         ) {
             val showedName = chatState.name
-            if (showedName != null) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                if (showedName != null) {
                     Text(
                         text = showedName,
                         fontWeight = FontWeight.Medium,
                         fontSize = 16.sp
                     )
-                    Spacer(modifier = Modifier.weight(1f))
-                    MessageDoneMark(chatState)
-                    if (chatState.lastMessageType != LastMessageType.UNKNOWN) {
-                        chatState.lastUpdateTimestamp?.let { lastUpdateTimestamp ->
-                            LastRoomUpdateDate(timestamp = lastUpdateTimestamp)
-                        }
+                } else {
+                    Shimmer(
+                        modifier = Modifier
+                            .height(20.dp)
+                            .width(150.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                MessageDoneMark(chatState)
+
+                if (chatState.lastMessageType != LastMessageType.UNKNOWN) {
+                    chatState.lastUpdateTimestamp?.let { lastUpdateTimestamp ->
+                        LastRoomUpdateDate(timestamp = lastUpdateTimestamp)
                     }
                 }
-            } else {
-                Shimmer(
-                    modifier = Modifier
-                        .height(20.dp)
-                        .width(150.dp)
-                )
             }
 
             Row(
@@ -263,15 +266,15 @@ private fun LastMessageAuthor(state: RoomState) {
 private fun LastMessageText(state: RoomState, modifier: Modifier) {
     val lastMessageText: String? = when (state.lastMessageType) {
         LastMessageType.IMAGE -> {
-            "Изображение"
+            stringResource(R.string.chat_list_message_type_image)
         }
 
         LastMessageType.VIDEO -> {
-            "Видео"
+            stringResource(R.string.chat_list_message_type_video)
         }
 
         LastMessageType.DOCUMENT -> {
-            "Документ"
+            stringResource(R.string.chat_list_message_type_document)
         }
 
         LastMessageType.TEXT -> {
@@ -279,7 +282,7 @@ private fun LastMessageText(state: RoomState, modifier: Modifier) {
         }
 
         LastMessageType.UNKNOWN -> {
-            "Сообщений нет"
+            stringResource(R.string.chat_list_message_type_no_messages)
         }
 
         else -> null

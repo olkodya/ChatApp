@@ -52,6 +52,10 @@
     <string name="chat_list_weekday_saturday">Sat</string>
     <string name="chat_list_weekday_sunday">Sun</string>
     <string name="chat_list_you">You: </string>
+    <string name="chat_list_message_type_image">Image</string>
+    <string name="chat_list_message_type_video">Video</string>
+    <string name="chat_list_message_type_document">Document</string>
+    <string name="chat_list_message_type_no_messages">No messages</string>
 
     <!-- Create Chat -->
     <string name="create_chat_cancel_button_text">Cancel</string>
