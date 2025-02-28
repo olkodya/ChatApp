@@ -51,7 +51,7 @@ data class UserTest(
     @SerialName("_id")
     val id: String,
     val username: String,
-    val name: String
+    val name: String? = null
 )
 
 @Serializable
@@ -71,17 +71,44 @@ data class TextMessage(
 ) : MessageResponse()
 
 @Serializable
+@SerialName("system")
+data class SystemMessage(
+    @SerialName("_id")
+    override val id: String,
+    override val rid: String,
+    override val ts: DateParamTest,
+    override val u: UserTest,
+    override val _updatedAt: DateParamTest,
+    override val urls: List<String> = emptyList(),
+    override val mentions: List<String> = emptyList(),
+    override val channels: List<String> = emptyList(),
+    val msg: String,
+    val t: String, // тип системного сообщения (например "uj" для user joined)
+    val groupable: Boolean = false
+) : MessageResponse()
+
+@Serializable
 data class MarkdownData(
     val type: String,
     val value: List<MarkdownValue>? = null,
 ) {
-
     @Serializable
-    data class MarkdownValue(
-        val type: String?,
-        val value: String? = null,
-        val unicode: String? = null,
-    )
+    sealed class MarkdownValue {
+        @Serializable
+        @SerialName("PLAIN_TEXT")
+        data class PlainText(
+            val type: String,
+            val value: String? = null
+        ) : MarkdownValue()
+
+        @Serializable
+        @SerialName("EMOJI")
+        data class Emoji(
+            val type: String,
+            val value: PlainText,
+            val shortCode: String
+        ) : MarkdownValue()
+    }
 }
 
 @Serializable
@@ -161,19 +188,17 @@ sealed class FileMessage : MessageResponse() {
     ) : FileMessage()
 }
 
-// Кастомный сериализатор для определения типа сообщения
-object MessageSerializer :
-    JsonContentPolymorphicSerializer<MessageResponse>(MessageResponse::class) {
+// Обновляем MessageSerializer для поддержки системных сообщений
+object MessageSerializer : JsonContentPolymorphicSerializer<MessageResponse>(MessageResponse::class) {
     override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out MessageResponse> {
         val json = element.jsonObject
         return when {
+            json.containsKey("t") -> SystemMessage.serializer() // Если есть поле t - это системное сообщение
             !json.containsKey("file") -> TextMessage.serializer()
             json["file"]?.jsonObject?.get("type")?.jsonPrimitive?.content?.startsWith("image") == true ->
                 ImageMessage.serializer()
-
             json["file"]?.jsonObject?.get("type")?.jsonPrimitive?.content?.startsWith("video") == true ->
                 VideoMessage.serializer()
-
             else -> GenericFileMessage.serializer()
         }
     }

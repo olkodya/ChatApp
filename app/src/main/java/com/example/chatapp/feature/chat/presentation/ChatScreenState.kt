@@ -26,7 +26,7 @@ data class ChatScreenState(
 data class MessageState(
     val id: String,
     val isMeAuthor: Boolean,
-    val messageAuthorName: String,
+    val messageAuthorName: String?,
     val messageTimestamp: Long,
     val messageType: MessageType,
 ) {

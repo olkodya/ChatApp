@@ -3,12 +3,14 @@ package com.example.chatapp.feature.chat.di
 import com.example.chatapp.feature.chat.data.model.AttachmentData
 import com.example.chatapp.feature.chat.data.model.FileMessage
 import com.example.chatapp.feature.chat.data.model.MessageResponse
+import com.example.chatapp.feature.chat.data.model.SystemMessage
 import com.example.chatapp.feature.chat.data.model.TextMessage
+import com.example.chatapp.feature.chat.di.MessageEntity.MessageType.*
 
 data class MessageEntity(
     val id: String,
     val messageAuthorId: String,
-    val messageAuthorName: String,
+    val messageAuthorName: String?,
     val isMeAuthor: Boolean,
     val messageTimestamp: Long,
     val messageType: MessageType,
@@ -51,7 +53,7 @@ fun MessageResponse.toEntity(loggedUserId: String) = MessageEntity(
     messageTimestamp = ts.date,
     messageType = when (this) {
         is TextMessage -> {
-            MessageEntity.MessageType.Text(text = msg)
+            Text(text = msg)
         }
 
         is FileMessage -> {
@@ -59,7 +61,7 @@ fun MessageResponse.toEntity(loggedUserId: String) = MessageEntity(
                 is FileMessage.ImageMessage -> {
                     val attachment: AttachmentData.ImageAttachment =
                         attachments.firstOrNull() ?: error("FileMessage without ImageAttachment")
-                    MessageEntity.MessageType.Image(
+                    Image(
                         text = attachment.desc,
                         width = attachment.image_dimensions.width,
                         height = attachment.image_dimensions.height,
@@ -71,7 +73,7 @@ fun MessageResponse.toEntity(loggedUserId: String) = MessageEntity(
                 is FileMessage.VideoMessage -> {
                     val attachment: AttachmentData.VideoAttachment =
                         attachments.firstOrNull() ?: error("FileMessage without VideoAttachment")
-                    MessageEntity.MessageType.Video(
+                    Video(
                         text = attachment.desc,
                         videoName = attachment.title,
                         videoType = attachment.video_type,
@@ -82,7 +84,7 @@ fun MessageResponse.toEntity(loggedUserId: String) = MessageEntity(
                 is FileMessage.GenericFileMessage -> {
                     val attachment: AttachmentData.FileAttachment =
                         attachments.firstOrNull() ?: error("FileMessage without FileAttachment")
-                    MessageEntity.MessageType.File(
+                    File(
                         text = attachment.desc,
                         fileName = attachment.title,
                         fileUrl = "https://eltex2025.rocket.chat" + attachment.title_link
@@ -90,5 +92,7 @@ fun MessageResponse.toEntity(loggedUserId: String) = MessageEntity(
                 }
             }
         }
+
+        is SystemMessage -> TODO()
     },
 )
