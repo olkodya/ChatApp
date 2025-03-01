@@ -9,7 +9,7 @@ class ObserveRoomsUseCaseImpl @Inject constructor(
     private val chatListRepository: ChatListRepository,
 ) : ObserveRoomsUseCase {
 
-    override suspend fun invoke(): StateFlow<List<RoomEntity>?> {
-        return chatListRepository.observeRooms()
+    override suspend fun invoke(stateFlow: (StateFlow<List<RoomEntity>?>) -> Unit) {
+        return chatListRepository.observeRooms(stateFlow = stateFlow)
     }
 }

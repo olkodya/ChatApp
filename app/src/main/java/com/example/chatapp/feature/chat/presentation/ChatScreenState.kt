@@ -59,7 +59,7 @@ data class MessageState(
         @Immutable
         data class File(
             override val text: String?,
-            val fileName: String,
+            val fileName: String?,
             val fileUrl: String,
         ) : MessageType()
     }

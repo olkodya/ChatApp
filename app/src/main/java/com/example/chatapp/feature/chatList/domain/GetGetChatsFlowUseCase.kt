@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface ObserveRoomsUseCase {
 
-    suspend operator fun invoke(): StateFlow<List<RoomEntity>?>
+    suspend operator fun invoke(stateFlow: (StateFlow<List<RoomEntity>?>) -> Unit)
 }

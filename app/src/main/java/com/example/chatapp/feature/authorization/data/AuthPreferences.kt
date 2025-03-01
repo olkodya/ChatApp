@@ -10,6 +10,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -33,17 +34,18 @@ class AuthPreferences @Inject constructor(
             } else null
         }
 
-    suspend fun getAuthData(): AuthData? {
+    fun getAuthData(): AuthData? = runBlocking {
         val token = context.dataStore.updateData { it }[KEY_AUTH_TOKEN]
         val userId = context.dataStore.updateData { it }[KEY_USER_ID]
         val password = context.dataStore.updateData { it }[KEY_PASSWORD_SHA256]
         val username = context.dataStore.updateData { it }[KEY_USERNAME]
-        return if (token != null && userId != null && password != null && username != null) {
+        return@runBlocking if (token != null && userId != null && password != null && username != null) {
             AuthData(token, userId, password, username)
         } else {
             null
         }
     }
+
 
     suspend fun saveAuthData(token: String, userId: String, password: String, username: String) {
         context.dataStore.edit { preferences ->

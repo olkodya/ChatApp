@@ -1,6 +1,9 @@
 package com.example.chatapp.di
 
 import android.content.Context
+import com.example.chatapp.BuildConfig
+import com.example.chatapp.data.WebSocketDataStore
+import com.example.chatapp.data.WebSocketDataStoreImpl
 import com.example.chatapp.feature.authorization.data.AuthPreferences
 import com.example.chatapp.feature.authorization.data.api.LoginApi
 import com.example.chatapp.feature.chatList.data.api.ChatListApi
@@ -11,6 +14,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -25,18 +29,18 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class AppModule {
-    private companion object {
-        val contentType = "application/json".toMediaType()
-        val json = Json {
-            ignoreUnknownKeys = true
-            coerceInputValues = true
-        }
-        val BASE_URL = "https://eltex2025.rocket.chat/"
-    }
 
     @Provides
     @Singleton
     fun provideContext(@ApplicationContext context: Context): Context = context
+
+    @Singleton
+    @Provides
+    fun provideJson() = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+        classDiscriminatorMode = ClassDiscriminatorMode.NONE
+    }
 
     @Provides
     @Singleton
@@ -71,13 +75,27 @@ class AppModule {
     @Singleton
     @Provides
     fun provideRetrofit(
-        @Named("RestOkHttpClient") okHttpClient: OkHttpClient
+        @Named("RestOkHttpClient") okHttpClient: OkHttpClient,
+        json: Json
     ): Retrofit =
         Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl(BASE_URL)
-            .addConverterFactory(json.asConverterFactory(contentType))
+            .baseUrl(BuildConfig.BASE_URL)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
+
+    @Singleton
+    @Provides
+    fun provideSocketDataStore(
+        @Named("WebSocketOkHttpClient")
+        okHttpClient: OkHttpClient,
+        authPreferences: AuthPreferences,
+        json: Json
+    ): WebSocketDataStore = WebSocketDataStoreImpl(
+        okHttpClient = okHttpClient,
+        authPreferences = authPreferences,
+        json = json,
+    )
 
     @Provides
     fun provideLoginApi(retrofit: Retrofit): LoginApi = retrofit.create()

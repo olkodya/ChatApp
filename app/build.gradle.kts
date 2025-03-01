@@ -19,6 +19,9 @@ android {
         versionCode = 1
         versionName = "0.0.1"
 
+        buildConfigField("String", "BASE_URL", project.property("BASE_URL") as String)
+        buildConfigField("String", "BASE_SOCKET_URL", project.property("BASE_SOCKET_URL") as String)
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

@@ -1,12 +1,12 @@
-package com.example.chatapp.feature.chat.domain
+package com.example.chatapp.feature.chat.data
 
 import com.example.chatapp.feature.chat.di.MessageEntity
 import kotlinx.coroutines.flow.StateFlow
 
-interface ObserveMessagesUse {
+interface ChatRepository {
 
-    suspend operator fun invoke(
-        roomId: String,
+    suspend fun observeMessages(
         stateFlow: (StateFlow<List<MessageEntity>?>) -> Unit,
+        roomId: String
     )
 }

@@ -5,7 +5,10 @@ import com.example.chatapp.feature.chat.data.model.FileMessage
 import com.example.chatapp.feature.chat.data.model.MessageResponse
 import com.example.chatapp.feature.chat.data.model.SystemMessage
 import com.example.chatapp.feature.chat.data.model.TextMessage
-import com.example.chatapp.feature.chat.di.MessageEntity.MessageType.*
+import com.example.chatapp.feature.chat.di.MessageEntity.MessageType.File
+import com.example.chatapp.feature.chat.di.MessageEntity.MessageType.Image
+import com.example.chatapp.feature.chat.di.MessageEntity.MessageType.Text
+import com.example.chatapp.feature.chat.di.MessageEntity.MessageType.Video
 
 data class MessageEntity(
     val id: String,
@@ -39,32 +42,32 @@ data class MessageEntity(
 
         data class File(
             val text: String?,
-            val fileName: String,
+            val fileName: String?,
             val fileUrl: String,
         ) : MessageType()
     }
 }
 
 fun MessageResponse.toEntity(loggedUserId: String) = MessageEntity(
-    id = id,
-    messageAuthorName = u.name,
-    isMeAuthor = u.id == loggedUserId,
-    messageAuthorId = u.id,
-    messageTimestamp = ts.date,
+    id = requireNotNull(id),
+    messageAuthorName = requireNotNull(u?.name?:""),
+    isMeAuthor = u?.id == loggedUserId,
+    messageAuthorId = requireNotNull(u?.id?:""),
+    messageTimestamp = requireNotNull(ts?.date?:0),
     messageType = when (this) {
         is TextMessage -> {
-            Text(text = msg)
+            Text(text = requireNotNull(msg))
         }
 
         is FileMessage -> {
             when (this) {
                 is FileMessage.ImageMessage -> {
                     val attachment: AttachmentData.ImageAttachment =
-                        attachments.firstOrNull() ?: error("FileMessage without ImageAttachment")
+                        attachments?.firstOrNull() ?: error("FileMessage without ImageAttachment")
                     Image(
                         text = attachment.desc,
-                        width = attachment.image_dimensions.width,
-                        height = attachment.image_dimensions.height,
+                        width = requireNotNull(attachment.image_dimensions?.width),
+                        height = requireNotNull(attachment.image_dimensions.height),
                         imagePreviewUrl = "https://eltex2025.rocket.chat" + attachment.image_preview,
                         imageUrl = "https://eltex2025.rocket.chat" + attachment.image_url,
                     )
@@ -72,18 +75,18 @@ fun MessageResponse.toEntity(loggedUserId: String) = MessageEntity(
 
                 is FileMessage.VideoMessage -> {
                     val attachment: AttachmentData.VideoAttachment =
-                        attachments.firstOrNull() ?: error("FileMessage without VideoAttachment")
+                        attachments?.firstOrNull() ?: error("FileMessage without VideoAttachment")
                     Video(
                         text = attachment.desc,
-                        videoName = attachment.title,
-                        videoType = attachment.video_type,
+                        videoName = requireNotNull(attachment.title?:""),
+                        videoType = requireNotNull(attachment.video_type?:""),
                         videoUrl = "https://eltex2025.rocket.chat" + attachment.title_link
                     )
                 }
 
                 is FileMessage.GenericFileMessage -> {
                     val attachment: AttachmentData.FileAttachment =
-                        attachments.firstOrNull() ?: error("FileMessage without FileAttachment")
+                        attachments?.firstOrNull() ?: error("FileMessage without FileAttachment")
                     File(
                         text = attachment.desc,
                         fileName = attachment.title,
@@ -93,6 +96,6 @@ fun MessageResponse.toEntity(loggedUserId: String) = MessageEntity(
             }
         }
 
-        is SystemMessage -> Text(text = msg)
+        is SystemMessage -> Text(text = requireNotNull(msg))
     },
 )

@@ -2,7 +2,6 @@ package com.example.chatapp.feature.chat.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chatapp.feature.chat.di.MessageEntity
 import com.example.chatapp.feature.chat.domain.ObserveMessagesUse
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -15,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlin.collections.map
 
 @HiltViewModel(assistedFactory = ChatViewModel.Factory::class)
 class ChatViewModel @AssistedInject constructor(
@@ -30,24 +30,22 @@ class ChatViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
-            val messageEntities: StateFlow<List<MessageEntity>?> =
-                observeMessagesUse(roomId = roomId)
-            messageEntities.collectLatest { updatedMessages ->
-                if (messageEntities.value == null) {
-                    mutableChatListState.value =
-                        chatListState.value.copy()
-                } else {
-                    val messagesList = updatedMessages
-//                        ?.sortedByDescending { it. }
-                        ?.map { it.toMessageState() } ?: emptyList()
-                    mutableChatListState.value = chatListState.value.copy(
-//                        errorState = null,
-//                        isLoading = false,
-//                        rooms = roomsList.toImmutableList()
-                        messages = messagesList
-                    )
+            observeMessagesUse(
+                roomId = roomId,
+                stateFlow = { stateFlow ->
+                    viewModelScope.launch {
+                        stateFlow.collectLatest { updatedMessages ->
+                            if (updatedMessages != null) {
+                                val messagesList =
+                                    updatedMessages.map { it.toMessageState() } ?: emptyList()
+                                mutableChatListState.value = chatListState.value.copy(
+                                    messages = messagesList
+                                )
+                            }
+                        }
+                    }
                 }
-            }
+            )
         }
     }
 

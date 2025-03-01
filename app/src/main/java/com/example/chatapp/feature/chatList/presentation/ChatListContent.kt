@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -28,6 +30,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -136,7 +143,17 @@ fun ChatListContent(
             LoadingState()
         } else if (chatListState.errorState != null) {
         } else {
-            ChatList(state = chatListState, handleAction = handleAction)
+            val listState = rememberLazyListState()
+            var previousSize by remember { mutableStateOf(chatListState.rooms.size) }
+
+            LaunchedEffect(chatListState.rooms.size) {
+                if (chatListState.rooms.size > previousSize && chatListState.rooms.isNotEmpty()) {
+                    listState.animateScrollToItem(0)
+                }
+                previousSize = chatListState.rooms.size
+
+            }
+            ChatList(state = chatListState, handleAction = handleAction, listState)
         }
     }
 }
@@ -144,12 +161,15 @@ fun ChatListContent(
 @Composable
 private fun ChatList(
     state: ChatListScreenState,
-    handleAction: (ChatListViewModel.ChatListAction) -> Unit
+    handleAction: (ChatListViewModel.ChatListAction) -> Unit,
+    listState: LazyListState
 ) {
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
+        state = listState,
     ) {
+
         items(
             count = state.rooms.size,
             key = { id -> state.rooms[id].id },

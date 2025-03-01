@@ -21,6 +21,8 @@ private val LightColorScheme = lightColorScheme(
     secondary = LightBlue,
     tertiary = DarkGray,
     surfaceVariant = LightGray,
+    tertiaryContainer = LightLightGray,
+    secondaryContainer = LightLightBlue,
 //    background = Color.Red
 )
 

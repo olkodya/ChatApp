@@ -18,27 +18,27 @@ import kotlinx.serialization.json.jsonPrimitive
 @Serializable
 data class DateParamTest(
     @SerialName("\$date")
-    val date: Long
+    val date: Long? = null
 )
 
 @Serializable
 sealed class MessageResponse {
     @SerialName("_id")
-    abstract val id: String
-    abstract val rid: String
-    abstract val ts: DateParamTest
-    abstract val u: UserTest
-    abstract val _updatedAt: DateParamTest
-    abstract val urls: List<String>
-    abstract val mentions: List<String>
-    abstract val channels: List<String>
+    abstract val id: String?
+    abstract val rid: String?
+    abstract val ts: DateParamTest?
+    abstract val u: UserTest?
+    abstract val _updatedAt: DateParamTest?
+    abstract val urls: List<String>?
+    abstract val mentions: List<String>?
+    abstract val channels: List<String>?
 }
 
 @Serializable
 data class UserTest(
     @SerialName("_id")
-    val id: String,
-    val username: String,
+    val id: String? = null,
+    val username: String? = null,
     val name: String? = null
 )
 
@@ -46,15 +46,15 @@ data class UserTest(
 @SerialName("text")
 data class TextMessage(
     @SerialName("_id")
-    override val id: String,
-    override val rid: String,
-    override val ts: DateParamTest,
-    override val u: UserTest,
-    override val _updatedAt: DateParamTest,
-    override val urls: List<String> = emptyList(),
-    override val mentions: List<String> = emptyList(),
-    override val channels: List<String> = emptyList(),
-    val msg: String,
+    override val id: String? = null,
+    override val rid: String? = null,
+    override val ts: DateParamTest? = null,
+    override val u: UserTest? = null,
+    override val _updatedAt: DateParamTest? = null,
+    override val urls: List<String>? = null,
+    override val mentions: List<String>? = null,
+    override val channels: List<String>? = null,
+    val msg: String? = null,
     val md: List<MarkdownData>? = null
 ) : MessageResponse()
 
@@ -62,22 +62,22 @@ data class TextMessage(
 @SerialName("system")
 data class SystemMessage(
     @SerialName("_id")
-    override val id: String,
-    override val rid: String,
-    override val ts: DateParamTest,
-    override val u: UserTest,
-    override val _updatedAt: DateParamTest,
-    override val urls: List<String> = emptyList(),
-    override val mentions: List<String> = emptyList(),
-    override val channels: List<String> = emptyList(),
-    val msg: String,
-    val t: String, // тип системного сообщения (например "uj" для user joined)
-    val groupable: Boolean = false
+    override val id: String? = null,
+    override val rid: String? = null,
+    override val ts: DateParamTest? = null,
+    override val u: UserTest? = null,
+    override val _updatedAt: DateParamTest? = null,
+    override val urls: List<String>? = null,
+    override val mentions: List<String>? = null,
+    override val channels: List<String>? = null,
+    val msg: String? = null,
+    val t: String? = null, // тип системного сообщения (например "uj" для user joined)
+    val groupable: Boolean? = null
 ) : MessageResponse()
 
 @Serializable
 data class MarkdownData(
-    val type: String,
+    val type: String? = null,
     val value: List<MarkdownValue>? = null,
 ) {
     @Serializable
@@ -85,8 +85,8 @@ data class MarkdownData(
         @Serializable
         @SerialName("PLAIN_TEXT")
         data class PlainText(
-            val type: String,
-            val value: String? = null
+            val type: String? = null,
+            val value: String? = null,
         ) : MarkdownValue()
 
         @Serializable
@@ -110,77 +110,77 @@ data class MarkdownData(
 @Serializable
 data class FileData(
     @SerialName("_id")
-    val id: String,
-    val name: String,
-    val type: String,
-    val size: Int,
-    val format: String
+    val id: String? = null,
+    val name: String? = null,
+    val type: String? = null,
+    val size: Int? = null,
+    val format: String? = null,
 )
 
 @Serializable
 @SerialName("file")
 sealed class FileMessage : MessageResponse() {
-    abstract val msg: String
-    abstract val groupable: Boolean
-    abstract val file: FileData
-    abstract val files: List<FileData>
-    abstract val attachments: List<AttachmentData>
+    abstract val msg: String?
+    abstract val groupable: Boolean?
+    abstract val file: FileData?
+    abstract val files: List<FileData>?
+    abstract val attachments: List<AttachmentData>?
 
     @Serializable
     @SerialName("image")
     data class ImageMessage(
         @SerialName("_id")
-        override val id: String,
-        override val rid: String,
-        override val ts: DateParamTest,
-        override val u: UserTest,
-        override val _updatedAt: DateParamTest,
-        override val urls: List<String> = emptyList(),
-        override val mentions: List<String> = emptyList(),
-        override val channels: List<String> = emptyList(),
-        override val msg: String = "",
-        override val groupable: Boolean,
-        override val file: FileData,
-        override val files: List<FileData>,
-        override val attachments: List<ImageAttachment>
+        override val id: String? = null,
+        override val rid: String? = null,
+        override val ts: DateParamTest? = null,
+        override val u: UserTest? = null,
+        override val _updatedAt: DateParamTest? = null,
+        override val urls: List<String>? = null,
+        override val mentions: List<String>? = null,
+        override val channels: List<String>? = null,
+        override val msg: String? = null,
+        override val groupable: Boolean? = null,
+        override val file: FileData? = null,
+        override val files: List<FileData>? = null,
+        override val attachments: List<ImageAttachment>? = null,
     ) : FileMessage()
 
     @Serializable
     @SerialName("video")
     data class VideoMessage(
         @SerialName("_id")
-        override val id: String,
-        override val rid: String,
-        override val ts: DateParamTest,
-        override val u: UserTest,
-        override val _updatedAt: DateParamTest,
-        override val urls: List<String> = emptyList(),
-        override val mentions: List<String> = emptyList(),
-        override val channels: List<String> = emptyList(),
-        override val msg: String = "",
-        override val groupable: Boolean,
-        override val file: FileData,
-        override val files: List<FileData>,
-        override val attachments: List<VideoAttachment>
+        override val id: String? = null,
+        override val rid: String? = null,
+        override val ts: DateParamTest? = null,
+        override val u: UserTest? = null,
+        override val _updatedAt: DateParamTest? = null,
+        override val urls: List<String>? = null,
+        override val mentions: List<String>? = null,
+        override val channels: List<String>? = null,
+        override val msg: String? = null,
+        override val groupable: Boolean? = null,
+        override val file: FileData? = null,
+        override val files: List<FileData>? = null,
+        override val attachments: List<VideoAttachment>? = null,
     ) : FileMessage()
 
     @Serializable
     @SerialName("file")
     data class GenericFileMessage(
         @SerialName("_id")
-        override val id: String,
-        override val rid: String,
-        override val ts: DateParamTest,
-        override val u: UserTest,
-        override val _updatedAt: DateParamTest,
-        override val urls: List<String> = emptyList(),
-        override val mentions: List<String> = emptyList(),
-        override val channels: List<String> = emptyList(),
-        override val msg: String = "",
-        override val groupable: Boolean,
-        override val file: FileData,
-        override val files: List<FileData>,
-        override val attachments: List<FileAttachment>
+        override val id: String? = null,
+        override val rid: String? = null,
+        override val ts: DateParamTest? = null,
+        override val u: UserTest? = null,
+        override val _updatedAt: DateParamTest? = null,
+        override val urls: List<String>? = null,
+        override val mentions: List<String>? = null,
+        override val channels: List<String>? = null,
+        override val msg: String? = null,
+        override val groupable: Boolean? = null,
+        override val file: FileData? = null,
+        override val files: List<FileData>? = null,
+        override val attachments: List<FileAttachment>? = null,
     ) : FileMessage()
 }
 
@@ -206,11 +206,11 @@ object MessageSerializer :
 // Вспомогательные классы для вложений
 @Serializable
 sealed class AttachmentData {
-    abstract val ts: String
-    abstract val title: String
-    abstract val title_link: String
-    abstract val title_link_download: Boolean
-    abstract val type: String
+    abstract val ts: String?
+    abstract val title: String?
+    abstract val title_link: String?
+    abstract val title_link_download: Boolean?
+    abstract val type: String?
     abstract val description: String?
     abstract val descriptionMd: List<MarkdownData>?
 
@@ -224,48 +224,48 @@ sealed class AttachmentData {
 
     @Serializable
     data class ImageAttachment(
-        override val ts: String,
-        override val title: String,
-        override val title_link: String,
-        override val title_link_download: Boolean,
-        override val type: String,
+        override val ts: String? = null,
+        override val title: String? = null,
+        override val title_link: String? = null,
+        override val title_link_download: Boolean? = null,
+        override val type: String? = null,
         override val description: String? = null,
         override val descriptionMd: List<MarkdownData>? = null,
-        val image_dimensions: ImageDimensions,
-        val image_preview: String,
-        val image_url: String,
-        val image_type: String,
-        val image_size: Int
+        val image_dimensions: ImageDimensions? = null,
+        val image_preview: String? = null,
+        val image_url: String? = null,
+        val image_type: String? = null,
+        val image_size: Int? = null,
     ) : AttachmentData() {
 
         @Serializable
         data class ImageDimensions(
-            val width: Int,
-            val height: Int,
+            val width: Int? = null,
+            val height: Int? = null,
         )
     }
 
     @Serializable
     data class VideoAttachment(
-        override val ts: String,
-        override val title: String,
-        override val title_link: String,
-        override val title_link_download: Boolean,
-        override val type: String,
+        override val ts: String? = null,
+        override val title: String? = null,
+        override val title_link: String? = null,
+        override val title_link_download: Boolean? = null,
+        override val type: String? = null,
         override val description: String? = null,
         override val descriptionMd: List<MarkdownData>? = null,
-        val video_url: String,
-        val video_type: String,
-        val video_size: Int
+        val video_url: String? = null,
+        val video_type: String? = null,
+        val video_size: Int? = null,
     ) : AttachmentData()
 
     @Serializable
     data class FileAttachment(
-        override val ts: String,
-        override val title: String,
-        override val title_link: String,
-        override val title_link_download: Boolean,
-        override val type: String,
+        override val ts: String? = null,
+        override val title: String? = null,
+        override val title_link: String? = null,
+        override val title_link_download: Boolean? = null,
+        override val type: String? = null,
         override val description: String? = null,
         override val descriptionMd: List<MarkdownData>? = null,
         val format: String? = null,

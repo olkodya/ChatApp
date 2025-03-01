@@ -105,9 +105,9 @@ fun MessageItem(
     val minWidth: Dp = (LocalConfiguration.current.screenWidthDp * 0.3).dp
     val shape: Dp = 15.dp
     val containerColor: Color = if (chatState.isMeAuthor) {
-        MaterialTheme.colorScheme.secondary
+        MaterialTheme.colorScheme.secondaryContainer
     } else {
-        MaterialTheme.colorScheme.tertiary
+        MaterialTheme.colorScheme.tertiaryContainer
     }
 
     @Composable
@@ -176,7 +176,7 @@ fun MessageItem(
                 }
 
                 is MessageState.MessageType.File -> {
-                    Text(chatState.messageType.fileName)
+                    Text(chatState.messageType.fileName?:"")
                     Text(chatState.messageType.fileUrl)
                     MessageText(text = chatState.messageType.text.toString())
                     MessageTime(

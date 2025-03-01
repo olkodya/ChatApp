@@ -3,10 +3,10 @@ package com.example.chatapp.feature.chatList.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.feature.chatList.domain.ObserveRoomsUseCase
-import com.example.chatapp.feature.chatList.domain.model.RoomEntity
 import com.example.chatapp.feature.chatList.domain.model.toRoomState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,22 +47,30 @@ class ChatListViewModel @Inject constructor(
         mutableChatListState.value = chatListState.value.copy(errorState = null, isLoading = true)
         viewModelScope.launch {
             runCatching {
-                val roomsEntities: StateFlow<List<RoomEntity>?> = observeRoomsUseCase()
-                roomsEntities.collectLatest { updatedRooms ->
-                    if (roomsEntities.value == null) {
-                        mutableChatListState.value =
-                            chatListState.value.copy(errorState = null, isLoading = true)
-                    } else {
-                        val roomsList = updatedRooms
-                            ?.sortedByDescending { it.lastUpdateTimestamp }
-                            ?.map { it.toRoomState() } ?: emptyList()
-                        mutableChatListState.value = chatListState.value.copy(
-                            errorState = null,
-                            isLoading = false,
-                            rooms = roomsList.toImmutableList()
-                        )
+                observeRoomsUseCase(
+                    stateFlow = { stateFlow ->
+                        viewModelScope.launch {
+                            stateFlow.collectLatest { updatedRooms ->
+                                if (updatedRooms == null) {
+                                    mutableChatListState.value =
+                                        chatListState.value.copy(
+                                            errorState = null,
+                                            isLoading = true
+                                        )
+                                } else {
+                                    val roomsList = updatedRooms
+                                        .sortedByDescending { it.lastUpdateTimestamp }
+                                        .map { it.toRoomState() }
+                                    mutableChatListState.value = chatListState.value.copy(
+                                        errorState = null,
+                                        isLoading = false,
+                                        rooms = roomsList.toImmutableList()
+                                    )
+                                }
+                            }
+                        }
                     }
-                }
+                )
             }.onFailure {
                 print(it)
             }

@@ -245,5 +245,4 @@ fun NotFoundMessagePreview() {
             query = "xcx"
         )
     }
-
 }
