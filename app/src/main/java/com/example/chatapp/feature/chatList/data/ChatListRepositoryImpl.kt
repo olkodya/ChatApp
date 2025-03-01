@@ -4,7 +4,8 @@ import android.util.Log
 import com.example.chatapp.feature.authorization.data.AuthData
 import com.example.chatapp.feature.authorization.data.AuthPreferences
 import com.example.chatapp.feature.chat.data.model.MessageResponse
-import com.example.chatapp.feature.chat.data.model.MessagesResponse
+import com.example.chatapp.feature.chat.data.model.MessagesCallResponse
+import com.example.chatapp.feature.chat.data.model.MessagesSubResponse
 import com.example.chatapp.feature.chat.di.MessageEntity
 import com.example.chatapp.feature.chat.di.toEntity
 import com.example.chatapp.feature.chatList.data.api.ChatListApi
@@ -188,6 +189,16 @@ class ChatListRepositoryImpl @Inject constructor(
 
     private fun callsProcessing(text: String, responseId: String) = when (responseId) {
         ROOMS_CALL_ID -> {
+            try {
+                val res = formattedJson.decodeFromString(
+                    RoomsResponse.serializer(),
+                    text
+                ).result
+
+                Log.d("rooms", res.toString())
+            } catch (e: Exception) {
+                print(e.toString())
+            }
             val entities: List<RoomEntity> =
                 formattedJson.decodeFromString(
                     RoomsResponse.serializer(),
@@ -207,7 +218,7 @@ class ChatListRepositoryImpl @Inject constructor(
         MASSAGES_CALL_ID -> {
             try {
                 val messagesResponse: List<MessageResponse>? =
-                    formattedJson.decodeFromString<MessagesResponse>(text)
+                    formattedJson.decodeFromString<MessagesCallResponse>(text)
                         .result
                         ?.messages
                 val messagesEntity: List<MessageEntity>? = messagesResponse
@@ -283,6 +294,27 @@ class ChatListRepositoryImpl @Inject constructor(
     }
 
     private fun messagesChangedProcessing(text: String) {
+        try {
+            val messagesResponse: List<MessageResponse> =
+                formattedJson.decodeFromString<MessagesSubResponse>(text)
+                    .fields.messages ?: return
+
+            val messagesEntity: List<MessageEntity>? = messagesResponse
+                .map { it.toEntity(authData.userId) }
+
+            messagesMutableStateFlow.update { currentMessages ->
+                // Добавляем новые сообщения к существующим
+                val updatedMessages =
+                    (messagesEntity ?: emptyList()) + (currentMessages ?: emptyList())
+                // Сортируем по времени (опционально)
+                updatedMessages
+//                updatedMessages.sortedBy { it.timestamp }
+            }
+
+
+        } catch (e: Exception) {
+            Log.d("s", e.toString())
+        }
 //        val messagesResponseSubscription:  =
 //            formattedJson.decodeFromString(
 //                RoomsResponseSubscription.serializer(),
@@ -373,24 +405,23 @@ class ChatListRepositoryImpl @Inject constructor(
                 }
                 val responseId: String? = (Json.parseToJsonElement(text) as JsonObject)["id"]
                     ?.jsonPrimitive?.content
-                val eventName: String? = Json.parseToJsonElement(text)
-                    .jsonObject["fields"]
-                    ?.jsonObject["eventName"]?.jsonPrimitive?.content
 
-                val name: String? = Json.parseToJsonElement(text)
-                    .jsonObject["fields"]
-                    ?.jsonObject["name"]?.jsonPrimitive?.content
+                val eventName: String? = Json.parseToJsonElement(text)
+                    .jsonObject["collection"]?.jsonPrimitive?.content
+                    ?: Json.parseToJsonElement(text)
+                        .jsonObject["fields"]
+                        ?.jsonObject["eventName"]?.jsonPrimitive?.content
+
 
                 Log.d("sfsfsvsdvsv", responseId.toString())
                 when {
+                    eventName != null -> subscriptionsProcessing(text = text, eventName = eventName)
+
                     responseId != null && responseId != "id" -> callsProcessing(
                         text = text,
                         responseId = responseId
                     )
 
-                    eventName != null -> subscriptionsProcessing(text = text, eventName = eventName)
-
-                    name != null -> subscriptionsProcessing(text = text, eventName = name)
                 }
             } catch (exception: Exception) {
             }

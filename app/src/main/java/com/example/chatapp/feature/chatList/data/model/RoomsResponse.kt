@@ -66,7 +66,9 @@ data class RoomResponse(
         @SerialName("u")
         val author: MessageAuthorResponse,
         @SerialName("file")
-        val file: File? = null
+        val file: File? = null,
+        @SerialName("msg")
+        val msg: String? = null
     ) {
 
         @Serializable
@@ -82,14 +84,14 @@ data class RoomResponse(
             @SerialName("type")
             val type: String,
             @SerialName("value")
-            val value: List<MessageValueResponse>
+            val value: List<MessageValueResponse>? = null
         ) {
             @Serializable
             data class MessageValueResponse(
                 @SerialName("type")
-                val type: String,
+                val type: String? = null,
                 @SerialName("value")
-                val value: String,
+                val value: String? = null,
             )
         }
 

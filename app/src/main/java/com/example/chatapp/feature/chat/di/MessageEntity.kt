@@ -93,6 +93,6 @@ fun MessageResponse.toEntity(loggedUserId: String) = MessageEntity(
             }
         }
 
-        is SystemMessage -> TODO()
+        is SystemMessage -> Text(text = msg)
     },
 )

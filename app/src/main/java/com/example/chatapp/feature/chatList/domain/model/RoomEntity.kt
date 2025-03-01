@@ -91,7 +91,7 @@ fun RoomResponse.toEntity(
         userName = userName,
         userId = uids?.firstOrNull(),
         type = RoomType.fromString(type),
-        lastMessageContent = if (msgs == 0) "Сообщений нет" else lastMessage?.message?.firstOrNull()?.value?.firstOrNull()?.value,
+        lastMessageContent = if (msgs == 0) "Сообщений нет" else lastMessage?.msg,
         lastMessageAuthor = lastMessage?.author?.name,
         lastMessageAuthorId = lastMessage?.author?.id ?: "",
         lastUpdateTimestamp = if (msgs == 0) {

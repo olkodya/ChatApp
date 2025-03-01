@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,11 +63,18 @@ fun ChatContent(
             )
         }
     ) { paddingValues ->
+
+        val chatListState = rememberLazyListState()
+        LaunchedEffect(chatState.messages.size){
+            chatListState.animateScrollToItem(0)
+        }
+
         Column(
             modifier = Modifier
                 .padding(top = paddingValues.calculateTopPadding())
         ) {
             LazyColumn(
+                state = chatListState,
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 reverseLayout = true
             ) {

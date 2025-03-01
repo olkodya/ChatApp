@@ -14,18 +14,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-@Serializable
-data class MessagesResponse(
-    val msg: String,
-    val id: String?,
-    val result: MessagesResult?
-)
-
-@Serializable
-data class MessagesResult(
-    val messages: List<@Serializable(with = MessageSerializer::class) MessageResponse>?,
-    val unreadNotLoaded: Int?
-)
 
 @Serializable
 data class DateParamTest(
@@ -104,9 +92,17 @@ data class MarkdownData(
         @Serializable
         @SerialName("EMOJI")
         data class Emoji(
-            val type: String,
-            val value: PlainText,
-            val shortCode: String
+            val type: String? = null,
+            val value: PlainText? = null,
+            val shortCode: String? = null
+        ) : MarkdownValue()
+
+        @Serializable
+        @SerialName("PARAGRAPH")
+        data class Paragraph(
+            val type: String? = null,
+            val value: PlainText? = null,
+            val shortCode: String? = null
         ) : MarkdownValue()
     }
 }
@@ -189,7 +185,8 @@ sealed class FileMessage : MessageResponse() {
 }
 
 // Обновляем MessageSerializer для поддержки системных сообщений
-object MessageSerializer : JsonContentPolymorphicSerializer<MessageResponse>(MessageResponse::class) {
+object MessageSerializer :
+    JsonContentPolymorphicSerializer<MessageResponse>(MessageResponse::class) {
     override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out MessageResponse> {
         val json = element.jsonObject
         return when {
@@ -197,8 +194,10 @@ object MessageSerializer : JsonContentPolymorphicSerializer<MessageResponse>(Mes
             !json.containsKey("file") -> TextMessage.serializer()
             json["file"]?.jsonObject?.get("type")?.jsonPrimitive?.content?.startsWith("image") == true ->
                 ImageMessage.serializer()
+
             json["file"]?.jsonObject?.get("type")?.jsonPrimitive?.content?.startsWith("video") == true ->
                 VideoMessage.serializer()
+
             else -> GenericFileMessage.serializer()
         }
     }

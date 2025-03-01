@@ -147,15 +147,15 @@ sealed class WebSocketMessage(
         @SerialName("id")
         val id: String,
         @SerialName("params")
-        val params: List<String>,
+        val params: List<@Serializable(with = ParamTypeSerializer::class) ParamType?>,
     ) : WebSocketMessage(msg = "sub") {
 
         companion object {
-            fun messagesFactory(id: String, roomId: String) = RoomsSubscribe(
+            fun messagesFactory(id: String, roomId: String) = MessagesSubscribe (
                 id = id,
                 params = listOf(
-                    roomId,
-                    "false",
+                    ParamType.StringValue(roomId),
+                    ParamType.BoolValue(false),
                 )
             )
         }
@@ -192,6 +192,9 @@ sealed class WebSocketMessage(
 
         @Serializable
         data class IntValue(val value: Int) : ParamType()
+
+        @Serializable
+        data class BoolValue(val value: Boolean) : ParamType()
 
         @Serializable
         data class DateValue(
