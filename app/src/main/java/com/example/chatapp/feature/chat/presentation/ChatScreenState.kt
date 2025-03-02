@@ -3,7 +3,8 @@ package com.example.chatapp.feature.chat.presentation
 import androidx.compose.runtime.Immutable
 import com.example.chatapp.components.ErrorState
 import com.example.chatapp.feature.chat.di.MessageEntity
-import com.example.chatapp.feature.chatList.presentation.RoomState.RoomTypeState
+import com.example.chatapp.feature.chat.domain.model.ChatInfoEntity
+import com.example.chatapp.feature.chatList.domain.model.RoomEntity.RoomType
 
 @Immutable
 data class ChatScreenState(
@@ -14,11 +15,27 @@ data class ChatScreenState(
     val topBarState: TopBarState? = null,
 ) {
     data class TopBarState(
-        val isLoading: Boolean = false,
-        val chatType: RoomTypeState? = null,
+        val isLoading: Boolean = true,
+        val chatType: String? = null,
         val chatName: String? = null,
         val chatAvatarUrl: String? = null,
         val numberOfMembers: String? = null,
+    )
+}
+
+fun ChatInfoEntity.topTopBarState(roomId: String): ChatScreenState.TopBarState {
+
+
+    return ChatScreenState.TopBarState(
+        isLoading = false,
+        chatType = chatType,
+        chatName = chatName,
+        chatAvatarUrl = if (chatType == "c") {
+            "https://eltex2025.rocket.chat/avatar/room/$roomId"
+        } else {
+            "https://eltex2025.rocket.chat/avatar/$username"
+        },
+        numberOfMembers = numberOfMembers,
     )
 }
 

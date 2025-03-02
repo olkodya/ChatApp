@@ -11,11 +11,11 @@ import com.example.chatapp.feature.chatList.presentation.RoomState
 fun ChatScreen(
     roomId: String,
     navigateBack: () -> Unit,
-//    roomType: RoomState.RoomTypeState?,
+    roomType: RoomState.RoomTypeState,
 ) {
 
     val viewModel = hiltViewModel<ChatViewModel, ChatViewModel.Factory> { factory ->
-        factory.create(roomId)
+        factory.create(roomId, roomType)
     }
     val viewModelState: ChatScreenState by viewModel.chatListState.collectAsStateWithLifecycle()
 

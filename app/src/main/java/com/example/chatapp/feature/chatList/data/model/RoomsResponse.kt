@@ -48,7 +48,7 @@ data class RoomResponse(
     @SerialName("msgs")
     val msgs: Int,
     @SerialName("ts")
-    val ts: Date?,
+    val ts: Date? = null,
     @SerialName("uids")
     val uids: List<String>? = null,
     @SerialName("lastMessage")

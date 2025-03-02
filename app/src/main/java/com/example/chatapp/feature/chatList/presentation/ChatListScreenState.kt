@@ -7,6 +7,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 @Immutable
 data class ChatListScreenState(
@@ -45,9 +46,9 @@ data class RoomState(
 ) {
 
 
-    @Parcelize
+    @Serializable
     @Immutable
-    enum class RoomTypeState : Parcelable {
+    enum class RoomTypeState  {
         DIRECT,                 // Direct messages
         PUBLIC_CHANNEL,         // Public channel
         PRIVATE_CHANNEL,        // Private channel

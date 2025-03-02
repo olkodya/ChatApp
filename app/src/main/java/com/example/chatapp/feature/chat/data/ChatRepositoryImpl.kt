@@ -10,9 +10,13 @@ import com.example.chatapp.feature.chat.data.model.MessageResponse
 import com.example.chatapp.feature.chat.data.model.MessagesCallResponse
 import com.example.chatapp.feature.chat.data.model.MessagesSubResponse
 import com.example.chatapp.feature.chat.data.model.PostMessageRequest
+import com.example.chatapp.feature.chat.data.model.RoomInfoResponse
 import com.example.chatapp.feature.chat.data.model.TextMessage
 import com.example.chatapp.feature.chat.di.MessageEntity
 import com.example.chatapp.feature.chat.di.toEntity
+import com.example.chatapp.feature.chat.domain.model.ChatInfoEntity
+import com.example.chatapp.feature.chat.domain.model.toEntity
+import com.example.chatapp.feature.chatList.data.model.UserInfo
 import com.example.chatapp.feature.chatList.data.model.WebSocketMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -152,6 +156,16 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun sendMessage(roomId: String, text: String?) = api.postMessage(
         body = PostMessageRequest(message = TextMessage(rid = roomId, msg = text))
     )
+
+    override suspend fun getRoomInfo(roomId: String): ChatInfoEntity {
+        authData = authPreferences.getAuthData()?: return throw IOException("Auth data not set")
+      return  api.getRoomInfo(roomId = roomId).toEntity(authData.username, authData.userId)
+    }
+
+    override suspend fun getUserInfo(userId: String): ChatInfoEntity {
+        val user = api.getUserInfo(userId = userId)
+      return  ChatInfoEntity(username = user.user.name, chatType = "d", userId = user.user.id, chatName = user.user.name, chatAvatarUrl = "")
+    }
 
 
     private companion object {

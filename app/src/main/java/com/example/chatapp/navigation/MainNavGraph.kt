@@ -28,7 +28,7 @@ fun MainNavGraph(
                     rootNavHostController.navigate(
                         Routes.ScreenChat(
                             roomId = roomId,
-//                            roomType = roomType
+                            roomType = roomType
                         )
                     )
                 }

@@ -1,11 +1,6 @@
 package com.example.chatapp.navigation
 
-import android.os.Build
-import android.os.Bundle
-import android.os.Parcelable
-import androidx.navigation.NavType
 import com.example.chatapp.feature.chatList.presentation.RoomState
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,7 +12,7 @@ sealed class Routes {
     @Serializable
     data class ScreenChat(
         val roomId: String,
-//        val roomType: RoomState.RoomTypeState,
+        val roomType: RoomState.RoomTypeState,
     ) : Routes() {
 
         companion object {

@@ -263,8 +263,6 @@ private fun ChatItem(
 
                 }
 
-
-
                 MessageDoneMark(chatState)
 
                 if (chatState.lastMessageType != LastMessageType.UNKNOWN) {
@@ -413,7 +411,6 @@ fun MessageCounter(unreadMessagesCount: Int) {
         )
     }
 }
-
 
 @Composable
 fun MessageDoneMark(chatState: RoomState) {

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,7 +24,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,15 +45,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.example.chatapp.R
 import com.example.chatapp.components.EmptyState
 import com.example.chatapp.components.ErrorState
 import com.example.chatapp.components.LoadingState
+import com.example.chatapp.ui.theme.AppTheme
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -74,9 +83,78 @@ fun ChatContent(
                     titleContentColor = MaterialTheme.colorScheme.background,
                     actionIconContentColor = MaterialTheme.colorScheme.primary,
                 ),
+
                 title = {
-                    Text(chatState.topBarState?.chatName.toString())
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+
+
+                    ) {
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f) // Даем этой части возможность расширяться
+                        ) {
+                            Button(
+                                onClick = {
+                                    handleAction(ChatViewModel.ChatAction.OnBackClicked)
+                                },
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .size(24.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.shevron_left),
+                                    contentDescription = stringResource(R.string.profile_shevron_icon_content_description),
+                                )
+                            }
+
+                            if (chatState.topBarState?.isLoading == true) {
+                                LoadingState(Modifier, color = Color.White)
+                            } else {
+                                AsyncImage(
+                                    model = chatState.topBarState?.chatAvatarUrl,
+                                    contentDescription = "xsscs",
+                                    modifier = Modifier
+                                        .size(44.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                                )
+                                Text(
+                                    text = chatState.topBarState?.chatName.toString(),
+                                    modifier = Modifier
+                                        .padding(start = 12.dp)
+                                        .weight(1f), // Позволяем тексту занимать доступное пространство
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+
+                            Button(
+                                onClick = {
+                                    handleAction(ChatViewModel.ChatAction.OnBackClicked)
+                                },
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = stringResource(R.string.profile_shevron_icon_content_description),
+                                )
+                            }
+
+                        }
+
+                    }
+
                 }
+
+
             )
         },
         bottomBar = {
@@ -350,5 +428,21 @@ fun MessageItem(
             Spacer(Modifier.weight(1f))
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MessagesPreview() {
+    AppTheme {
+        ChatContent(
+            chatState = ChatScreenState(
+                topBarState = ChatScreenState.TopBarState(
+                    chatName = "sdkkkkkkkkkkkkkkkkkkkkkkkkkkkx",
+                    isLoading = false
+                )
+            )
+        ) { }
+    }
+
 }
 

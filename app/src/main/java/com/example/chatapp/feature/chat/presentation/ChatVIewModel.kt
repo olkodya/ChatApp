@@ -3,7 +3,9 @@ package com.example.chatapp.feature.chat.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.feature.chat.domain.CreateMessageUseCase
+import com.example.chatapp.feature.chat.domain.GetRoomInfoUseCase
 import com.example.chatapp.feature.chat.domain.ObserveMessagesUse
+import com.example.chatapp.feature.chatList.presentation.RoomState
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -12,15 +14,16 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = ChatViewModel.Factory::class)
 class ChatViewModel @AssistedInject constructor(
     @Assisted private val roomId: String,
+    @Assisted private val roomTypeState: RoomState.RoomTypeState,
     private val observeMessagesUse: ObserveMessagesUse,
-    private val createMessageUseCase: CreateMessageUseCase
+    private val createMessageUseCase: CreateMessageUseCase,
+    private val getRoomInfoUseCase: GetRoomInfoUseCase,
 ) : ViewModel() {
 
     private val mutableChatListState = MutableStateFlow<ChatScreenState>(ChatScreenState())
@@ -30,8 +33,13 @@ class ChatViewModel @AssistedInject constructor(
     val events = mutableEvents.receiveAsFlow()
 
     init {
+
+
+
         mutableChatListState.value = chatListState.value.copy(
             isLoading = true,
+            topBarState = ChatScreenState.TopBarState(isLoading = true)
+
         )
         viewModelScope.launch {
             observeMessagesUse(
@@ -52,6 +60,20 @@ class ChatViewModel @AssistedInject constructor(
                     }
                 }
             )
+        }
+
+        viewModelScope.launch {
+            mutableChatListState.value = chatListState.value.copy(
+                    isLoading = true
+            )
+            runCatching {
+            val room = getRoomInfoUseCase(roomId = roomId)
+            mutableChatListState.value = chatListState.value.copy(
+                topBarState = room.topTopBarState(roomId)
+            )}.onFailure {
+                print(it)
+            }
+
         }
     }
 
@@ -87,6 +109,13 @@ class ChatViewModel @AssistedInject constructor(
 
     }
 
+    private fun getRoom() {
+
+        viewModelScope.launch {
+        }
+
+    }
+
     private fun messageFieldChanged(textField: String) {
         mutableChatListState.value = chatListState.value.copy(textField = textField)
     }
@@ -99,12 +128,11 @@ class ChatViewModel @AssistedInject constructor(
 
     sealed class ChatEvent {
         data object NavigateBack : ChatEvent()
-
     }
 
     @AssistedFactory
     interface Factory {
-        fun create(roomId: String): ChatViewModel
+        fun create(roomId: String, roomTypeState: RoomState.RoomTypeState): ChatViewModel
     }
 
 }
