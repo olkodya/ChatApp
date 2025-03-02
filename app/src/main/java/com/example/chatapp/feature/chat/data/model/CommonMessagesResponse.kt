@@ -85,7 +85,7 @@ data class SystemMessage(
     override val mentions: List<String>? = null,
     override val channels: List<String>? = null,
     val msg: String? = null,
-    val t: String? = null, // тип системного сообщения (например "uj" для user joined)
+    val t: String? = null,
     val groupable: Boolean? = null
 ) : MessageResponse()
 

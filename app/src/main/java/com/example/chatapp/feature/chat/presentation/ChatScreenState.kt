@@ -4,7 +4,6 @@ import androidx.compose.runtime.Immutable
 import com.example.chatapp.components.ErrorState
 import com.example.chatapp.feature.chat.di.MessageEntity
 import com.example.chatapp.feature.chat.domain.model.ChatInfoEntity
-import com.example.chatapp.feature.chatList.domain.model.RoomEntity.RoomType
 
 @Immutable
 data class ChatScreenState(
@@ -19,7 +18,7 @@ data class ChatScreenState(
         val chatType: String? = null,
         val chatName: String? = null,
         val chatAvatarUrl: String? = null,
-        val numberOfMembers: String? = null,
+        val numberOfMembers: Int? = null,
     )
 }
 
@@ -79,6 +78,12 @@ data class MessageState(
             val fileName: String?,
             val fileUrl: String,
         ) : MessageType()
+
+        @Immutable
+        data class System(
+            override val text: String,
+        ) : MessageType()
+
     }
 }
 
@@ -114,4 +119,9 @@ fun MessageEntity.MessageType.toState() = when (this) {
         videoType = videoType,
         videoUrl = videoUrl
     )
+
+    is MessageEntity.MessageType.SystemMessage -> MessageState.MessageType.System(
+        text = text
+    )
+
 }

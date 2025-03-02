@@ -45,6 +45,11 @@ data class MessageEntity(
             val fileName: String?,
             val fileUrl: String,
         ) : MessageType()
+
+        data class SystemMessage(
+            val text: String,
+        ) : MessageType()
+
     }
 }
 
@@ -96,6 +101,6 @@ fun MessageResponse.toEntity(loggedUserId: String) = MessageEntity(
             }
         }
 
-        is SystemMessage -> Text(text = requireNotNull(msg))
+        is SystemMessage -> MessageEntity.MessageType.SystemMessage(text = t + msg)
     },
 )

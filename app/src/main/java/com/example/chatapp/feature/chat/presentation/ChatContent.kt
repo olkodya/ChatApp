@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,9 +26,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -44,10 +44,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -72,7 +74,7 @@ fun ChatContent(
     chatState: ChatScreenState,
     handleAction: (ChatViewModel.ChatAction) -> Unit
 ) {
-
+    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -89,13 +91,11 @@ fun ChatContent(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
-
-
                     ) {
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f) // Даем этой части возможность расширяться
+                            modifier = Modifier.weight(1f)
                         ) {
                             Button(
                                 onClick = {
@@ -103,7 +103,7 @@ fun ChatContent(
                                 },
                                 contentPadding = PaddingValues(0.dp),
                                 modifier = Modifier
-                                    .padding(8.dp)
+                                    .padding(end = 8.dp)
                                     .size(24.dp)
                             ) {
                                 Icon(
@@ -123,19 +123,32 @@ fun ChatContent(
                                         .clip(CircleShape)
                                         .background(MaterialTheme.colorScheme.surfaceVariant)
                                 )
-                                Text(
-                                    text = chatState.topBarState?.chatName.toString(),
+                                Column(
                                     modifier = Modifier
-                                        .padding(start = 12.dp)
-                                        .weight(1f), // Позволяем тексту занимать доступное пространство
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
+                                        .padding(start = 12.dp, end = 4.dp)
+                                        .weight(1f),
+                                ) {
+
+                                    Text(
+                                        text = chatState.topBarState?.chatName.toString(),
+                                        fontSize = 17.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                    if (chatState.topBarState?.chatType != "d") {
+                                        Text(
+                                            text = "Участники: " + chatState.topBarState?.numberOfMembers.toString(),
+                                            fontSize = 11.sp,
+                                            maxLines = 1,
+                                        )
+                                    }
+                                }
                             }
 
                             Button(
                                 onClick = {
-                                    handleAction(ChatViewModel.ChatAction.OnBackClicked)
+
                                 },
                                 contentPadding = PaddingValues(0.dp),
                                 modifier = Modifier
@@ -143,18 +156,14 @@ fun ChatContent(
                                     .size(24.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.MoreVert,
+                                    painter = painterResource(R.drawable.more),
                                     contentDescription = stringResource(R.string.profile_shevron_icon_content_description),
                                 )
                             }
 
                         }
-
                     }
-
                 }
-
-
             )
         },
         bottomBar = {
@@ -207,7 +216,10 @@ private fun MessagesList(
         state = chatListState,
         verticalArrangement = Arrangement.spacedBy(12.dp),
         reverseLayout = true,
-        contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding() + 8.dp)
+        contentPadding = PaddingValues(
+            top = 13.dp,
+            bottom = paddingValues.calculateBottomPadding() + 8.dp
+        )
     ) {
         items(
             count = chatState.messages.size,
@@ -221,6 +233,26 @@ private fun MessagesList(
         }
     }
 }
+
+@Composable
+fun MessageIcon(
+    painter: Painter, contentDescription: String,
+) {
+
+    Box(
+        Modifier
+            .clip(CircleShape)
+            .background(color = MaterialTheme.colorScheme.secondary)
+    ) {
+        Icon(
+            painter = painter,
+            modifier = Modifier.padding(8.dp),
+            contentDescription = contentDescription,
+            tint = MaterialTheme.colorScheme.surface
+        )
+    }
+}
+
 
 @Composable
 private fun ChatInputField(
@@ -243,7 +275,6 @@ private fun ChatInputField(
             onValueChange = onValueChange,
             modifier = Modifier
                 .weight(1f),
-//                .padding(horizontal = 8.dp),
             placeholder = { Text("Текст сообщения") },
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -254,28 +285,22 @@ private fun ChatInputField(
             maxLines = 5
         )
 
-
         IconButton(
             onClick = onSendClick,
             enabled = value.isNotEmpty()
         ) {
             if (value.isNotEmpty()) {
-                Icon(
-                    imageVector = Icons.Default.Send,
-                    contentDescription = "Отправить",
-                    tint = if (value.isNotEmpty())
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                MessageIcon(
+                    painter = painterResource(R.drawable.send),
+                    contentDescription = "",
                 )
             } else {
+
                 Icon(
-                    imageVector = Icons.Default.Send,
+                    painter = painterResource(R.drawable.attach),
                     contentDescription = "Отправить",
-                    tint = if (value.isNotEmpty())
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    tint =
+                        MaterialTheme.colorScheme.secondary
                 )
             }
 
@@ -306,6 +331,7 @@ fun MessageItem(
             text = text
         )
     }
+
 
     @Composable
     fun MessageTime(
@@ -365,13 +391,43 @@ fun MessageItem(
                 }
 
                 is MessageState.MessageType.File -> {
-                    Text(chatState.messageType.fileName ?: "")
-                    Text(chatState.messageType.fileUrl)
-                    MessageText(text = chatState.messageType.text.toString())
-                    MessageTime(
-                        timestamp = chatState.messageTimestamp,
-                        color = containerColor
-                    )
+
+                    Row(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+
+                    ) {
+                        MessageIcon(
+                            painterResource(R.drawable.draft),
+                            "add"
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            modifier = Modifier.weight(2f),
+                            text = chatState.messageType.fileName.toString(),
+                            softWrap = true,
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        if (chatState.messageType.text == null)
+                            Box(Modifier.weight(1f)) {
+                                MessageTime(
+                                    timestamp = chatState.messageTimestamp,
+                                    color = containerColor
+                                )
+                            }
+                    }
+                    if (chatState.messageType.text != null) {
+
+                        MessageText(text = chatState.messageType.text.toString())
+
+                        MessageTime(
+                            timestamp = chatState.messageTimestamp,
+                            color = containerColor
+                        )
+                    }
                 }
 
                 is MessageState.MessageType.Image -> {
@@ -413,13 +469,45 @@ fun MessageItem(
                 }
 
                 is MessageState.MessageType.Video -> {
-                    Text(chatState.messageType.videoName)
-                    Text(chatState.messageType.videoUrl)
-                    MessageText(text = chatState.messageType.text.toString())
-                    MessageTime(
-                        timestamp = chatState.messageTimestamp,
-                        color = containerColor
-                    )
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+
+                    ) {
+                        MessageIcon(
+                            painterResource(R.drawable.videocam_oultined),
+                            "add"
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            modifier = Modifier.weight(2f),
+                            text = chatState.messageType.videoName.toString(),
+                            softWrap = true,
+                        )
+                        if (chatState.messageType.text == null)
+                            Box(Modifier.weight(1f)) {
+                                MessageTime(
+                                    timestamp = chatState.messageTimestamp,
+                                    color = containerColor
+                                )
+                            }
+                    }
+                    if (chatState.messageType.text != null) {
+
+                        MessageText(text = chatState.messageType.text.toString())
+
+                        MessageTime(
+                            timestamp = chatState.messageTimestamp,
+                            color = containerColor
+                        )
+                    }
+                }
+
+                is MessageState.MessageType.System -> {
+
                 }
             }
 
@@ -428,6 +516,15 @@ fun MessageItem(
             Spacer(Modifier.weight(1f))
         }
     }
+    if (chatState.messageType is MessageState.MessageType.System)
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Text(
+                text = chatState.messageType.text.toString(),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.tertiary
+            )
+
+        }
 }
 
 @Preview(showBackground = true)
@@ -439,10 +536,93 @@ fun MessagesPreview() {
                 topBarState = ChatScreenState.TopBarState(
                     chatName = "sdkkkkkkkkkkkkkkkkkkkkkkkkkkkx",
                     isLoading = false
-                )
+                ),
+                textField = "sfs"
             )
         ) { }
     }
 
 }
 
+@Preview(showBackground = true)
+@Composable
+fun MessageItemSystemPreview() {
+    AppTheme {
+        MessageItem(
+            chatState = MessageState(
+                id = "sx",
+                isMeAuthor = true,
+                messageAuthorName = "Olga",
+                messageTimestamp = 0,
+                messageType = MessageState.MessageType.System("Warning")
+            )
+        ) {
+
+        }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun MessageItemTextPreview() {
+    AppTheme {
+        MessageItem(
+            chatState = MessageState(
+                id = "sx",
+                isMeAuthor = true,
+                messageAuthorName = "Olga",
+                messageTimestamp = 0,
+                messageType = MessageState.MessageType.Text("Hi")
+            )
+        ) {
+
+        }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun MessageItemVideoPreview() {
+    AppTheme {
+        MessageItem(
+            chatState = MessageState(
+                id = "sx",
+                isMeAuthor = true,
+                messageAuthorName = "Olga",
+                messageTimestamp = 0,
+                messageType = MessageState.MessageType.Video(
+                    text = null,
+                    videoType = "ad",
+                    videoName = "zzdzssssssssszxssssssssssssssxaxa.jar",
+                    videoUrl = "z"
+                )
+            )
+        ) {
+
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MessageItemFilePreview() {
+    AppTheme {
+        MessageItem(
+            chatState = MessageState(
+                id = "sx",
+                isMeAuthor = true,
+                messageAuthorName = "Olga",
+                messageTimestamp = 0,
+                messageType = MessageState.MessageType.File(
+                    text = null,
+                    fileName = "ca,dddddddddddddkdxd",
+                    fileUrl = ""
+                )
+            )
+        ) {
+
+        }
+    }
+}

@@ -1,19 +1,18 @@
 package com.example.chatapp.feature.chat.domain.model
 
 import com.example.chatapp.feature.chat.data.model.RoomInfoResponse
-import com.example.chatapp.feature.chatList.domain.model.RoomEntity.RoomType
 
 data class ChatInfoEntity(
     val username: String? = null,
-    val chatType: String?=null,
+    val chatType: String? = null,
     val userId: String? = null,
     val chatName: String? = null,
     val chatAvatarUrl: String? = null,
-    val numberOfMembers: String? = null,
+    val numberOfMembers: Int? = null,
 )
 
 
-fun RoomInfoResponse.toEntity(usernameMe: String?, loggedUserId: String) : ChatInfoEntity {
+fun RoomInfoResponse.toEntity(usernameMe: String?, loggedUserId: String): ChatInfoEntity {
     val userName = room.usernames?.size?.let {
         if (it > 1) {
             if (room.usernames[0] != usernameMe)
@@ -27,5 +26,11 @@ fun RoomInfoResponse.toEntity(usernameMe: String?, loggedUserId: String) : ChatI
     }
 
     val uid = room.uids?.firstOrNull()
-    return ChatInfoEntity(userId = uid, username = userName, chatType = room.type, chatName = room.name?:"")
+    return ChatInfoEntity(
+        userId = uid,
+        username = userName,
+        chatType = room.type,
+        chatName = room.name ?: "",
+        numberOfMembers = room.usersCount,
+    )
 }
