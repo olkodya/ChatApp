@@ -1,6 +1,5 @@
 package com.example.chatapp.data
 
-import android.util.Log
 import com.example.chatapp.BuildConfig
 import com.example.chatapp.feature.authorization.data.AuthPreferences
 import com.example.chatapp.feature.chatList.data.model.WebSocketMessage
@@ -41,9 +40,6 @@ class WebSocketDataStoreImpl(
                 return
             }
             mutableResponseFlow.value = text
-//            val responseId: String? = (Json.parseToJsonElement(text) as JsonObject)["id"]
-//                ?.jsonPrimitive?.content
-            Log.d("WebSocketDataStoreImpl onMessage", "")
         }
 
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {

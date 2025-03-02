@@ -1,6 +1,10 @@
 package com.example.chatapp.feature.chat.presentation
 
 import android.annotation.SuppressLint
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +25,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -39,12 +44,17 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -74,7 +84,7 @@ fun ChatContent(
     chatState: ChatScreenState,
     handleAction: (ChatViewModel.ChatAction) -> Unit
 ) {
-    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -198,7 +208,10 @@ fun ChatContent(
                     message = "Чат создан, сообщений нет"
                 )
 
-                else -> MessagesList(chatListState, paddingValues, chatState, handleAction)
+                else -> {
+                    MessagesList(chatListState, paddingValues, chatState, handleAction)
+
+                }
             }
         }
     }
@@ -261,6 +274,28 @@ private fun ChatInputField(
     onSendClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    var selectedImages by remember {
+        mutableStateOf<List<Uri?>>(emptyList())
+    }
+
+    val maxSelectionCount = 1
+
+
+    val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> selectedImages = listOf(uri) }
+    )
+
+
+    fun launchPhotoPicker() {
+        singlePhotoPickerLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
+    }
+
+    ImageLayoutView(selectedImages = selectedImages)
+
     Row(
         modifier = modifier
             .shadow(elevation = 8.dp)
@@ -286,8 +321,7 @@ private fun ChatInputField(
         )
 
         IconButton(
-            onClick = onSendClick,
-            enabled = value.isNotEmpty()
+            onClick = { launchPhotoPicker() },
         ) {
             if (value.isNotEmpty()) {
                 MessageIcon(
@@ -626,3 +660,19 @@ fun MessageItemFilePreview() {
         }
     }
 }
+
+
+@Composable
+fun ImageLayoutView(selectedImages: List<Uri?>) {
+    Box() {
+        AsyncImage(
+            model = selectedImages.firstOrNull(),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            contentScale = ContentScale.Fit
+        )
+    }
+}
+

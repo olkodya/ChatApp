@@ -21,13 +21,13 @@ data class RoomEntity(
 ) {
 
     enum class RoomType(val value: String) {
-        DIRECT("d"),                // Direct messages
-        PUBLIC_CHANNEL("c"),        // Public channel
-        PRIVATE_CHANNEL("p"),       // Private channel
-        DISCUSSIONS("discussions"), // Team or channel discussions
-        TEAMS("teams"),             // Workspace teams
-        LIVECHAT("l"),              // Livechat
-        VOIP("v"),                  // Omnichannel VoIP rooms
+        DIRECT("d"),
+        PUBLIC_CHANNEL("c"),
+        PRIVATE_CHANNEL("p"),
+        DISCUSSIONS("discussions"),
+        TEAMS("teams"),
+        LIVECHAT("l"),
+        VOIP("v"),
         UNKNOWN("unknown");
 
         companion object {
@@ -42,13 +42,6 @@ data class RoomEntity(
         VIDEO("video"),
         DOCUMENT("document"),
         UNKNOWN("unknown");
-
-        companion object {
-//            fun fromString(value: String): LastMessageType {
-//
-//            }
-        }
-
     }
 }
 

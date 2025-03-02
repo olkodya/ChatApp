@@ -16,7 +16,6 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 
-
 @Serializable
 data class UrlMetaData(
     val url: String,
@@ -81,7 +80,7 @@ data class SystemMessage(
     override val ts: DateParamTest? = null,
     override val u: UserTest? = null,
     override val _updatedAt: DateParamTest? = null,
-    override val  urls: List<UrlMetaData>? = null,
+    override val urls: List<UrlMetaData>? = null,
     override val mentions: List<String>? = null,
     override val channels: List<String>? = null,
     val msg: String? = null,
@@ -158,7 +157,7 @@ sealed class FileMessage : MessageResponse() {
         override val ts: DateParamTest? = null,
         override val u: UserTest? = null,
         override val _updatedAt: DateParamTest? = null,
-        override val  urls: List<UrlMetaData>? = null,
+        override val urls: List<UrlMetaData>? = null,
         override val mentions: List<String>? = null,
         override val channels: List<String>? = null,
         override val msg: String? = null,
@@ -207,7 +206,6 @@ sealed class FileMessage : MessageResponse() {
     ) : FileMessage()
 }
 
-// Обновляем MessageSerializer для поддержки системных сообщений
 object MessageSerializer :
     JsonContentPolymorphicSerializer<MessageResponse>(MessageResponse::class) {
     override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out MessageResponse> {
@@ -226,7 +224,6 @@ object MessageSerializer :
     }
 }
 
-// Вспомогательные классы для вложений
 @Serializable
 sealed class AttachmentData {
     abstract val ts: String?

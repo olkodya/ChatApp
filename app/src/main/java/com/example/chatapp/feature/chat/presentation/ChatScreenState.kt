@@ -123,5 +123,4 @@ fun MessageEntity.MessageType.toState() = when (this) {
     is MessageEntity.MessageType.SystemMessage -> MessageState.MessageType.System(
         text = text
     )
-
 }

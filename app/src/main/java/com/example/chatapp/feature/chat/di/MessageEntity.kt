@@ -55,10 +55,10 @@ data class MessageEntity(
 
 fun MessageResponse.toEntity(loggedUserId: String) = MessageEntity(
     id = requireNotNull(id),
-    messageAuthorName = requireNotNull(u?.name?:""),
+    messageAuthorName = requireNotNull(u?.name ?: ""),
     isMeAuthor = u?.id == loggedUserId,
-    messageAuthorId = requireNotNull(u?.id?:""),
-    messageTimestamp = requireNotNull(ts?.date?:0),
+    messageAuthorId = requireNotNull(u?.id ?: ""),
+    messageTimestamp = requireNotNull(ts?.date ?: 0),
     messageType = when (this) {
         is TextMessage -> {
             Text(text = requireNotNull(msg))
@@ -83,8 +83,8 @@ fun MessageResponse.toEntity(loggedUserId: String) = MessageEntity(
                         attachments?.firstOrNull() ?: error("FileMessage without VideoAttachment")
                     Video(
                         text = attachment.desc,
-                        videoName = requireNotNull(attachment.title?:""),
-                        videoType = requireNotNull(attachment.video_type?:""),
+                        videoName = requireNotNull(attachment.title ?: ""),
+                        videoType = requireNotNull(attachment.video_type ?: ""),
                         videoUrl = "https://eltex2025.rocket.chat" + attachment.title_link
                     )
                 }

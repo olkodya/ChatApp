@@ -17,5 +17,3 @@ data class MessagesSubResponse(
         val messages: List<@Serializable(with = MessageSerializer::class) MessageResponse>?,
     )
 }
-
-

@@ -1,13 +1,13 @@
 package com.example.chatapp.feature.chat.data.model
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class RoomInfoResponse(
     @SerialName("room")
     val room: Room,
-){
+) {
     @Serializable
     data class Room(
         @SerialName("_id")

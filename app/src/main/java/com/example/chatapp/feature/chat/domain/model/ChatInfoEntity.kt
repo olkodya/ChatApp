@@ -11,7 +11,6 @@ data class ChatInfoEntity(
     val numberOfMembers: Int? = null,
 )
 
-
 fun RoomInfoResponse.toEntity(usernameMe: String?, loggedUserId: String): ChatInfoEntity {
     val userName = room.usernames?.size?.let {
         if (it > 1) {

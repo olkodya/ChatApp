@@ -1,6 +1,6 @@
 package com.example.chatapp.feature.chatList.data
 
-import android.util.Log
+import android.content.Context
 import com.example.chatapp.data.WebSocketDataStore
 import com.example.chatapp.feature.authorization.data.AuthData
 import com.example.chatapp.feature.authorization.data.AuthPreferences
@@ -10,13 +10,11 @@ import com.example.chatapp.feature.chat.data.model.MessageResponse
 import com.example.chatapp.feature.chat.data.model.MessagesCallResponse
 import com.example.chatapp.feature.chat.data.model.MessagesSubResponse
 import com.example.chatapp.feature.chat.data.model.PostMessageRequest
-import com.example.chatapp.feature.chat.data.model.RoomInfoResponse
 import com.example.chatapp.feature.chat.data.model.TextMessage
 import com.example.chatapp.feature.chat.di.MessageEntity
 import com.example.chatapp.feature.chat.di.toEntity
 import com.example.chatapp.feature.chat.domain.model.ChatInfoEntity
 import com.example.chatapp.feature.chat.domain.model.toEntity
-import com.example.chatapp.feature.chatList.data.model.UserInfo
 import com.example.chatapp.feature.chatList.data.model.WebSocketMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,6 +36,7 @@ class ChatRepositoryImpl @Inject constructor(
     @Named("WebSocketOkHttpClient") private val okHttpClient: OkHttpClient,
     private val authPreferences: AuthPreferences,
     private val formattedJson: Json,
+    private val context: Context
 ) : ChatRepository {
 
     private lateinit var authData: AuthData
@@ -55,11 +54,8 @@ class ChatRepositoryImpl @Inject constructor(
                         ?.messages
                 val messagesEntity: List<MessageEntity>? = messagesResponse
                     ?.map { it.toEntity(authData.userId) }
-
                 messagesMutableStateFlow.value = messagesEntity
-
             } catch (e: Exception) {
-                Log.d("s", e.toString())
             }
         }
 
@@ -75,26 +71,18 @@ class ChatRepositoryImpl @Inject constructor(
         else -> Unit
     }
 
-
     private fun messagesChangedProcessing(text: String) {
         try {
-            Log.d("sxas", "saxax")
             val messagesResponse: List<MessageResponse> =
                 formattedJson.decodeFromString<MessagesSubResponse>(text)
                     .fields.messages ?: return
-            Log.d("sxas", "saxax")
-
             val messagesEntity: List<MessageEntity>? = messagesResponse
                 .map { it.toEntity(authData.userId) }
-            Log.d("scacasa", messagesStateFlow.value.toString())
-
             messagesMutableStateFlow.update { currentMessages ->
                 val updatedMessages =
                     (messagesEntity ?: emptyList()) + (currentMessages ?: emptyList())
                 updatedMessages
             }
-            Log.d("scacasa", messagesEntity.toString())
-            Log.d("scacasa", messagesStateFlow.value.toString())
         } catch (e: Exception) {
             print("")
         }
@@ -108,8 +96,6 @@ class ChatRepositoryImpl @Inject constructor(
 
             val eventName: String? = Json.parseToJsonElement(text)
                 .jsonObject["collection"]?.jsonPrimitive?.content
-
-            Log.e("12351235421", "$responseId++++$eventName")
             when {
                 eventName != null -> subscriptionsProcessing(text = text, eventName = eventName)
 
@@ -158,15 +144,20 @@ class ChatRepositoryImpl @Inject constructor(
     )
 
     override suspend fun getRoomInfo(roomId: String): ChatInfoEntity {
-        authData = authPreferences.getAuthData()?: return throw IOException("Auth data not set")
-      return  api.getRoomInfo(roomId = roomId).toEntity(authData.username, authData.userId)
+        authData = authPreferences.getAuthData() ?: return throw IOException("Auth data not set")
+        return api.getRoomInfo(roomId = roomId).toEntity(authData.username, authData.userId)
     }
 
     override suspend fun getUserInfo(userId: String): ChatInfoEntity {
         val user = api.getUserInfo(userId = userId)
-      return  ChatInfoEntity(username = user.user.name, chatType = "d", userId = user.user.id, chatName = user.user.name, chatAvatarUrl = "")
+        return ChatInfoEntity(
+            username = user.user.name,
+            chatType = "d",
+            userId = user.user.id,
+            chatName = user.user.name,
+            chatAvatarUrl = ""
+        )
     }
-
 
     private companion object {
         const val MASSAGES_CALL_ID = "477ca7f6-d8e9-4921-a407-b32da33e1b9a"

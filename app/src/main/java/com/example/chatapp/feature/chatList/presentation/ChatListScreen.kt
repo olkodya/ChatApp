@@ -51,7 +51,13 @@ fun ChatListScreen(
                 viewModel.handleAction(ChatListViewModel.ChatListAction.OnCancelButtonClick)
 
             },
-            onNavigateToChat = { viewModel.handleAction(ChatListViewModel.ChatListAction.OnUserClick(roomId = it))},
+            onNavigateToChat = {
+                viewModel.handleAction(
+                    ChatListViewModel.ChatListAction.OnUserClick(
+                        roomId = it
+                    )
+                )
+            },
             sheetState = sheetState,
         )
     }

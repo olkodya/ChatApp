@@ -2,7 +2,6 @@ package com.example.chatapp.feature.chat.data
 
 import com.example.chatapp.feature.chat.di.MessageEntity
 import com.example.chatapp.feature.chat.domain.model.ChatInfoEntity
-import com.example.chatapp.feature.chatList.data.model.UserInfo
 import kotlinx.coroutines.flow.StateFlow
 
 interface ChatRepository {

@@ -1,12 +1,10 @@
 package com.example.chatapp.feature.chatList.presentation
 
-import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 import com.example.chatapp.components.ErrorState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 @Immutable
@@ -48,14 +46,14 @@ data class RoomState(
 
     @Serializable
     @Immutable
-    enum class RoomTypeState  {
-        DIRECT,                 // Direct messages
-        PUBLIC_CHANNEL,         // Public channel
-        PRIVATE_CHANNEL,        // Private channel
-        DISCUSSIONS,            // Team or channel discussions
-        TEAMS,                  // Workspace teams
-        LIVECHAT,               // Livechat
-        VOIP,                   // Omnichannel VoIP rooms
+    enum class RoomTypeState {
+        DIRECT,
+        PUBLIC_CHANNEL,
+        PRIVATE_CHANNEL,
+        DISCUSSIONS,
+        TEAMS,
+        LIVECHAT,
+        VOIP,
         UNKNOWN;
     }
 

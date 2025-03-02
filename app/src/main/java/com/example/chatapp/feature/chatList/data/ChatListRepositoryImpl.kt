@@ -4,7 +4,6 @@ import android.util.Log
 import com.example.chatapp.data.WebSocketDataStore
 import com.example.chatapp.feature.authorization.data.AuthData
 import com.example.chatapp.feature.authorization.data.AuthPreferences
-import com.example.chatapp.feature.chatCreation.domain.model.CreateChatEntity
 import com.example.chatapp.feature.chatList.data.api.ChatListApi
 import com.example.chatapp.feature.chatList.data.model.CreateChatRequest
 import com.example.chatapp.feature.chatList.data.model.CreateChatResponse
@@ -21,7 +20,6 @@ import com.example.chatapp.feature.chatList.domain.model.toEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -122,12 +120,9 @@ class ChatListRepositoryImpl @Inject constructor(
                         text
                     ).result.update.map { it.toEntity(0, authData.userId, authData.username) }
                 roomsMutableStateFlow.value = entities
-                Log.d("roomsMutableStateFlow", "roomsMutableStateFlow?.value?.size")
                 checkAndLoadConversationalistInfo()
             } catch (e: Exception) {
                 print(e.toString())
-                Log.d("roomsMutableStateFlow", e.toString())
-
             }
         }
 
@@ -135,10 +130,8 @@ class ChatListRepositoryImpl @Inject constructor(
             try {
                 val subscriptions: SubscriptionsResponse =
                     formattedJson.decodeFromString(SubscriptionsResponse.serializer(), text)
-                Log.d("d", subscriptions.toString())
                 subscriptions.result.update.meagreSubscriptionsToRoomsStateFlow()
             } catch (e: Exception) {
-                Log.d("s", e.toString())
             }
         }
 
@@ -241,11 +234,8 @@ class ChatListRepositoryImpl @Inject constructor(
                 ?.jsonPrimitive?.content
 
             val eventName: String? = Json.parseToJsonElement(text)
-                    .jsonObject["fields"]
-                    ?.jsonObject["eventName"]?.jsonPrimitive?.content
-
-            Log.d("roomsMutableStateFlow", responseId.toString())
-//            Log.e("12351235421", "$responseId++++$eventName")
+                .jsonObject["fields"]
+                ?.jsonObject["eventName"]?.jsonPrimitive?.content
             when {
                 eventName != null -> subscriptionsProcessing(text = text, eventName = eventName)
 

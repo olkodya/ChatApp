@@ -1,6 +1,5 @@
 package com.example.chatapp.feature.chatList.presentation
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -414,7 +413,6 @@ fun MessageCounter(unreadMessagesCount: Int) {
 
 @Composable
 fun MessageDoneMark(chatState: RoomState) {
-    Log.d("authir", chatState.numberOfCheckMark.toString())
     if (chatState.numberOfCheckMark == 1)
         Icon(
             painter = painterResource(R.drawable.unread_24),

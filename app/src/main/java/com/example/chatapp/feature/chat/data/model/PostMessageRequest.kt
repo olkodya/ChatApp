@@ -8,5 +8,3 @@ data class PostMessageRequest(
     @SerialName("message")
     val message: TextMessage
 )
-
-
