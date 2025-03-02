@@ -8,7 +8,6 @@ data class UserEntity(
     val name: String,
 )
 
-
 fun UserEntity.toUserState(): UserState = UserState(
     id = id,
     avatarUrl = "https://eltex2025.rocket.chat/avatar/$username",

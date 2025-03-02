@@ -23,7 +23,7 @@ fun CreateChatBottomSheet(
                     if (event.roomId == null) {
                         onDismiss()
                     } else {
-                        onNavigateToChat(event.roomId, )
+                        onNavigateToChat(event.roomId)
                     }
                 }
             }

@@ -33,14 +33,11 @@ class ChatViewModel @AssistedInject constructor(
     val events = mutableEvents.receiveAsFlow()
 
     init {
-
-
-
         mutableChatListState.value = chatListState.value.copy(
             isLoading = true,
             topBarState = ChatScreenState.TopBarState(isLoading = true)
-
         )
+
         viewModelScope.launch {
             observeMessagesUse(
                 roomId = roomId,
@@ -53,8 +50,7 @@ class ChatViewModel @AssistedInject constructor(
                                 mutableChatListState.value = chatListState.value.copy(
                                     messages = messagesList,
                                     isLoading = false,
-
-                                    )
+                                )
                             }
                         }
                     }
@@ -64,16 +60,16 @@ class ChatViewModel @AssistedInject constructor(
 
         viewModelScope.launch {
             mutableChatListState.value = chatListState.value.copy(
-                    isLoading = true
+                isLoading = true
             )
             runCatching {
-            val room = getRoomInfoUseCase(roomId = roomId)
-            mutableChatListState.value = chatListState.value.copy(
-                topBarState = room.topTopBarState(roomId)
-            )}.onFailure {
+                val room = getRoomInfoUseCase(roomId = roomId)
+                mutableChatListState.value = chatListState.value.copy(
+                    topBarState = room.topTopBarState(roomId)
+                )
+            }.onFailure {
                 print(it)
             }
-
         }
     }
 
@@ -109,13 +105,6 @@ class ChatViewModel @AssistedInject constructor(
 
     }
 
-    private fun getRoom() {
-
-        viewModelScope.launch {
-        }
-
-    }
-
     private fun messageFieldChanged(textField: String) {
         mutableChatListState.value = chatListState.value.copy(textField = textField)
     }
@@ -134,6 +123,5 @@ class ChatViewModel @AssistedInject constructor(
     interface Factory {
         fun create(roomId: String, roomTypeState: RoomState.RoomTypeState): ChatViewModel
     }
-
 }
 

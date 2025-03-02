@@ -62,7 +62,8 @@ fun CreateChatBottomSheetContent(
         ModalBottomSheet(
             modifier = Modifier
                 .statusBarsPadding()
-                .height(sheetHeight).align(Alignment.BottomEnd),
+                .height(sheetHeight)
+                .align(Alignment.BottomEnd),
             onDismissRequest = onDismissRequest,
             sheetState = sheetState,
 

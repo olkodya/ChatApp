@@ -1,6 +1,5 @@
 package com.example.chatapp.feature.chatList.data
 
-import android.util.Log
 import com.example.chatapp.data.WebSocketDataStore
 import com.example.chatapp.feature.authorization.data.AuthData
 import com.example.chatapp.feature.authorization.data.AuthPreferences
@@ -56,7 +55,6 @@ class ChatListRepositoryImpl @Inject constructor(
     private fun checkAndLoadConversationalistInfo() {
         roomsStateFlow.value?.forEach { room ->
             room.userId?.let { userId ->
-                // TODO: Not use not viewModel's coroutines scopes
                 repositoryScope.launch {
                     try {
                         val response = api.getUsersInfo(userId)

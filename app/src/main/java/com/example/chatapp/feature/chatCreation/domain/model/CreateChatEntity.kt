@@ -8,9 +8,6 @@ data class CreateChatEntity(
     val roomId: String,
 )
 
-
-
-
 fun CreateChatResponse.toEntity() = CreateChatEntity(
     roomId = requireNotNull(room?.rid)
 )
