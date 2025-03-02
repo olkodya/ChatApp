@@ -21,8 +21,9 @@ class CreateChatViewModel @Inject constructor(
     private val getUsersUseCase: GetUsersUseCase, private val createChatUseCase: CreateChatUseCase
 ) : ViewModel() {
 
-    private val mutableUserListState = MutableStateFlow<CreateChatState>(CreateChatState())
-    val userListState: StateFlow<CreateChatState> = mutableUserListState.asStateFlow()
+    private val mutableUserListState =
+        MutableStateFlow<CreateChatScreenState>(CreateChatScreenState())
+    val userListState: StateFlow<CreateChatScreenState> = mutableUserListState.asStateFlow()
 
     private val mutableEvents = Channel<CreateChatEvent>()
     val events = mutableEvents.receiveAsFlow()
@@ -46,8 +47,8 @@ class CreateChatViewModel @Inject constructor(
     private fun createChat(username: String) {
         viewModelScope.launch {
             runCatching {
-                createChatUseCase(username = username)
-
+                val roomId: String = createChatUseCase(username = username).roomId
+                mutableEvents.send(CreateChatEvent.HideBottomSheet(roomId))
             }.onFailure {
                 print(it.message)
             }
@@ -82,7 +83,7 @@ class CreateChatViewModel @Inject constructor(
 
     fun hideBottomSheet() {
         viewModelScope.launch {
-            mutableEvents.send(CreateChatEvent.HideBottomSheet)
+            mutableEvents.send(CreateChatEvent.HideBottomSheet(null))
         }
     }
 
@@ -93,6 +94,6 @@ class CreateChatViewModel @Inject constructor(
     }
 
     sealed class CreateChatEvent {
-        data object HideBottomSheet : CreateChatEvent()
+        data class HideBottomSheet(val roomId: String?) : CreateChatEvent()
     }
 }

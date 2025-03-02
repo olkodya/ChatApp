@@ -4,8 +4,10 @@ import android.util.Log
 import com.example.chatapp.data.WebSocketDataStore
 import com.example.chatapp.feature.authorization.data.AuthData
 import com.example.chatapp.feature.authorization.data.AuthPreferences
+import com.example.chatapp.feature.chatCreation.domain.model.CreateChatEntity
 import com.example.chatapp.feature.chatList.data.api.ChatListApi
 import com.example.chatapp.feature.chatList.data.model.CreateChatRequest
+import com.example.chatapp.feature.chatList.data.model.CreateChatResponse
 import com.example.chatapp.feature.chatList.data.model.RoomResponse
 import com.example.chatapp.feature.chatList.data.model.RoomsResponse
 import com.example.chatapp.feature.chatList.data.model.RoomsResponseSubscription
@@ -60,7 +62,6 @@ class ChatListRepositoryImpl @Inject constructor(
                 repositoryScope.launch {
                     try {
                         val response = api.getUsersInfo(userId)
-                        delay(1000)
                         roomsMutableStateFlow.value =
                             roomsMutableStateFlow.value?.map { currentRoom ->
                                 if (currentRoom.id == room.id) {
@@ -109,7 +110,7 @@ class ChatListRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getUsers(): UserListResponse = api.getUsersList(count = USER_LIST_COUNT)
-    override suspend fun createChat(username: String) =
+    override suspend fun createChat(username: String): CreateChatResponse =
         api.createDM(CreateChatRequest(username = username))
 
     private fun callsProcessing(text: String, responseId: String) = when (responseId) {

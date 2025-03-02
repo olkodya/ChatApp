@@ -1,17 +1,17 @@
 package com.example.chatapp.feature.chat.presentation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
+import com.example.chatapp.feature.chatList.presentation.RoomState
 
 @Composable
 fun ChatScreen(
     roomId: String,
     navigateBack: () -> Unit,
+//    roomType: RoomState.RoomTypeState?,
 ) {
 
     val viewModel = hiltViewModel<ChatViewModel, ChatViewModel.Factory> { factory ->

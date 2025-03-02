@@ -33,13 +33,14 @@ class ChatListViewModel @Inject constructor(
 
     fun handleAction(action: ChatListAction) {
         when (action) {
-            is ChatListAction.OnChatClicked -> navigateToChat(id = action.chatId)
+            is ChatListAction.OnChatClicked -> navigateToChat(id = action.chatId, roomTypeState = action.roomTypeState)
             is ChatListAction.OnSearchChatsFieldEdited -> chatsFieldChanged(action.query)
             ChatListAction.OnCancelButtonClick -> {
                 hideBottomSheet()
             }
 
             ChatListAction.OnAddChatClicked -> showBottomSheet()
+            is ChatListAction.OnUserClick -> navigateToChat(id = action.roomId, roomTypeState = RoomState.RoomTypeState.DIRECT )
         }
     }
 
@@ -77,9 +78,9 @@ class ChatListViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToChat(id: String) {
+    private fun navigateToChat(id: String, roomTypeState: RoomState.RoomTypeState) {
         viewModelScope.launch {
-            mutableEvents.send(ChatListEvent.NavigateToChat(chatId = id))
+            mutableEvents.send(ChatListEvent.NavigateToChat(chatId = id, roomType = roomTypeState))
         }
 
     }
@@ -103,13 +104,14 @@ class ChatListViewModel @Inject constructor(
 
     sealed class ChatListAction {
         data class OnSearchChatsFieldEdited(val query: String) : ChatListAction()
-        data class OnChatClicked(val chatId: String) : ChatListAction()
+        data class OnChatClicked(val chatId: String, val roomTypeState: RoomState.RoomTypeState) : ChatListAction()
         data object OnAddChatClicked : ChatListAction()
         data object OnCancelButtonClick : ChatListAction()
+        data class OnUserClick(val roomId: String): ChatListAction()
     }
 
     sealed class ChatListEvent {
-        data class NavigateToChat(val chatId: String) : ChatListEvent()
+        data class NavigateToChat(val chatId: String, val roomType: RoomState.RoomTypeState) : ChatListEvent()
         data object ShowBottomSheet : ChatListEvent()
         data object HideBottomSheet : ChatListEvent()
     }

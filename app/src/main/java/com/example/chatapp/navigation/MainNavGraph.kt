@@ -24,8 +24,13 @@ fun MainNavGraph(
 
         composable<BottomNavigationItem.Chats> {
             ChatListScreen(
-                onNavigateToChat = { roomId ->
-                    rootNavHostController.navigate(Routes.ScreenChat(roomId = roomId))
+                onNavigateToChat = { roomId, roomType ->
+                    rootNavHostController.navigate(
+                        Routes.ScreenChat(
+                            roomId = roomId,
+//                            roomType = roomType
+                        )
+                    )
                 }
             )
         }

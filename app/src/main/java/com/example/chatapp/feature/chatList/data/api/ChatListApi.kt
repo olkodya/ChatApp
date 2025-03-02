@@ -3,6 +3,7 @@ package com.example.chatapp.feature.chatList.data.api
 import com.example.chatapp.feature.chatList.data.model.UserInfoResponse
 import com.example.chatapp.feature.chatList.data.model.UserListResponse
 import com.example.chatapp.feature.chatList.data.model.CreateChatRequest
+import com.example.chatapp.feature.chatList.data.model.CreateChatResponse
 import com.example.chatapp.feature.chatList.data.model.RoomsResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -21,5 +22,5 @@ interface ChatListApi {
     suspend fun getUsersList(@Query("count") count: Int): UserListResponse
 
     @POST("/api/v1/im.create")
-    suspend fun createDM(@Body body: CreateChatRequest)
+    suspend fun createDM(@Body body: CreateChatRequest): CreateChatResponse
 }

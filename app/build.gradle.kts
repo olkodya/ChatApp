@@ -5,6 +5,7 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
+    id ("kotlin-parcelize")
     kotlin("plugin.serialization") version "2.0.21"
 }
 

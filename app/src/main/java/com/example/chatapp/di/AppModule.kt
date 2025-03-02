@@ -6,6 +6,7 @@ import com.example.chatapp.data.WebSocketDataStore
 import com.example.chatapp.data.WebSocketDataStoreImpl
 import com.example.chatapp.feature.authorization.data.AuthPreferences
 import com.example.chatapp.feature.authorization.data.api.LoginApi
+import com.example.chatapp.feature.chat.data.ChatApi
 import com.example.chatapp.feature.chatList.data.api.ChatListApi
 import com.example.chatapp.feature.profile.data.api.ProfileApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -106,4 +107,7 @@ class AppModule {
 
     @Provides
     fun providesChatListApi(retrofit: Retrofit): ChatListApi = retrofit.create()
+
+    @Provides
+    fun providesChatApi(retrofit: Retrofit): ChatApi = retrofit.create()
 }

@@ -4,13 +4,15 @@ import android.util.Log
 import com.example.chatapp.data.WebSocketDataStore
 import com.example.chatapp.feature.authorization.data.AuthData
 import com.example.chatapp.feature.authorization.data.AuthPreferences
+import com.example.chatapp.feature.chat.data.ChatApi
 import com.example.chatapp.feature.chat.data.ChatRepository
 import com.example.chatapp.feature.chat.data.model.MessageResponse
 import com.example.chatapp.feature.chat.data.model.MessagesCallResponse
 import com.example.chatapp.feature.chat.data.model.MessagesSubResponse
+import com.example.chatapp.feature.chat.data.model.PostMessageRequest
+import com.example.chatapp.feature.chat.data.model.TextMessage
 import com.example.chatapp.feature.chat.di.MessageEntity
 import com.example.chatapp.feature.chat.di.toEntity
-import com.example.chatapp.feature.chatList.data.api.ChatListApi
 import com.example.chatapp.feature.chatList.data.model.WebSocketMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +30,7 @@ import javax.inject.Named
 
 class ChatRepositoryImpl @Inject constructor(
     private val webSocketDataStore: WebSocketDataStore,
-    private val api: ChatListApi,
+    private val api: ChatApi,
     @Named("WebSocketOkHttpClient") private val okHttpClient: OkHttpClient,
     private val authPreferences: AuthPreferences,
     private val formattedJson: Json,
@@ -72,18 +74,23 @@ class ChatRepositoryImpl @Inject constructor(
 
     private fun messagesChangedProcessing(text: String) {
         try {
+            Log.d("sxas", "saxax")
             val messagesResponse: List<MessageResponse> =
                 formattedJson.decodeFromString<MessagesSubResponse>(text)
                     .fields.messages ?: return
+            Log.d("sxas", "saxax")
 
             val messagesEntity: List<MessageEntity>? = messagesResponse
                 .map { it.toEntity(authData.userId) }
+            Log.d("scacasa", messagesStateFlow.value.toString())
 
             messagesMutableStateFlow.update { currentMessages ->
                 val updatedMessages =
                     (messagesEntity ?: emptyList()) + (currentMessages ?: emptyList())
                 updatedMessages
             }
+            Log.d("scacasa", messagesEntity.toString())
+            Log.d("scacasa", messagesStateFlow.value.toString())
         } catch (e: Exception) {
             print("")
         }
@@ -97,18 +104,15 @@ class ChatRepositoryImpl @Inject constructor(
 
             val eventName: String? = Json.parseToJsonElement(text)
                 .jsonObject["collection"]?.jsonPrimitive?.content
-                ?: Json.parseToJsonElement(text)
-                    .jsonObject["fields"]
-                    ?.jsonObject["eventName"]?.jsonPrimitive?.content
 
             Log.e("12351235421", "$responseId++++$eventName")
             when {
+                eventName != null -> subscriptionsProcessing(text = text, eventName = eventName)
+
                 responseId != null -> callsProcessing(
                     text = text,
                     responseId = responseId
                 )
-
-                eventName != null -> subscriptionsProcessing(text = text, eventName = eventName)
             }
         } catch (exception: Exception) {
             print(exception)
@@ -123,13 +127,15 @@ class ChatRepositoryImpl @Inject constructor(
             ?: return throw IOException("Auth data not set")
 
         webSocketDataStore.sendMessage(
+            WebSocketMessage.Unsubscribe(MESSAGES_SUB_ID)
+        )
+        webSocketDataStore.sendMessage(
             WebSocketMessage.LoadHistoryRequest.create(
                 id = MASSAGES_CALL_ID,
                 roomId = roomId,
                 limit = GET_MASSAGES_LIMIT
             )
         )
-
         webSocketDataStore.sendMessage(
             WebSocketMessage.MessagesSubscribe.messagesFactory(
                 id = MESSAGES_SUB_ID,
@@ -137,11 +143,16 @@ class ChatRepositoryImpl @Inject constructor(
             )
         )
         stateFlow(messagesStateFlow)
-        webSocketDataStore.responseFlow.collect { text ->
+        webSocketDataStore.responseFlow.drop(1).collect { text ->
             if (text == null) return@collect
             onTextSocketProcessing(text)
         }
     }
+
+    override suspend fun sendMessage(roomId: String, text: String?) = api.postMessage(
+        body = PostMessageRequest(message = TextMessage(rid = roomId, msg = text))
+    )
+
 
     private companion object {
         const val MASSAGES_CALL_ID = "477ca7f6-d8e9-4921-a407-b32da33e1b9a"

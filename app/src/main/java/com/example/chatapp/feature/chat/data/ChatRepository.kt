@@ -9,4 +9,6 @@ interface ChatRepository {
         stateFlow: (StateFlow<List<MessageEntity>?>) -> Unit,
         roomId: String
     )
+
+    suspend fun sendMessage(roomId: String, text: String?)
 }

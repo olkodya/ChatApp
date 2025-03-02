@@ -1,19 +1,30 @@
 package com.example.chatapp.feature.chatList.presentation
 
+import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 import com.example.chatapp.components.ErrorState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.parcelize.Parcelize
 
 @Immutable
 data class ChatListScreenState(
     val errorState: ErrorState? = null,
     val isLoading: Boolean = false,
     val searchQuery: String = "",
-    val rooms: ImmutableList<RoomState> = persistentListOf(),
+    private val rooms: ImmutableList<RoomState> = persistentListOf(),
 ) {
     val isSuccessLoaded: Boolean
         get() = isLoading == false && errorState == null && rooms.isNotEmpty()
+
+
+    val filteredRoomsByQuery: ImmutableList<RoomState>
+        get() = rooms.filter { room ->
+            val nameLowerCase: String = (room.name ?: "").lowercase()
+            val searchQueryLowerCase: String = searchQuery.lowercase()
+            nameLowerCase.contains(searchQueryLowerCase)
+        }.toImmutableList()
 }
 
 @Immutable
@@ -33,8 +44,10 @@ data class RoomState(
     val lastMessageType: LastMessageType
 ) {
 
+
+    @Parcelize
     @Immutable
-    enum class RoomTypeState {
+    enum class RoomTypeState : Parcelable {
         DIRECT,                 // Direct messages
         PUBLIC_CHANNEL,         // Public channel
         PRIVATE_CHANNEL,        // Private channel

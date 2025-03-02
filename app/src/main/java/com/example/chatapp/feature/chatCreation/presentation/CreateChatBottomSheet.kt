@@ -12,15 +12,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun CreateChatBottomSheet(
     onDismiss: () -> Unit,
     sheetState: SheetState,
+    onNavigateToChat: (chatId: String) -> Unit,
 ) {
-
     val bottomSheetViewModel: CreateChatViewModel = hiltViewModel()
 
     LaunchedEffect(Unit) {
         bottomSheetViewModel.events.collect { event ->
             when (event) {
-                CreateChatViewModel.CreateChatEvent.HideBottomSheet -> {
-                    onDismiss()
+                is CreateChatViewModel.CreateChatEvent.HideBottomSheet -> {
+                    if (event.roomId == null) {
+                        onDismiss()
+                    } else {
+                        onNavigateToChat(event.roomId)
+                    }
                 }
             }
         }

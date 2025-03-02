@@ -15,7 +15,7 @@ import com.example.chatapp.feature.chatCreation.presentation.CreateChatBottomShe
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatListScreen(
-    onNavigateToChat: (id: String) -> Unit
+    onNavigateToChat: (id: String, roomType: RoomState.RoomTypeState) -> Unit
 ) {
 
     val viewModel: ChatListViewModel = hiltViewModel()
@@ -26,7 +26,7 @@ fun ChatListScreen(
         viewModel.events.collect { event ->
             when (event) {
                 is ChatListViewModel.ChatListEvent.NavigateToChat -> {
-                    onNavigateToChat(event.chatId)
+                    onNavigateToChat(event.chatId, event.roomType)
                 }
 
                 ChatListViewModel.ChatListEvent.ShowBottomSheet -> {
@@ -49,7 +49,9 @@ fun ChatListScreen(
         CreateChatBottomSheet(
             onDismiss = {
                 viewModel.handleAction(ChatListViewModel.ChatListAction.OnCancelButtonClick)
+
             },
+            onNavigateToChat = { viewModel.handleAction(ChatListViewModel.ChatListAction.OnUserClick(roomId = it))},
             sheetState = sheetState,
         )
     }

@@ -162,6 +162,11 @@ sealed class WebSocketMessage(
     }
 
     @Serializable
+    data class Unsubscribe(
+        val id: String,
+    ): WebSocketMessage(msg="unsub")
+
+    @Serializable
     data class LoadHistoryRequest(
         val method: String = "loadHistory",
         val id: String,

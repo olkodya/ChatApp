@@ -54,9 +54,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.chatapp.R
+import com.example.chatapp.components.EmptyState
+import com.example.chatapp.components.ErrorState
 import com.example.chatapp.components.LoadingState
 import com.example.chatapp.components.SearchTextField
 import com.example.chatapp.components.Shimmer
+import com.example.chatapp.feature.chatCreation.presentation.NotFoundMessage
 import com.example.chatapp.feature.chatList.presentation.RoomState.LastMessageType
 import com.example.chatapp.feature.chatList.presentation.RoomState.RoomTypeState
 import com.example.chatapp.ui.theme.AppTheme
@@ -139,21 +142,33 @@ fun ChatListContent(
             }
         }
 
-        if (chatListState.isLoading) {
-            LoadingState()
-        } else if (chatListState.errorState != null) {
-        } else {
-            val listState = rememberLazyListState()
-            var previousSize by remember { mutableStateOf(chatListState.rooms.size) }
+        val listState = rememberLazyListState()
+        var previousSize by remember { mutableStateOf(chatListState.filteredRoomsByQuery.size) }
 
-            LaunchedEffect(chatListState.rooms.size) {
-                if (chatListState.rooms.size > previousSize && chatListState.rooms.isNotEmpty()) {
-                    listState.animateScrollToItem(0)
-                }
-                previousSize = chatListState.rooms.size
-
+        LaunchedEffect(chatListState.filteredRoomsByQuery.size) {
+            if (chatListState.filteredRoomsByQuery.size > previousSize && chatListState.filteredRoomsByQuery.isNotEmpty()) {
+                listState.animateScrollToItem(0)
             }
-            ChatList(state = chatListState, handleAction = handleAction, listState)
+            previousSize = chatListState.filteredRoomsByQuery.size
+        }
+
+        when {
+            chatListState.isLoading -> LoadingState()
+            chatListState.errorState != null -> {
+                ErrorState(state = chatListState.errorState)
+            }
+
+            chatListState.filteredRoomsByQuery.isEmpty() && chatListState.searchQuery.isNotEmpty() -> NotFoundMessage(
+                chatListState.searchQuery
+            )
+
+            chatListState.filteredRoomsByQuery.isEmpty() && chatListState.searchQuery.isEmpty() -> EmptyState(
+                message = "Список чатов пуст"
+            )
+
+            else -> ChatList(
+                state = chatListState, handleAction = handleAction, listState = listState
+            )
         }
     }
 }
@@ -171,10 +186,10 @@ private fun ChatList(
     ) {
 
         items(
-            count = state.rooms.size,
-            key = { id -> state.rooms[id].id },
+            count = state.filteredRoomsByQuery.size,
+            key = { id -> state.filteredRoomsByQuery[id].id },
         ) { index ->
-            val chat = state.rooms[index]
+            val chat = state.filteredRoomsByQuery[index]
             ChatItem(chatState = chat, handleAction)
         }
     }
@@ -191,7 +206,14 @@ private fun ChatItem(
             .height(72.dp)
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 0.dp)
-            .clickable { handleAction(ChatListViewModel.ChatListAction.OnChatClicked(chatState.id)) }
+            .clickable {
+                handleAction(
+                    ChatListViewModel.ChatListAction.OnChatClicked(
+                        chatState.id,
+                        chatState.type
+                    )
+                )
+            }
             .drawBehind {
                 drawLine(
                     color = bordersColor,
@@ -224,9 +246,12 @@ private fun ChatItem(
             ) {
                 if (showedName != null) {
                     Text(
+                        modifier = Modifier.weight(1f),
                         text = showedName,
                         fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 } else {
                     Shimmer(
@@ -234,9 +259,11 @@ private fun ChatItem(
                             .height(20.dp)
                             .width(150.dp)
                     )
+                    Spacer(modifier = Modifier.weight(1f))
+
                 }
 
-                Spacer(modifier = Modifier.weight(1f))
+
 
                 MessageDoneMark(chatState)
 
@@ -447,9 +474,9 @@ fun ChatCardPreviewAuthorIsMe() {
                 imageUrl = "",
                 type = RoomTypeState.DIRECT,
                 name = "ssd",
-                lastMassage = "Коммутаторы коммутируютdd",
+                lastMassage = "Коммутаторы кllllllllssllllllllllllllоммутируютdd",
                 lastUpdateTimestamp = 0,
-                lastMessageAuthor = "xsxs",
+                lastMessageAuthor = "xsxssssss",
                 isMeMessageAuthor = true,
                 unreadMessagesCount = 1,
                 numberOfCheckMark = 1,
@@ -473,7 +500,7 @@ fun ChatListPreview() {
                         userName = "",
                         imageUrl = "",
                         type = RoomTypeState.DIRECT,
-                        name = "Ольга Кукарцева",
+                        name = "Ольга Кукаxaxaasaaaddaadqdqscрц",
                         lastMassage = "Коммутаторы коммутируют",
                         lastUpdateTimestamp = 0,
                         lastMessageAuthor = "xsxs",

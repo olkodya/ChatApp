@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -44,94 +46,102 @@ import com.example.chatapp.components.ErrorState
 import com.example.chatapp.components.LoadingState
 import com.example.chatapp.components.SearchTextField
 import com.example.chatapp.ui.theme.AppTheme
-import retrofit2.http.Query
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateChatBottomSheetContent(
-    userListState: CreateChatState,
+    userListState: CreateChatScreenState,
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
     handleAction: (CreateChatViewModel.CreateChatAction) -> Unit
 ) {
-    ModalBottomSheet(
-        modifier = Modifier.statusBarsPadding(),
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-        contentWindowInsets = { WindowInsets.ime },
-    ) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(modifier = Modifier.weight(1f)) {
-                    TextButton(
-                        modifier = Modifier.align(Alignment.CenterStart),
-                        onClick = {
-                            handleAction(CreateChatViewModel.CreateChatAction.OnCancelButtonClick)
+
+    val screenHeight = LocalConfiguration.current.screenHeightDp
+    val sheetHeight = (screenHeight * 0.95f).dp
+    Box(modifier = Modifier.fillMaxSize()) {
+        ModalBottomSheet(
+            modifier = Modifier
+                .statusBarsPadding()
+                .height(sheetHeight).align(Alignment.BottomEnd),
+            onDismissRequest = onDismissRequest,
+            sheetState = sheetState,
+
+            contentWindowInsets = { WindowInsets.ime },
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        TextButton(
+                            modifier = Modifier.align(Alignment.CenterStart),
+                            onClick = {
+                                handleAction(CreateChatViewModel.CreateChatAction.OnCancelButtonClick)
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.create_chat_cancel_button_text),
+                                color = MaterialTheme.colorScheme.secondary,
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Medium,
+                            )
                         }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.create_chat_cancel_button_text),
-                            color = MaterialTheme.colorScheme.secondary,
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.Medium,
-                        )
                     }
-                }
-                Text(
-                    text = stringResource(R.string.create_chat_title),
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(modifier = Modifier.weight(1f))
-            }
-
-            SearchTextField(
-                value = userListState.searchQuery,
-                onValueChange = { value ->
-                    handleAction(
-                        CreateChatViewModel.CreateChatAction.OnSearchUsersFieldEdited(
-                            value
-                        )
+                    Text(
+                        text = stringResource(R.string.create_chat_title),
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
                     )
-                },
-                placeholder = stringResource(R.string.create_chat_search_placeholder),
-                paddingValues = PaddingValues(bottom = 12.dp, start = 16.dp, end = 16.dp)
-            )
-
-            Text(
-                text = stringResource(R.string.create_chat_contacts_title),
-                modifier = Modifier.padding(horizontal = 16.dp),
-                color = MaterialTheme.colorScheme.tertiary,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
-            )
-
-            when {
-                userListState.isLoading -> LoadingState()
-                userListState.errorState != null -> {
-                    ErrorState(state = userListState.errorState)
+                    Spacer(modifier = Modifier.weight(1f))
                 }
 
-                userListState.filteredUsersByQuery.isEmpty() && userListState.searchQuery.isNotEmpty() -> NotFoundMessage(
-                    userListState.searchQuery
+                SearchTextField(
+                    value = userListState.searchQuery,
+                    onValueChange = { value ->
+                        handleAction(
+                            CreateChatViewModel.CreateChatAction.OnSearchUsersFieldEdited(
+                                value
+                            )
+                        )
+                    },
+                    isEnabled = userListState.isSuccessLoaded,
+                    placeholder = stringResource(R.string.create_chat_search_placeholder),
+                    paddingValues = PaddingValues(bottom = 12.dp, start = 16.dp, end = 16.dp)
                 )
 
-                userListState.filteredUsersByQuery.isEmpty() && userListState.searchQuery.isEmpty() -> EmptyState(
-                    message = stringResource(R.string.create_chat_user_list_empty)
+                Text(
+                    text = stringResource(R.string.create_chat_contacts_title),
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
                 )
 
-                else -> UsersList(
-                    users = userListState.filteredUsersByQuery,
-                    handleAction = handleAction
-                )
+                when {
+                    userListState.isLoading -> LoadingState()
+                    userListState.errorState != null -> {
+                        ErrorState(state = userListState.errorState)
+                    }
+
+                    userListState.filteredUsersByQuery.isEmpty() && userListState.searchQuery.isNotEmpty() -> NotFoundMessage(
+                        userListState.searchQuery
+                    )
+
+                    userListState.filteredUsersByQuery.isEmpty() && userListState.searchQuery.isEmpty() -> EmptyState(
+                        message = stringResource(R.string.create_chat_user_list_empty)
+                    )
+
+                    else -> UsersList(
+                        users = userListState.filteredUsersByQuery,
+                        handleAction = handleAction
+                    )
+                }
             }
         }
     }

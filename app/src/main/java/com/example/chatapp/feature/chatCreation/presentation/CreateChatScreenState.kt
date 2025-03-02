@@ -9,7 +9,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Immutable
-data class CreateChatState(
+data class CreateChatScreenState(
     private val users: ImmutableList<UserState> = persistentListOf(),
     val searchQuery: String = "",
     val errorState: ErrorState? = null,
@@ -32,6 +32,9 @@ data class CreateChatState(
             val searchQueryLowerCase: String = searchQuery.toLowerCase(Locale.current)
             nameLowerCase.contains(searchQueryLowerCase)
         }.toImmutableList()
+
+    val isSuccessLoaded: Boolean
+        get() = isLoading == false && errorState == null && users.isNotEmpty()
 }
 
 @Immutable
@@ -40,4 +43,10 @@ data class UserState(
     val avatarUrl: String,
     val name: String,
     val username: String,
+)
+
+@Immutable
+data class CreateChatState(
+    val success: Boolean,
+    val roomId: String,
 )

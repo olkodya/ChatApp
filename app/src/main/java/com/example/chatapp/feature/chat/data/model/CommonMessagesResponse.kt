@@ -11,8 +11,22 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+
+
+
+@Serializable
+data class UrlMetaData(
+    val url: String,
+    val meta: JsonObject = JsonObject(emptyMap())
+)
+
+@Serializable
+data class MessageUrl(
+    val urls: List<UrlMetaData>? = null
+)
 
 
 @Serializable
@@ -29,7 +43,7 @@ sealed class MessageResponse {
     abstract val ts: DateParamTest?
     abstract val u: UserTest?
     abstract val _updatedAt: DateParamTest?
-    abstract val urls: List<String>?
+    abstract val urls: List<UrlMetaData>?
     abstract val mentions: List<String>?
     abstract val channels: List<String>?
 }
@@ -51,7 +65,7 @@ data class TextMessage(
     override val ts: DateParamTest? = null,
     override val u: UserTest? = null,
     override val _updatedAt: DateParamTest? = null,
-    override val urls: List<String>? = null,
+    override val urls: List<UrlMetaData>? = null,
     override val mentions: List<String>? = null,
     override val channels: List<String>? = null,
     val msg: String? = null,
@@ -67,7 +81,7 @@ data class SystemMessage(
     override val ts: DateParamTest? = null,
     override val u: UserTest? = null,
     override val _updatedAt: DateParamTest? = null,
-    override val urls: List<String>? = null,
+    override val  urls: List<UrlMetaData>? = null,
     override val mentions: List<String>? = null,
     override val channels: List<String>? = null,
     val msg: String? = null,
@@ -92,6 +106,15 @@ data class MarkdownData(
         @Serializable
         @SerialName("EMOJI")
         data class Emoji(
+            val type: String? = null,
+            val value: PlainText? = null,
+            val shortCode: String? = null
+        ) : MarkdownValue()
+
+
+        @Serializable
+        @SerialName("LINK")
+        data class Link(
             val type: String? = null,
             val value: PlainText? = null,
             val shortCode: String? = null
@@ -135,7 +158,7 @@ sealed class FileMessage : MessageResponse() {
         override val ts: DateParamTest? = null,
         override val u: UserTest? = null,
         override val _updatedAt: DateParamTest? = null,
-        override val urls: List<String>? = null,
+        override val  urls: List<UrlMetaData>? = null,
         override val mentions: List<String>? = null,
         override val channels: List<String>? = null,
         override val msg: String? = null,
@@ -154,7 +177,7 @@ sealed class FileMessage : MessageResponse() {
         override val ts: DateParamTest? = null,
         override val u: UserTest? = null,
         override val _updatedAt: DateParamTest? = null,
-        override val urls: List<String>? = null,
+        override val urls: List<UrlMetaData>? = null,
         override val mentions: List<String>? = null,
         override val channels: List<String>? = null,
         override val msg: String? = null,
@@ -173,7 +196,7 @@ sealed class FileMessage : MessageResponse() {
         override val ts: DateParamTest? = null,
         override val u: UserTest? = null,
         override val _updatedAt: DateParamTest? = null,
-        override val urls: List<String>? = null,
+        override val urls: List<UrlMetaData>? = null,
         override val mentions: List<String>? = null,
         override val channels: List<String>? = null,
         override val msg: String? = null,

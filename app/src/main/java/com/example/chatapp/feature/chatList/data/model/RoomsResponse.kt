@@ -83,8 +83,8 @@ data class RoomResponse(
         data class MessageResponse(
             @SerialName("type")
             val type: String,
-            @SerialName("value")
-            val value: List<MessageValueResponse>? = null
+//            @SerialName("value")
+//            val value: List<MessageValueResponse>? = null
         ) {
             @Serializable
             data class MessageValueResponse(
