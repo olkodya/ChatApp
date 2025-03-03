@@ -1,5 +1,6 @@
 package com.example.chatapp.feature.chat.presentation
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.feature.chat.domain.CreateMessageUseCase
@@ -76,12 +77,24 @@ class ChatViewModel @AssistedInject constructor(
     fun handleAction(action: ChatAction) {
         when (action) {
             ChatAction.OnBackClicked -> onBackClicked()
+            ChatAction.OnDeleteImageClick -> {
+                deleteImage()
+            }
+
             is ChatAction.OnMessageTextChanged -> {
                 messageFieldChanged(action.text)
             }
 
             is ChatAction.OnSendMessageClick -> {
-                sendMessage(text = action.text)
+                sendMessage(text = action.text, uri = action.uri)
+            }
+
+            is ChatAction.OnAttachClick -> {
+                openPicker()
+            }
+
+            is ChatAction.OnImageSelect -> {
+                setImage(action.selected)
             }
         }
     }
@@ -92,12 +105,11 @@ class ChatViewModel @AssistedInject constructor(
         }
     }
 
-    private fun sendMessage(text: String) {
+    private fun sendMessage(text: String, uri: Uri?) {
         viewModelScope.launch {
             runCatching {
                 createMessageUseCase(roomId = roomId, text = text)
                 messageFieldChanged("")
-
             }.onFailure {
                 print(it)
             }
@@ -109,14 +121,34 @@ class ChatViewModel @AssistedInject constructor(
         mutableChatListState.value = chatListState.value.copy(textField = textField)
     }
 
+    private fun openPicker() {
+        viewModelScope.launch {
+            mutableEvents.send(ChatEvent.OpenImagePicker)
+        }
+    }
+
+    private fun setImage(imageUri: Uri?) {
+        mutableChatListState.value = chatListState.value.copy(selectedImages = listOf(imageUri))
+    }
+
+    private fun deleteImage() {
+        mutableChatListState.value = chatListState.value.copy(selectedImages = null, textField = "")
+
+    }
+
+
     sealed class ChatAction {
         data object OnBackClicked : ChatAction()
         data class OnMessageTextChanged(val text: String) : ChatAction()
-        data class OnSendMessageClick(val text: String) : ChatAction()
+        data class OnSendMessageClick(val text: String, val uri: Uri?) : ChatAction()
+        data object OnAttachClick : ChatAction()
+        data class OnImageSelect(val selected: Uri?) : ChatAction()
+        data object OnDeleteImageClick : ChatAction()
     }
 
     sealed class ChatEvent {
         data object NavigateBack : ChatEvent()
+        data object OpenImagePicker : ChatEvent()
     }
 
     @AssistedFactory

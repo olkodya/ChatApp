@@ -1,5 +1,6 @@
 package com.example.chatapp.feature.chat.presentation
 
+import android.net.Uri
 import androidx.compose.runtime.Immutable
 import com.example.chatapp.components.ErrorState
 import com.example.chatapp.feature.chat.di.MessageEntity
@@ -12,6 +13,7 @@ data class ChatScreenState(
     val isLoading: Boolean = false,
     val error: ErrorState? = null,
     val topBarState: TopBarState? = null,
+    val selectedImages: List<Uri?>? = null,
 ) {
     data class TopBarState(
         val isLoading: Boolean = true,
