@@ -12,7 +12,6 @@ interface ChatRepository {
     )
 
     suspend fun sendMessage(roomId: String, text: String?)
-
     suspend fun getRoomInfo(roomId: String): ChatInfoEntity
     suspend fun getUserInfo(userId: String): ChatInfoEntity
 }

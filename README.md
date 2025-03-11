@@ -7,5 +7,3 @@
 3. Jetpack navigation - навигация в приложении
 4. Dagger 2 - DI
 5. Coil - загрузка изображений
-## Пример работы:
-https://github.com/user-attachments/assets/99baa60a-d942-4344-b8e2-707cee0fa944
